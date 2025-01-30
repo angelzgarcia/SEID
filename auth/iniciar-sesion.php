@@ -1,8 +1,8 @@
 <?php
+// INICIO DE SESION CON CORREO Y CONTRASEÑA
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 require_once 'database.php';
-
 
 session_start();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
