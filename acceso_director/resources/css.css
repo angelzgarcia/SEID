@@ -1,0 +1,24 @@
+
+@import "tailwindcss";
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
+
+:root {
+    --primary-color: #05896;
+}
+
+/* HEADER STYLES */
+.header {
+    width: 100%;
+}
+.navbar {
+    background-color: #132d61;
+    color: #132d61;
+}
+
+
+
+.form-create-container {
+    min-height: 100vh;
+}
