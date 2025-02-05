@@ -1,5 +1,6 @@
 <?php
 require_once '../database.php';
+
 global $conn;
 session_start();
 $secretKey = 'your-secret-key';
@@ -19,9 +20,9 @@ if (empty($qr_code) || empty($token)) {
     die("Código QR o token no proporcionado.");
 }
 
-$credential_id = decryptValue($qr_code, $secretKey);
+$credential_id = (int)decryptValue($qr_code, $secretKey);
 
-if ($credential_id === false || intval($credential_id) <= 0) {
+if (!$credential_id || intval($credential_id) <= 0) {
     die("ID no válido.");
 }
 
@@ -30,19 +31,18 @@ $stmt -> bind_param("i", $credential_id);
 $stmt -> execute();
 $result = $stmt -> get_result();
 
-if ($result->num_rows === 0) {
+if ($result -> num_rows === 0) {
     die("Registro no encontrado.");
 }
 
 $row = $result -> fetch_assoc();
-$nivel_usuario = $row['nivel_usuario'];
+$nivel_usuario = (int)decryptValue($row['nivel_usuario'], $secretKey);
 
 $_SESSION['credential_id'] = $credential_id;
 $_SESSION['id_credencial'] = $credential_id;
 $_SESSION['nivel_usuario'] = $nivel_usuario;
 
-// Consultar el estado del registro y verificar el token
-$stmt = $conn -> prepare("SELECT nombre_credencial, apellidos_credencial FROM credenciales WHERE id_credencial = ?");
+$stmt = $conn -> prepare("SELECT nombres_credencial, apellidos_credencial, token_verificacion FROM credenciales WHERE id_credencial = ?");
 $stmt -> bind_param("i", $credential_id);
 $stmt -> execute();
 $result = $stmt -> get_result();
@@ -56,33 +56,30 @@ $user_name = $row['nombre_credencial'];
 $encryptedToken = $row['token_verificacion'];
 $last_name = $row['apellidos_credencial'];
 
-// Desencriptar el token almacenado
 $decryptedToken = decryptValue($encryptedToken, $secretKey);
-$descryptlastname = decryptValue($last_name, $secretKey);
+// $descryptlastname = decryptValue($last_name, $secretKey);
 
-// Verificar si el token ingresado coincide con el token almacenado
 if ($decryptedToken !== $token) {
-    header('Location: ../../login.php');
+    header('Location: ../views/login-qr.php');
     exit();
 }
 
-// Redirigir según el nivel_usuario
-switch ($nivelUsuario) {
+switch ($nivel_usuario) {
     case 1:
-        header('Location: ../acceso_director/views/Dashboard.php');
         $conn -> close();
+        header('Location: ../../acceso_director/views/Dashboard.php');
         exit();
     case 2:
-        header('Location: ../acceso_matriz/views/Dashboard.php');
         $conn -> close();
+        header('Location: ../../acceso_matriz/views/Dashboard.php');
         exit();
     case 3:
-        header('Location: ../acceso_vendedor/views/Dashboard.php');
         $conn -> close();
+        header('Location: ../../acceso_vendedor/views/Dashboard.php');
         exit();
     default:
-        $errorMensaje = "Nivel de usuario no válido.";
         $conn -> close();
+        $errorMensaje = "Nivel de usuario no válido.";
         header('Location: ../login.php?error=' . urlencode($errorMensaje));
         exit();
 }

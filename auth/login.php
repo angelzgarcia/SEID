@@ -1,8 +1,10 @@
-<?php
-// INICIO DE SESION CON CORREO Y CONTRASEÑA
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+<?php // INICIO DE SESION CON CORREO Y CONTRASEÑA
 require_once 'database.php';
+function decryptValue($encryptedValue, $secretKey) {
+    [$ciphertext, $iv] = explode('::', base64_decode($encryptedValue), 2);
+    $iv = base64_decode($iv);
+    return openssl_decrypt($ciphertext, 'aes-256-cbc', $secretKey, 0, $iv);
+}
 
 session_start();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -10,6 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pass = $_POST['pass'] ?? '';
 
     global $conn;
+    $secretKey = 'your-secret-key';
 
     $sqlUsuario = "
         SELECT *
@@ -24,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($resultUsuario -> num_rows === 1) {
         $row = $resultUsuario -> fetch_assoc();
         $hash_pass = $row['pass_inicio'];
-        $nivelUsuario = $row['nivel_usuario'];
+        $nivelUsuario = (int)decryptValue($row['nivel_usuario'], $secretKey);
 
         if ($pass === $hash_pass) {
             $_SESSION['id_usuario'] = $row['id_credencial'];
@@ -42,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     exit();
                 default:
                     $errorMensaje = "Nivel de usuario no válido.";
-                    header('Location: ../login.php?error=' . urlencode($errorMensaje));
+                    header('Location: ./views/login.php?error=' . urlencode($errorMensaje));
                     exit();
             }
         } else {
@@ -58,3 +61,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     header('Location: ../login.php?error=' . urlencode($errorMensaje));
     exit();
 }
+

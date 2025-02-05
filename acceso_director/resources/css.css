@@ -5,20 +5,20 @@
 @tailwind utilities; */
 
 :root {
-    --primary-color: #05896;
+    --primary-color: #132d61;
+    --header-height: 100px;
+    --sidebar-width: 300px;
 }
 
 /* HEADER STYLES */
-.header {
-    width: 100%;
-}
 .navbar {
-    background-color: #132d61;
-    color: #132d61;
+    max-height: var(--header-height);
+    background-color: var(--primary-color);
+    color: #fff;
 }
 
 
 
-.form-create-container {
+/* .form-create-container {
     min-height: 100vh;
-}
+} */

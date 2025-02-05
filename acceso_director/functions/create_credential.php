@@ -1,14 +1,13 @@
 <?php
 
-require '../../qrlib/barcode.php';
-require '../../vendor/autoload.php';
+// require '../../vendor/autoload.php';
+require_once '../../qrlib/barcode.php';
 require_once 'database.php';
 require_once './helpers/encrypt.php';
 require_once './helpers/swal.php';
 require_once './helpers/clear.php';
 
-use Zxing\QrReader;
-
+// use Zxing\QrReader;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST')
     match ($_POST['accion']) {
@@ -19,8 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST')
         'eliminar' => destroy(),
         default => throw new \Exception("Acción no válida")
     };
-else
-    redirect();
+else redirect();
 
 function redirect()
 {
@@ -33,37 +31,51 @@ function create()
     session_start();
     global $conn;
 
+    $token = str_pad(random_int(0, 9999), 4, '0', STR_PAD_LEFT);
     $pass = bin2hex(random_bytes(15));
+
     $data = [
-        'usuario_nivel' => (int)$_POST['usuario_nivel'] ? encryptValue(clearEntry($_POST['usuario_nivel']), SECRETKEY) : null ,
+        'usuario_nivel' => $_POST['usuario_nivel'] ? encryptValue(clearEntry($_POST['usuario_nivel']), SECRETKEY) : null ,
         'nombres' => clearEntry($_POST['nombres']) ?: null,
         'apellidos' => clearEntry($_POST['apellidos']) ?: null,
         'curp' => clearEntry($_POST['curp']) ?: null,
         'telefono' => clearEntry($_POST['telefono']) ?: null,
         'correo' => clearEntry($_POST['correo']) ?: null,
         'pass' => $pass,
-        'token_verificacion' => encryptValue('999', SECRETKEY),
+        'token_verificacion' => encryptValue($token, SECRETKEY),
         'id_sucursal' => clearEntry($_POST['id_sucursal']) ?: null,
     ];
 
     $errors = [];
-    $keys = array_keys($data);
 
-    
-
-
+    // VALIDAR CAMPOS VACÍOS
     foreach ($data as $key => $dato)
         if (!$dato)
             $errors[$key] = "El campo " . str_replace(['-', '_'], ' ', $key) . " es obligatorio";
 
-
+    // VALIDAR SI HAY ERRORES
     if(!empty($errors)) {
         if (count($errors) === count($data)-2) {
             $_SESSION['swal'] = swal('warning', 'Los campos son obligatorios');
             redirect();
+
+        // VALIDAR EL FORMATO DE LOS CAMPOS
+        } else {
+            !validateNames($data['nombres']) ? $errors['nombres'] = 'Solo se permiten letras y espacios' : '';
+
+            !validateLastNames($data['apellidos']) ? $errors['apellidos'] = 'Solo se permiten letras y espacios' : '';
+
+            !validateEmail($data['correo']) ? $errors['correo'] = 'Correo electrónico no válido' : '';
+
+            !validateCellPhone($data['telefono']) ? $errors['telefono'] = 'Número de teléfono no válido' : '';
+
+            !validateCurp($data['curp']) ? $errors['curp'] = 'CURP no válido' : '';
+
+            !validateUserLevel($data['usuario_nivel']) ? $errors['usuario_nivel'] = 'Nivel de usuario no permitido' : '';
+
+            $_SESSION['errors'] = $errors;
+            redirect();
         }
-        $_SESSION['errors'] = $errors;
-        redirect();
     }
 
     if (!simpleQuery(
@@ -75,6 +87,7 @@ function create()
         redirect();
     }
 
+    // CREAR CREDENCIAL
     $index_arr = array_values($data);
     $sql = '
         INSERT INTO credenciales (
@@ -110,14 +123,14 @@ function create()
     if (!file_exists($qrs_path))
         mkdir($qrs_path, 0777, true);
 
+    // CREAR QR CON EL ID DE LA CREDENCIAL ANTES CREADA
+    $generator = new barcode_generator();
     $options = [
         'version' => 5,
         'scale' => 10,
         'errorCorrectionLevel' => 'H',
     ];
-
-    $generator = new barcode_generator();
-    $image = $generator->render_image('qr', $credential_id, $options);
+    $image = $generator -> render_image('qr', encryptValue($credential_id, SECRETKEY), $options);
 
     imagepng($image, $qr_png_path);
     imagedestroy($image);
@@ -132,6 +145,7 @@ function create()
     $horaActual -> modify('-1 hour');
     $formatDateTime = $horaActual -> format('Y-m-d H:i:s');
 
+    // CREAR REGISTRO DEL QR ANTES CREADO
     $sql = "
         INSERT INTO qr_codes (id_credencial_qr_codes, file_path, created_at)
         VALUES (?, ?, ?)
@@ -172,5 +186,47 @@ function destroy()
 {
 
 }
+
+function validateNames($nombre) {
+    return !empty($nombre) ? preg_match("/^[a-zA-Z\s]+$/", $nombre) : true;
+}
+
+function validateLastNames($apellidos) {
+    return !empty($apellidos) ? preg_match("/^[a-zA-Z\s]+$/", $apellidos) : true;
+}
+
+function validateEmail($correo) {
+    return !empty($correo) ? filter_var($correo, FILTER_VALIDATE_EMAIL) !== false : true;
+}
+
+function validateCellPhone($telefono) {
+    return !empty($telefono) ? preg_match('/^\+?[0-9]{1,4}?[-.\s]?[0-9]{1,15}$/', $telefono) : true;
+}
+
+function validateCurp($curp) {
+    return !empty($curp) ? preg_match('/^[A-Z]{4}[0-9]{6}[A-Z]{6}[0-9]{2}[A-Z]{1}[0-9]{1}$/', $curp) : true;
+}
+
+function validateUserLevel($nivel) {
+    return !empty($nivel) ? is_numeric($nivel) && $nivel >= 1 && $nivel <= 3 : true;
+}
+
+// $validateNames = fn($nombre) =>
+//     !empty($nombres) && preg_match("/^[a-zA-Z\s]+$/", $nombre);
+
+// $validateLastNames = fn($apellidos) =>
+//     !empty($apellidos) && preg_match("/^[a-zA-Z\s]+$/", $apellidos);
+
+// $validateEmail = fn($correo) =>
+//     !empty($correo) && filter_var($correo, FILTER_VALIDATE_EMAIL) !== false;
+
+// $validateCellPhone = fn($telefono) =>
+//     !empty($telefono) && preg_match('/^\+?[0-9]{1,4}?[-.\s]?[0-9]{1,15}$/', $telefono);
+
+// $validateCurp = fn($curp) =>
+//     !empty($curp) && preg_match('/^[A-Z]{4}[0-9]{6}[A-Z]{6}[0-9]{2}[A-Z]{1}[0-9]{1}$/', $curp);
+
+// $validateUserLevel = fn($nivel) =>
+//     !empty($nivel) && is_numeric($nivel) && $nivel >= 1 && $nivel <= 3;
 
 

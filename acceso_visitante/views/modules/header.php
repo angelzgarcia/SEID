@@ -4,9 +4,9 @@
 <nav class="navbar navbar-expand-lg navbar-custom fixed-top">
     <div class="container-fluid">
         <a class="navbar-brand" href="https://denedig.online/">
-            <img src="./img/denedig.png" alt="Logo de Denedig" height="40">
+            <img src="<?=HTTP_URL?>acceso_visitante/resources/imgs/denedig-removebg-preview.png" alt="Logo de Denedig">
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar">
+        <button  style="display: none;" class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar ">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="offcanvas offcanvas-end offcanvas-custom" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">

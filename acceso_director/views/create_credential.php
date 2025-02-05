@@ -78,9 +78,9 @@
             <label for="nivel_usuario">Nivel de usuario</label>
             <select name="usuario_nivel" id="usuario_nivel">
                 <option disabled selected>Asigne el nivel de permisos del usuario</option>
-                <option value="<?= 1 ?>">Director</option>
-                <option value="<?= 2 ?>">Matriz</option>
-                <option value="<?= 3 ?>">Vendedor</option>
+                <option value="<?= '1' ?>">Director</option>
+                <option value="<?= '2' ?>">Matriz</option>
+                <option value="<?= '3' ?>">Vendedor</option>
             </select>
 
             <!-- ENVIAR -->
