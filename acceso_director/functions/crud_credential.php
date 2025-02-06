@@ -30,9 +30,10 @@ function create()
 
     $token = str_pad(random_int(0, 9999), 4, '0', STR_PAD_LEFT);
     $pass = bin2hex(random_bytes(15));
+    $nivel_usuario = '3';
 
     $data = [
-        'usuario_nivel' => isset($_POST['usuario_nivel']) ? encryptValue(clearEntry($_POST['usuario_nivel']), SECRETKEY) : null ,
+        'usuario_nivel' => encryptValue(clearEntry($nivel_usuario), SECRETKEY) ?? null ,
         'nombres' => clearEntry($_POST['nombres'] ?? ''),
         'apellidos' => clearEntry($_POST['apellidos'] ?? ''),
         'curp' => clearEntry($_POST['curp'] ?? ''),
@@ -65,7 +66,7 @@ function create()
 
     !validateCellPhone($data['telefono']) ? $errors['telefono'] = 'Número de teléfono no válido' : '';
 
-    // !validateCurp($data['curp']) ? $errors['curp'] = 'CURP no válido' : '';
+    !validateCurp($data['curp']) ? $errors['curp'] = 'CURP no válido' : '';
 
     !validateUserLevel((int)$data['usuario_nivel']) ? $errors['usuario_nivel'] = 'Nivel de usuario no permitido' : '';
 
@@ -201,7 +202,7 @@ function validateCellPhone($telefono) {
 }
 
 function validateCurp($curp) {
-    return !empty($curp) ? preg_match('/^[A-Z]{4}[0-9]{6}[A-Z]{6}[0-9]{2}[A-Z]{1}[0-9]{1}$/', $curp) : true;
+    return !empty($curp) ? preg_match('/^[A-Z]{4}[0-9]{6}[HM]{1}[A-Z]{2}[A-Z]{3}[0-9A-Z]{1}[0-9]{1}$/', strtoupper($curp)) : true;
 }
 
 function validateUserLevel($nivel) {

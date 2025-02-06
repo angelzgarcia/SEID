@@ -66,12 +66,12 @@ if ($decryptedToken !== $token) {
 
 switch ($nivel_usuario) {
     case 1:
+        header('Location: ../../acceso_matriz/views/Dashboard.php');
         $conn -> close();
-        header('Location: ../../acceso_director/views/Dashboard.php');
         exit();
     case 2:
         $conn -> close();
-        header('Location: ../../acceso_matriz/views/Dashboard.php');
+        header('Location: ../../acceso_director/views/Dashboard.php');
         exit();
     case 3:
         $conn -> close();

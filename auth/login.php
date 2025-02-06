@@ -35,10 +35,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             switch ($nivelUsuario) {
                 case 1:
-                    header('Location: ../acceso_director/views/Dashboard.php');
+                    header('Location: ../acceso_matriz/views/Dashboard.php');
                     exit();
                 case 2:
-                    header('Location: ../acceso_matriz/views/Dashboard.php');
+                    header('Location: ../acceso_director/views/Dashboard.php');
                     exit();
                 case 3:
                     header('Location: ../acceso_vendedor/views/Dashboard.php');
