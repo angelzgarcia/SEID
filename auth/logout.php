@@ -1,17 +1,18 @@
 <?php
-//sesion
+// session_start();
+
+// $_SESSION = array();
+
+// if (
+//     session_id() != "" ||
+//     isset($_COOKIE[session_name()])
+//     )
+// {
+//     setcookie(session_name(), '', time() -3600,'/');
+// }
+
 session_start();
-
-$_SESSION = array();
-
-if(session_id() != "" ||
-isset($_COOKIE[session_name()])) {
-    setcookie(session_name(), '', time() -3600,'/');
-    
-}
-
+session_unset();
 session_destroy();
-
-header("Location: ../acceso_DD/login.php");
-exit;
-?>
+header("Location: ./views/login-qr");
+exit();

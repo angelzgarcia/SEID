@@ -13,7 +13,7 @@
                 <li>
                     <a href="<?= HTTP_URL ?>acceso_director/views/dashboard">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M360-160v-240h240v240H360Zm80-80h80v-80h-80v80ZM88-440l-48-64 440-336 160 122v-82h120v174l160 122-48 64-392-299L88-440Zm392 160Z"/></svg>
-                        <span>Home</span>
+                        <span>Dashboard</span>
                     </a>
                 </li>
                 <li>
@@ -29,10 +29,12 @@
                     </a>
                 </li>
                 <li>
-                    <a href="">
+                    <form action="<?= HTTP_URL ?>auth/logout" class="logout-form">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h280v80H200Zm440-160-55-58 102-102H360v-80h327L585-622l55-58 200 200-200 200Z"/></svg>
-                        <span>cerrar sesión</span>
-                    </a>
+                        <button type="submit" class="capitalize">
+                            cerrar sesión
+                        </button>
+                    </form>
                 </li>
             </ul>
         </div>

@@ -38,7 +38,7 @@ if ($result -> num_rows === 0) {
 $row = $result -> fetch_assoc();
 $nivel_usuario = (int)decryptValue($row['nivel_usuario'], $secretKey);
 
-$_SESSION['credential_id'] = $credential_id;
+// $_SESSION['credential_id'] = $credential_id;
 $_SESSION['id_credencial'] = $credential_id;
 $_SESSION['nivel_usuario'] = $nivel_usuario;
 
@@ -52,9 +52,13 @@ if ($result->num_rows === 0) {
 }
 
 $row = $result -> fetch_assoc();
-$user_name = $row['nombre_credencial'];
+$user_name = $row['nombres_credencial'];
 $encryptedToken = $row['token_verificacion'];
 $last_name = $row['apellidos_credencial'];
+
+$_SESSION['nombres'] = $user_name;
+$_SESSION['apellidos'] = $last_name;
+
 
 $decryptedToken = decryptValue($encryptedToken, $secretKey);
 // $descryptlastname = decryptValue($last_name, $secretKey);
@@ -66,16 +70,16 @@ if ($decryptedToken !== $token) {
 
 switch ($nivel_usuario) {
     case 1:
-        header('Location: ../../acceso_matriz/views/Dashboard.php');
+        header('Location: ../../acceso_matriz/views/dashboard.php');
         $conn -> close();
         exit();
     case 2:
         $conn -> close();
-        header('Location: ../../acceso_director/views/Dashboard.php');
+        header('Location: ../../acceso_director/views/dashboard.php');
         exit();
     case 3:
         $conn -> close();
-        header('Location: ../../acceso_vendedor/views/Dashboard.php');
+        header('Location: ../../acceso_vendedor/views/dashboard.php');
         exit();
     default:
         $conn -> close();

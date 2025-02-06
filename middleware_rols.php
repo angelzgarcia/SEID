@@ -9,7 +9,7 @@ if (!isset($_SESSION['usuario'])) {
 
 function verificarRol($rolesPermitidos) {
     if (!in_array($_SESSION['rol'], $rolesPermitidos)) {
-        header("Location: /acceso_denegado.php"); // Página de error si no tiene permiso
+        header("Location: /acceso_denegado.php");
         exit();
     }
 }

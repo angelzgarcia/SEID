@@ -27,12 +27,13 @@ body {
 /* HEADER  - NAVBAR */
 
 .navbar {
-    background-color: #e7ecfa;
+    background-color: #fff;
     z-index: 1000;
     grid-area: nav;
     color: #fff;
     height: var(--navbar-heigh);
-    /* padding: 0 !important; */
+    box-shadow: 0 .02rem .1rem 0 rgba(128, 128, 128, 0.74);
+    padding: 0 4rem !important;
 }
 .navbar-toggler-icon {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.5 3.5h13a.5.5 0 010 1h-13a.5.5 0 010-1zm0 4h13a.5.5 0 010 1h-13a.5.5 0 010-1zm0 4h13a.5.5 0 010 1h-13a.5.5 0 010-1z' fill='%fff'/%3E%3C/svg%3E");
@@ -379,11 +380,10 @@ footer {
     width: 300px;
     height: 300px;
     margin: 2rem auto;
-    border: 1px solid #ccc;
+    /* border: 1px solid #ccc; */
     border-radius: .5rem;
-    box-shadow: 0 .3rem .3rem 0 rgba(128, 128, 128, 0.342);
-    background-color: rgba(128, 128, 128, 0.081);
-    /* background-color: #3e8eaec5; */
+    box-shadow: 0 .3rem .3rem 0 rgba(128, 128, 128, 0.282);
+    background-color: #fff;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 -960 960 960' width='24px' fill='%23dcdaca'%3E%3Cpath d='M80-680v-200h200v80H160v120H80Zm0 600v-200h80v120h120v80H80Zm600 0v-80h120v-120h80v200H680Zm120-600v-120H680v-80h200v200h-80ZM700-260h60v60h-60v-60Zm0-120h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60-60h60v60h-60v-60Zm120-120h60v60h-60v-60Zm-60 60h60v60h-60v-60Zm-60-60h60v60h-60v-60Zm240-320v240H520v-240h240ZM440-440v240H200v-240h240Zm0-320v240H200v-240h240Zm-60 500v-120H260v120h120Zm0-320v-120H260v120h120Zm320 0v-120H580v120h120Z'/%3E%3C/svg%3E");
     background-size: cover;
     background-repeat: no-repeat;
@@ -395,13 +395,15 @@ footer {
     align-items: center;
     justify-content: center;
     gap: 6rem;
-    /* padding-block-end: 4rem; */
     padding: 3rem 0;
+    background-color: #f4f5f7;
     flex-wrap: wrap;
     & h1 {
         font-size: 2.5rem;
         text-align: center;
-        color: black;
+        /* color: black; */
+        font-weight: 900;
+        color: #252f3f;
     }
     & .login-form-container, form {
         display: inherit;
@@ -411,10 +413,12 @@ footer {
 .login-form-container {
     gap: 2rem;
     & h2 {
-        color: var(--primary-color);
+        /* color: var(--secondary-color); */
+        /* color: #363434; */
+        color: #252f3f;
         font-weight: normal;
         font-size: 3rem;
-        font-weight: bolder;
+        font-weight: 900;
         text-align: center;
         flex-wrap: wrap;
         display: flex;
@@ -422,25 +426,21 @@ footer {
         justify-content: center;
         gap: 1.5rem;
         & svg {
-            fill: gray;
-            width: 40px;
-            height: 40px;
+            fill: black;
+            width: 30px;
+            height: 30px;
         }
     }
     & form {
-        /* color: white; */
         padding: 2rem;
         border-radius: .6rem;
-        /* background-color: var(--primary-color); */
+        background-color: #fff;
         width: 90%;
         margin: auto;
         gap: 1.8rem;
         box-shadow:
-            0 0 .4rem 0 rgba(128, 128, 128, 0.226),
-            0 .3rem .3rem 0 rgba(128, 128, 128, 0.242);
-        /* & fieldset legend {
-
-        } */
+            0 0 0 .05rem rgba(128, 128, 128, 0.126),
+            0 .3rem .3rem 0 rgba(128, 128, 128, 0.282);
         & input, button {
             width: 100%;
             outline: none;
@@ -448,7 +448,7 @@ footer {
             padding: .7rem;
             border-radius: .3rem;
             &:focus {
-                box-shadow: 0 0 .2rem 0 gray;
+                box-shadow: 0 0 .1rem 0 gray;
             }
         }
         & button[type="submit"] {
@@ -461,6 +461,9 @@ footer {
             align-items: center;
             gap: 1.1rem;
             justify-content: center;
+            &:hover {
+                background-color: #263d6d;
+            }
         }
         & svg {
             fill: white;

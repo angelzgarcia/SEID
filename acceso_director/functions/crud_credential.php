@@ -33,7 +33,7 @@ function create()
     $nivel_usuario = '3';
 
     $data = [
-        'usuario_nivel' => encryptValue(clearEntry($nivel_usuario), SECRETKEY) ?? null ,
+        'usuario_nivel' => encryptValue(clearEntry($nivel_usuario), SECRETKEY) ?? null,
         'nombres' => clearEntry($_POST['nombres'] ?? ''),
         'apellidos' => clearEntry($_POST['apellidos'] ?? ''),
         'curp' => clearEntry($_POST['curp'] ?? ''),
@@ -52,7 +52,7 @@ function create()
             $errors[$key] = "El campo " . str_replace(['-', '_'], ' ', $key) . " es obligatorio";
 
     // VALIDAR SI HAY ERRORES
-    if (count($errors) === count($data)-2) {
+    if (count($errors) === count($data)-3) {
         $_SESSION['swal'] = swal('warning', 'Los campos son obligatorios');
         redirect();
     }
