@@ -4,7 +4,7 @@
     <nav class="navbar">
         <div class="name-logo-brand">
             <a href="https://denedig.online/">
-                <img src="<?= HTTP_URL ?>acceso_director/storage/imgs/uploads/logo-removebg-preview.png" alt="Logo sucursal">
+                <img src="https://d1csarkz8obe9u.cloudfront.net/posterpreviews/color-logo-design-template-2b21eef46e5a1a5cdf9bb5a001074bd1_screen.jpg?ts=1567014385" alt="brand-logo">
             </a>
         </div>
 

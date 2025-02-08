@@ -1,24 +1,20 @@
-<?php session_start() ?>
+<?php require_once __DIR__ . '/../config.php' ?>
+<?php $page_name = ACCESO . 'Dashboard' ?>
+
 <!DOCTYPE html>
 <html lang="en">
+<?php require_once MATRIX_DOC_VIEWS . "modules/head.php" ?>
 <body>
 
-    dashboard matriz
-    <hr>
-    Nivel de usuario:
-    <?= $_SESSION['nivel_usuario'] ?>
+    <?php require_once MATRIX_DOC_VIEWS . "modules/header.php" ?>
 
-    <hr>
-    ID del usuario:
-    <?= $_SESSION['id_credencial'] ?>
+    <?php require_once MATRIX_DOC_VIEWS . "modules/sidebar.php" ?>
 
-    <hr>
-    Nombre del usuario:
-    <?= $_SESSION['nombres'] ?>
-
-    <hr>
-    Apellidos del usuario:
-    <?= $_SESSION['apellidos'] ?>
+    <main class="main-content matriz-content">
+        <div class="dashboard-container matriz-dashboard">
+            DASHBOARD MATRIZ
+        </div>
+    </main>
 
 </body>
 </html>
