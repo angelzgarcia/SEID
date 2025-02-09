@@ -8,7 +8,7 @@
     define('DOC_ROOT', __DIR__ . '/');
 
     $formatter = new IntlDateFormatter(
-        'es_MXN',
+        'es_MX',
         IntlDateFormatter::FULL,
         IntlDateFormatter::FULL,
         'America/Mexico_City',
@@ -16,4 +16,16 @@
         'EEEE, d \'de\' MMMM \'de\' YYYY HH:mm:ss'
     );
 
-    $fecha = $formatter -> format(time());
+    $formatter_abreviado = new IntlDateFormatter(
+        'es_MX',
+        IntlDateFormatter::NONE,
+        IntlDateFormatter::SHORT,
+        'America/Mexico_City',
+        IntlDateFormatter::GREGORIAN,
+        'dd MMM HH:mm'
+    );
+
+    $timestamp = time();
+
+    $fecha = $formatter -> format($timestamp);
+    $fecha_ab = $formatter_abreviado -> format($timestamp);

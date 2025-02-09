@@ -17,7 +17,7 @@
                 <ul class="sidebar-links-list">
                     <!-- INVENTARIO -->
                     <li>
-                        <a href="<?= MATRIX_HTTP_VIEWS ?>inventario/create" class="<?= strpos($_SERVER['PHP_SELF'], 'inventario/create.php') ? 'active' : '' ?>">
+                        <a href="<?= MATRIX_HTTP_VIEWS ?>inventario/index" class="<?= strpos($_SERVER['PHP_SELF'], 'inventario/') ? 'active' : '' ?>">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M440-183v-274L200-596v274l240 139Zm80 0 240-139v-274L520-457v274Zm-80 92L160-252q-19-11-29.5-29T120-321v-318q0-22 10.5-40t29.5-29l280-161q19-11 40-11t40 11l280 161q19 11 29.5 29t10.5 40v318q0 22-10.5 40T800-252L520-91q-19 11-40 11t-40-11Zm200-528 77-44-237-137-78 45 238 136Zm-160 93 78-45-237-137-78 45 237 137Z"/></svg>
                             <span>inventario</span>
                         </a>
@@ -25,7 +25,7 @@
 
                     <!-- VENTAS -->
                     <li>
-                        <a href="" class="<?= strpos($_SERVER['PHP_SELF'], 'ventas/create.php') ? 'active' : '' ?>">
+                        <a href="<?= MATRIX_HTTP_VIEWS ?>ventas/index" class="<?= strpos($_SERVER['PHP_SELF'], 'ventas/') ? 'active' : '' ?>">
                             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M440-600v-120H320v-80h120v-120h80v120h120v80H520v120h-80ZM280-80q-33 0-56.5-23.5T200-160q0-33 23.5-56.5T280-240q33 0 56.5 23.5T360-160q0 33-23.5 56.5T280-80Zm400 0q-33 0-56.5-23.5T600-160q0-33 23.5-56.5T680-240q33 0 56.5 23.5T760-160q0 33-23.5 56.5T680-80ZM40-800v-80h131l170 360h280l156-280h91L692-482q-11 20-29.5 31T622-440H324l-44 80h480v80H280q-45 0-68.5-39t-1.5-79l54-98-144-304H40Z"/></svg>
                             <span>ventas</span>
                         </a>

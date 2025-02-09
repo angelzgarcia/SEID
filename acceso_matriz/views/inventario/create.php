@@ -1,5 +1,5 @@
 <?php require_once __DIR__ . '/../../config.php' ?>
-<?php $page_name = ACCESO . 'Inventario' ?>
+<?php $page_name = ACCESO . 'Añadir producto' ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -10,374 +10,213 @@
 
     <?php require_once MATRIX_DOC_VIEWS . "/modules/sidebar.php" ?>
 
-    <main class="main-content matriz-content inventory-content">
+    <main class="main-content matriz-content">
+        <!-- CREAR PRODUCTO -->
+        <div class="form-create-container">
+            <h1>
+                Añadir producto
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="m260-520 220-360 220 360H260ZM700-80q-75 0-127.5-52.5T520-260q0-75 52.5-127.5T700-440q75 0 127.5 52.5T880-260q0 75-52.5 127.5T700-80Zm-580-20v-320h320v320H120Zm580-60q42 0 71-29t29-71q0-42-29-71t-71-29q-42 0-71 29t-29 71q0 42 29 71t71 29Zm-500-20h160v-160H200v160Zm202-420h156l-78-126-78 126Zm78 0ZM360-340Zm340 80Z"/></svg>
+            </h1>
 
-        <!-- FILTRAR INVENTARIOS POR SUCURSAL -->
-        <form action="" class="subsidiaries-filter">
-            <select name="" id="">
-                <option disabled selected>Todas las sucursales</option>
-                <option value="">Sucursal 1 Sucursal 1</option>
-                <option value="">Sucursal 2</option>
-                <option value="">Sucursal 3</option>
-            </select>
-        </form>
+            <form class="form-create" action="../../functions/crud_credential.php" method="POST" autocomplete="off">
+                <!-- CATEGORIA -->
+                <fieldset class="field-select">
+                    <legend>Categoría</legend>
+                    <p class='message-error'>
+                        <?= $_SESSION['errors']['categoria'] ?? '' ?>
+                    </p>
 
-        <!-- CRUD -->
-        <div class="crud-container">
-            <!-- CRUD HEADER -->
-            <div class="crud-header">
-                <!-- HEADER SUPERIOR -->
-                <div class="crud-top-header">
-                    <div class="crud-tittle">
-                        <h1>inventario</h1>
-                        <p>Consulte y gestiones su invetario</p>
-                    </div>
-                    <div class="crud-order-by">
-                        <select name="" id="">
-                            <option selected disabled>Ordenar por</option>
-                            <option value="">Ver todos</option>
-                            <option value="">Menor stock</option>
-                            <option value="">Mayor stock</option>
-                            <option value="">Próximo a vencer</option>
-                            <option value="">A - Z</option>
-                            <option value="">Z - A</option>
-                        </select>
-                    </div>
-                    <a href="" class="crud-add-btn">
-                        Añadir producto
-                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M440-120v-320H120v-80h320v-320h80v320h320v80H520v320h-80Z"/></svg>
-                    </a>
-                </div>
+                    <select name="categoria">
+                        <option selected disable>Seleccione la categoría del producto</option>
+                        <option value="">Categoría 1</option>
+                        <option value="">Categoría 2</option>
+                        <option value="">Categoría 3</option>
+                        <option value="">Categoría 4</option>
+                        <option value="">Categoría 5</option>
+                    </select>
+                </fieldset>
 
-                <!-- HEADER INTERMEDIO -->
-                <div class="crud-middle-header">
-                    <div class="details">
-                        <div class="summary">
-                            <p>Total de productos</p>
-                            <span>122</span>
-                        </div>
-                        <div class="summary">
-                            <p>Productos sin stock</p>
-                            <span>15</span>
-                        </div>
-                        <div class="summary">
-                            <p>Productos con bajo inventario</p>
-                            <span>38</span>
-                        </div>
-                        <div class="summary">
-                            <p>Productos próximos a vencer</p>
-                            <span>7</span>
-                        </div>
-                    </div>
-                </div>
+                <!-- MARCA -->
+                <fieldset class="field-select">
+                    <legend>Marca</legend>
+                    <p class='message-error'>
+                        <?= $_SESSION['errors']['marca'] ?? '' ?>
+                    </p>
 
-                <!-- HEADER INFERIOR -->
-                <div class="crud-bottom-header">
-                    <form action="" class="delete-all-form">
-                        <input type="checkbox" name="" id="">
-                        <p>Seleccionar todo</p>
+                    <select name="marca">
+                        <option selected disabled>Seleccione la marca del producto</option>
+                        <option value="">Marca 1</option>
+                        <option value="">Marca 2</option>
+                        <option value="">Marca 3</option>
+                        <option value="">Marca 4</option>
+                    </select>
+                </fieldset>
 
-                        <select name="" id="">
-                            <option value="">Acciones</option>
-                            <option value="">Eliminar registros</option>
-                        </select>
+                <!-- CODIGO DE BARRAS -->
+                <fieldset>
+                    <legend>Codigo de barras</legend>
+                    <p class='message-error'>
+                        <?= $_SESSION['errors']['codigo_barras'] ?? '' ?>
+                    </p>
 
-                    </form>
+                    <input type="text" name="codigo_barras" placeholder="Ingrese el codigo de barras" >
+                </fieldset>
 
-                    <form action="" class="crud-searcher">
-                        <input type="text" name="" id="" placeholder="Buscar producto.....">
-                        <button type="submit">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
-                        </button>
-                    </form>
-                </div>
-            </div>
+                <!-- NOMBRE -->
+                <fieldset>
+                    <legend>Nombre *</legend>
+                    <p class='message-error'>
+                        <?= $_SESSION['errors']['nombre'] ?? '' ?>
+                    </p>
 
-            <!-- LISTA DE REGISTROS -->
-            <div class="crud-grid">
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame">
-                    <!-- DETALLES -->
-                    <div class="register-details">
-                        <div class="name-brand-category">
-                            <p>Nombre del producto</p>
-                            <span>Marca / Categoria</span>
+                    <input type="text" name="nombre" placeholder="Ingrese el nombre del producto" >
+                </fieldset>
+
+                <!-- TIPO DE VENTA -->
+                <fieldset>
+                    <legend>Se vende por *</legend>
+                    <div class="type_sales">
+                        <p class='message-error'>
+                            <?= $_SESSION['errors']['tipo_venta'] ?? '' ?>
+                        </p>
+
+                        <div>
+                            <input type="radio" name="tipo_venta" class="tipo_venta" value="unidad" checked onchange="ajustarCampos()">
+                            <label for="venta_unidad">Unidad</label>
                         </div>
 
-                        <div class="img-cost-stock">
-                            <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img">
-                            <div class="quantities">
-                                <p>
-                                    Costo por unidad
-                                    <span>$227</span>
-                                </p>
-                                <p>
-                                    Precio sugerido
-                                    <span>$289</span>
-                                </p>
-                                <p>
-                                    Unidades
-                                    <span>116</span>
-                                </p>
-                            </div>
+                        <div>
+                            <input type="radio" name="tipo_venta" class="tipo_venta" value="granel" onchange="ajustarCampos()">
+                            <label for="venta_granel">Granel</label>
+                        </div>
+
+                        <div>
+                            <input type="radio" name="tipo_venta" class="tipo_venta" value="paquete" onchange="ajustarCampos()">
+                            <label for="venta_paquete">Paquete</label>
                         </div>
                     </div>
-                    <!-- ACCIONES -->
-                    <div class="register-actions">
-                        <a href="">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M160-120v-170l527-526q12-12 27-18t30-6q16 0 30.5 6t25.5 18l56 56q12 11 18 25.5t6 30.5q0 15-6 30t-18 27L330-120H160Zm80-80h56l393-392-28-29-29-28-392 393v56Zm560-503-57-57 57 57Zm-139 82-29-28 57 57-28-29ZM560-120q74 0 137-37t63-103q0-36-19-62t-51-45l-59 59q23 10 36 22t13 26q0 23-36.5 41.5T560-200q-17 0-28.5 11.5T520-160q0 17 11.5 28.5T560-120ZM183-426l60-60q-20-8-31.5-16.5T200-520q0-12 18-24t76-37q88-38 117-69t29-70q0-55-44-87.5T280-840q-45 0-80.5 16T145-785q-11 13-9 29t15 26q13 11 29 9t27-13q14-14 31-20t42-6q41 0 60.5 12t19.5 28q0 14-17.5 25.5T262-654q-80 35-111 63.5T120-520q0 32 17 54.5t46 39.5Z"/></svg>
-                        </a>
-                        <form action="" class="destroy-btn">
-                            <button type="submit">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
-                            </button>
-                        </form>
-                    </div>
-                </div>
+                </fieldset>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame">
-                    <!-- DETALLES -->
-                    <div class="register-details">
-                        <div class="name-brand-category">
-                            <p>Nombre del producto</p>
-                            <span>Marca / Categoria</span>
-                        </div>
+                <!-- STOCK -->
+                <fieldset>
+                    <legend>Stock *</legend>
+                    <p class='message-error'>
+                        <?= $_SESSION['errors']['stock'] ?? '' ?>
+                    </p>
 
-                        <div class="img-cost-stock">
-                            <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img">
-                            <div class="quantities">
-                                <p>
-                                    Costo por unidad
-                                    <span>$227</span>
-                                </p>
-                                <p>
-                                    Precio sugerido
-                                    <span>$289</span>
-                                </p>
-                                <p>
-                                    Unidades
-                                    <span>116</span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- ACCIONES -->
-                    <div class="register-actions">
-                        <a href="">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M160-120v-170l527-526q12-12 27-18t30-6q16 0 30.5 6t25.5 18l56 56q12 11 18 25.5t6 30.5q0 15-6 30t-18 27L330-120H160Zm80-80h56l393-392-28-29-29-28-392 393v56Zm560-503-57-57 57 57Zm-139 82-29-28 57 57-28-29ZM560-120q74 0 137-37t63-103q0-36-19-62t-51-45l-59 59q23 10 36 22t13 26q0 23-36.5 41.5T560-200q-17 0-28.5 11.5T520-160q0 17 11.5 28.5T560-120ZM183-426l60-60q-20-8-31.5-16.5T200-520q0-12 18-24t76-37q88-38 117-69t29-70q0-55-44-87.5T280-840q-45 0-80.5 16T145-785q-11 13-9 29t15 26q13 11 29 9t27-13q14-14 31-20t42-6q41 0 60.5 12t19.5 28q0 14-17.5 25.5T262-654q-80 35-111 63.5T120-520q0 32 17 54.5t46 39.5Z"/></svg>
-                        </a>
-                        <form action="" class="destroy-btn">
-                            <button type="submit">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
-                            </button>
-                        </form>
-                    </div>
-                </div>
+                    <small id="stockLabel">Cantidad en unidades</small>
+                    <input type="text" id="stock" name="stock" placeholder="Ingrese la cantidad de stock" oninput="validarNumero(this)">
+                </fieldset>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame">
-                    <!-- DETALLES -->
-                    <div class="register-details">
-                        <div class="name-brand-category">
-                            <p>Nombre del producto</p>
-                            <span>Marca / Categoria</span>
-                        </div>
+                <!-- PRECIO COSTO -->
+                <fieldset>
+                    <legend>Precio del Costo *</legend>
+                    <p class='message-error'>
+                        <?= $_SESSION['errors']['precio_costo'] ?? '' ?>
+                    </p>
 
-                        <div class="img-cost-stock">
-                            <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img">
-                            <div class="quantities">
-                                <p>
-                                    Costo por unidad
-                                    <span>$227</span>
-                                </p>
-                                <p>
-                                    Precio sugerido
-                                    <span>$289</span>
-                                </p>
-                                <p>
-                                    Unidades
-                                    <span>116</span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- ACCIONES -->
-                    <div class="register-actions">
-                        <a href="">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M160-120v-170l527-526q12-12 27-18t30-6q16 0 30.5 6t25.5 18l56 56q12 11 18 25.5t6 30.5q0 15-6 30t-18 27L330-120H160Zm80-80h56l393-392-28-29-29-28-392 393v56Zm560-503-57-57 57 57Zm-139 82-29-28 57 57-28-29ZM560-120q74 0 137-37t63-103q0-36-19-62t-51-45l-59 59q23 10 36 22t13 26q0 23-36.5 41.5T560-200q-17 0-28.5 11.5T520-160q0 17 11.5 28.5T560-120ZM183-426l60-60q-20-8-31.5-16.5T200-520q0-12 18-24t76-37q88-38 117-69t29-70q0-55-44-87.5T280-840q-45 0-80.5 16T145-785q-11 13-9 29t15 26q13 11 29 9t27-13q14-14 31-20t42-6q41 0 60.5 12t19.5 28q0 14-17.5 25.5T262-654q-80 35-111 63.5T120-520q0 32 17 54.5t46 39.5Z"/></svg>
-                        </a>
-                        <form action="" class="destroy-btn">
-                            <button type="submit">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
-                            </button>
-                        </form>
-                    </div>
-                </div>
+                    <input type="text" id="precio_costo" name="precio_costo" placeholder="Ingrese el precio de costo" oninput="validarNumero(this)">
+                </fieldset>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame">
-                    <!-- DETALLES -->
-                    <div class="register-details">
-                        <div class="name-brand-category">
-                            <p>Nombre del producto</p>
-                            <span>Marca / Categoria</span>
-                        </div>
 
-                        <div class="img-cost-stock">
-                            <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img">
-                            <div class="quantities">
-                                <p>
-                                    Costo por unidad
-                                    <span>$227</span>
-                                </p>
-                                <p>
-                                    Precio sugerido
-                                    <span>$289</span>
-                                </p>
-                                <p>
-                                    Unidades
-                                    <span>116</span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- ACCIONES -->
-                    <div class="register-actions">
-                        <a href="">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M160-120v-170l527-526q12-12 27-18t30-6q16 0 30.5 6t25.5 18l56 56q12 11 18 25.5t6 30.5q0 15-6 30t-18 27L330-120H160Zm80-80h56l393-392-28-29-29-28-392 393v56Zm560-503-57-57 57 57Zm-139 82-29-28 57 57-28-29ZM560-120q74 0 137-37t63-103q0-36-19-62t-51-45l-59 59q23 10 36 22t13 26q0 23-36.5 41.5T560-200q-17 0-28.5 11.5T520-160q0 17 11.5 28.5T560-120ZM183-426l60-60q-20-8-31.5-16.5T200-520q0-12 18-24t76-37q88-38 117-69t29-70q0-55-44-87.5T280-840q-45 0-80.5 16T145-785q-11 13-9 29t15 26q13 11 29 9t27-13q14-14 31-20t42-6q41 0 60.5 12t19.5 28q0 14-17.5 25.5T262-654q-80 35-111 63.5T120-520q0 32 17 54.5t46 39.5Z"/></svg>
-                        </a>
-                        <form action="" class="destroy-btn">
-                            <button type="submit">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
-                            </button>
-                        </form>
-                    </div>
-                </div>
+                <!-- PRECIO VENTA -->
+                <fieldset>
+                    <legend>Precio de Venta *</legend>
+                    <p class='message-error'>
+                        <?= $_SESSION['errors']['precio_venta'] ?? '' ?>
+                    </p>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame">
-                    <!-- DETALLES -->
-                    <div class="register-details">
-                        <div class="name-brand-category">
-                            <p>Nombre del producto</p>
-                            <span>Marca / Categoria</span>
-                        </div>
+                    <input type="text" id="precio_venta" name="precio_venta" placeholder="Ingrese el precio de venta" oninput="validarNumero(this)">
+                </fieldset>
 
-                        <div class="img-cost-stock">
-                            <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img">
-                            <div class="quantities">
-                                <p>
-                                    Costo por unidad
-                                    <span>$227</span>
-                                </p>
-                                <p>
-                                    Precio sugerido
-                                    <span>$289</span>
-                                </p>
-                                <p>
-                                    Unidades
-                                    <span>116</span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- ACCIONES -->
-                    <div class="register-actions">
-                        <a href="">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M160-120v-170l527-526q12-12 27-18t30-6q16 0 30.5 6t25.5 18l56 56q12 11 18 25.5t6 30.5q0 15-6 30t-18 27L330-120H160Zm80-80h56l393-392-28-29-29-28-392 393v56Zm560-503-57-57 57 57Zm-139 82-29-28 57 57-28-29ZM560-120q74 0 137-37t63-103q0-36-19-62t-51-45l-59 59q23 10 36 22t13 26q0 23-36.5 41.5T560-200q-17 0-28.5 11.5T520-160q0 17 11.5 28.5T560-120ZM183-426l60-60q-20-8-31.5-16.5T200-520q0-12 18-24t76-37q88-38 117-69t29-70q0-55-44-87.5T280-840q-45 0-80.5 16T145-785q-11 13-9 29t15 26q13 11 29 9t27-13q14-14 31-20t42-6q41 0 60.5 12t19.5 28q0 14-17.5 25.5T262-654q-80 35-111 63.5T120-520q0 32 17 54.5t46 39.5Z"/></svg>
-                        </a>
-                        <form action="" class="destroy-btn">
-                            <button type="submit">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
-                            </button>
-                        </form>
-                    </div>
-                </div>
+                <!-- PRECIO MAYOREO -->
+                <fieldset>
+                    <legend>Precio de Mayoreo *</legend>
+                    <p class='message-error'>
+                        <?= $_SESSION['errors']['precio_mayoreo'] ?? '' ?>
+                    </p>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame">
-                    <!-- DETALLES -->
-                    <div class="register-details">
-                        <div class="name-brand-category">
-                            <p>Nombre del producto</p>
-                            <span>Marca / Categoria</span>
-                        </div>
+                    <input type="text" id="precio_mayoreo" name="precio_mayoreo" placeholder="Ingrese el precio de mayoreo" oninput="validarNumero(this)">
+                </fieldset>
 
-                        <div class="img-cost-stock">
-                            <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img">
-                            <div class="quantities">
-                                <p>
-                                    Costo por unidad
-                                    <span>$227</span>
-                                </p>
-                                <p>
-                                    Precio sugerido
-                                    <span>$289</span>
-                                </p>
-                                <p>
-                                    Unidades
-                                    <span>116</span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- ACCIONES -->
-                    <div class="register-actions">
-                        <a href="">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M160-120v-170l527-526q12-12 27-18t30-6q16 0 30.5 6t25.5 18l56 56q12 11 18 25.5t6 30.5q0 15-6 30t-18 27L330-120H160Zm80-80h56l393-392-28-29-29-28-392 393v56Zm560-503-57-57 57 57Zm-139 82-29-28 57 57-28-29ZM560-120q74 0 137-37t63-103q0-36-19-62t-51-45l-59 59q23 10 36 22t13 26q0 23-36.5 41.5T560-200q-17 0-28.5 11.5T520-160q0 17 11.5 28.5T560-120ZM183-426l60-60q-20-8-31.5-16.5T200-520q0-12 18-24t76-37q88-38 117-69t29-70q0-55-44-87.5T280-840q-45 0-80.5 16T145-785q-11 13-9 29t15 26q13 11 29 9t27-13q14-14 31-20t42-6q41 0 60.5 12t19.5 28q0 14-17.5 25.5T262-654q-80 35-111 63.5T120-520q0 32 17 54.5t46 39.5Z"/></svg>
-                        </a>
-                        <form action="" class="destroy-btn">
-                            <button type="submit">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
-                            </button>
-                        </form>
-                    </div>
-                </div>
+                <!-- VENCIMIENTO -->
+                <fieldset>
+                    <legend>Vencimiento</legend>
+                    <p class='message-error'>
+                        <?= $_SESSION['errors']['vencimiento'] ?? '' ?>
+                    </p>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame">
-                    <!-- DETALLES -->
-                    <div class="register-details">
-                        <div class="name-brand-category">
-                            <p>Nombre del producto</p>
-                            <span>Marca / Categoria</span>
-                        </div>
+                    <input type="date" name="vencimiento" class="uppercase">
+                </fieldset>
 
-                        <div class="img-cost-stock">
-                            <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img">
-                            <div class="quantities">
-                                <p>
-                                    Costo por unidad
-                                    <span>$227</span>
-                                </p>
-                                <p>
-                                    Precio sugerido
-                                    <span>$289</span>
-                                </p>
-                                <p>
-                                    Unidades
-                                    <span>116</span>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- ACCIONES -->
-                    <div class="register-actions">
-                        <a href="">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M160-120v-170l527-526q12-12 27-18t30-6q16 0 30.5 6t25.5 18l56 56q12 11 18 25.5t6 30.5q0 15-6 30t-18 27L330-120H160Zm80-80h56l393-392-28-29-29-28-392 393v56Zm560-503-57-57 57 57Zm-139 82-29-28 57 57-28-29ZM560-120q74 0 137-37t63-103q0-36-19-62t-51-45l-59 59q23 10 36 22t13 26q0 23-36.5 41.5T560-200q-17 0-28.5 11.5T520-160q0 17 11.5 28.5T560-120ZM183-426l60-60q-20-8-31.5-16.5T200-520q0-12 18-24t76-37q88-38 117-69t29-70q0-55-44-87.5T280-840q-45 0-80.5 16T145-785q-11 13-9 29t15 26q13 11 29 9t27-13q14-14 31-20t42-6q41 0 60.5 12t19.5 28q0 14-17.5 25.5T262-654q-80 35-111 63.5T120-520q0 32 17 54.5t46 39.5Z"/></svg>
-                        </a>
-                        <form action="" class="destroy-btn">
-                            <button type="submit">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/></svg>
-                            </button>
-                        </form>
-                    </div>
-                </div>
+                <!-- IMAGEN -->
+                <fieldset>
+                    <legend>Imagen *</legend>
 
-            </div>
+                    <p class="message-error">
+                        <?= $_SESSION['errors']['imagen'] ?? '' ?>
+                    </p>
+
+                    <div class="image-upload-container" onclick="document.getElementById('imagenInput').click()">
+                        <img id="previewImg" src="" alt="Vista previa">
+                        <span id="uploadText" class="upload-label">Haz click para subir una imagen</span>
+                        <input type="file" name="imagen" id="imagenInput" accept="image/*" onchange="mostrarVistaPrevia(event)">
+                    </div>
+                </fieldset>
+
+                <input type="hidden" name="accion" value="crear">
+
+                <!-- ENVIAR FORMULARIO -->
+                <button type="submit" class="form-btn">
+                    guardar
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M840-680v480q0 33-23.5 56.5T760-120H200q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h480l160 160Zm-80 34L646-760H200v560h560v-446ZM480-240q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35ZM240-560h360v-160H240v160Zm-40-86v446-560 114Z"/></svg>
+                </button>
+            </form>
         </div>
     </main>
 
+    <!-- AJUSTAR PLACEHOLDER Y LEGEND DEL INPUT STOCK SEGÚN EL TIPO DE VENTA -->
+    <script>
+        function ajustarCampos() {
+            let tipoVenta = document.querySelector('input[name="tipo_venta"]:checked').value;
+            let stockInput = document.getElementById("stock");
+            let stockLabel = document.getElementById("stockLabel");
+
+            if (tipoVenta === "granel") {
+                stockInput.placeholder = "Ingrese la cantidad en kg, g, L, etc.";
+                stockLabel.textContent = "Cantidad en peso (kg, g, L, etc.)";
+            } else if (tipoVenta === "paquete") {
+                stockInput.placeholder = "Ingrese la cantidad de productos por paquete";
+                stockLabel.textContent = "Cantidad de productos por paquete";
+            } else {
+                stockInput.placeholder = "Ingrese la cantidad en unidades";
+                stockLabel.textContent = "Cantidad en unidades";
+            }
+        }
+
+        function validarNumero(input) {
+            input.value = input.value.replace(/[^0-9.]/g, '');
+        }
+    </script>
+
+    <!-- VISTA PREVIA DEL INPUT FILE -->
+    <script>
+        function mostrarVistaPrevia(event) {
+            const fileInput = event.target;
+            const file = fileInput.files[0];
+            const previewImg = document.getElementById("previewImg");
+            const uploadText = document.getElementById("uploadText");
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    previewImg.style.display = "block";
+                    uploadText.style.display = "none";
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+    </script>
 </body>
 </html>

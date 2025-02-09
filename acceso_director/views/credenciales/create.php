@@ -17,7 +17,6 @@
     <?php require_once '../modules/sidebar.php' ?>
 
     <main class="main-content director-main">
-
         <!-- CREAR CREDENCIAL -->
         <div class="form-create-container">
             <h1>
