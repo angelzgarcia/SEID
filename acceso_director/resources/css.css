@@ -128,9 +128,9 @@ body {
     cursor: pointer;
     justify-content: center;
     padding: .5rem;
-    border-radius: .4rem;
-    background-color: var(--hover-color-50);
-    box-shadow: 0 .2rem .3rem 0 rgba(128, 128, 128, 0.485);
+    /* border-radius: .4rem; */
+    /* background-color: var(--hover-color-50); */
+    /* box-shadow: 0 .2rem .3rem 0 rgba(128, 128, 128, 0.485); */
     & svg {
         fill: #111;
         width: 21px;
@@ -195,10 +195,10 @@ body {
             justify-content: space-between;
             min-width: 100%;
             text-transform: capitalize;
-            background-color: var(--hover-color-50);
+            background-color: aliceblue;
             transition: transform .2s ease;
             &::after {
-                content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 -960 960 960' width='24px' fill='%23000000'%3E%3Cpath d='m480-320 160-160-160-160-56 56 64 64H320v80h168l-64 64 56 56Zm0 240q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z'/%3E%3C/svg%3E");
+                content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 -960 960 960' width='24px' fill='%23111111'%3E%3Cpath d='M480-80 240-320l57-57 183 183 183-183 57 57L480-80ZM298-584l-58-56 240-240 240 240-58 56-182-182-182 182Z'/%3E%3C/svg%3E");
             }
             &:hover { transform: scale(105%); }
         }
@@ -226,16 +226,16 @@ body {
             background-color: var(--hover-color-75);
         }
         &:hover > summary, &[open] > summary {
-            background-color: #cdd2d8;
+            background-color: var(--hover-color-100);
             color: white;
             &::after {
                 content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 -960 960 960' width='24px' fill='%23ffffff'%3E%3Cpath d='m480-320 160-160-160-160-56 56 64 64H320v80h168l-64 64 56 56Zm0 240q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z'/%3E%3C/svg%3E");
             }
         }
         &[open] > summary {
-            background-color: var(--hover-color-100);
+            background-color: #b1bbc4;
             &::after {
-                content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 -960 960 960' width='24px' fill='%23ffffff'%3E%3Cpath d='m480-320 160-160-56-56-64 64v-168h-80v168l-64-64-56 56 160 160Zm0 240q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z'/%3E%3C/svg%3E");
+                content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' height='24px' viewBox='0 -960 960 960' width='24px' fill='%23e8eaed'%3E%3Cpath d='M440-440v240h-80v-160H200v-80h240Zm160-320v160h160v80H520v-240h80Z'/%3E%3C/svg%3E");
             }
         }
     }
@@ -256,7 +256,7 @@ body {
         padding: 2.5rem 0 2rem .5rem;
         gap: 1rem;
         & .link {
-            background-color: var(--hover-color-75);
+            background-color: aliceblue;
             border-radius: .3rem;
             padding: .7rem .5rem;
             transition: transform .3s ease;
@@ -267,8 +267,8 @@ body {
                 height: auto;
             }
             &:hover {
-                background-color: #cdd2d8;
-                transform: scale(110%);
+                background-color: var(--hover-color-100);
+                transform: scale(105%);
                 & svg { fill: white; }
             }
         }

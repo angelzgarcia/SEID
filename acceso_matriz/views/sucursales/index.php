@@ -12,16 +12,6 @@
 
     <main class="main-content matriz-content inventory-content">
 
-        <!-- FILTRAR INVENTARIOS POR SUCURSAL -->
-        <form action="" class="subsidiaries-filter">
-            <select name="" id="">
-                <option disabled selected>Todas las sucursales</option>
-                <option value="">Sucursal 1 Sucursal 1</option>
-                <option value="">Sucursal 2</option>
-                <option value="">Sucursal 3</option>
-            </select>
-        </form>
-
         <!-- CRUD -->
         <div class="crud-container">
             <!-- CRUD HEADER -->
@@ -29,22 +19,20 @@
                 <!-- HEADER SUPERIOR -->
                 <div class="crud-top-header">
                     <div class="crud-tittle">
-                        <h1>inventario</h1>
-                        <p>Consulte y gestiones su invetario</p>
+                        <h1>sucursales</h1>
+                        <p>Consulte y gestiones sus sucursales</p>
                     </div>
+
                     <div class="crud-order-by">
                         <select name="" id="">
                             <option selected disabled>Ordenar por</option>
-                            <option value="">Ver todos</option>
-                            <option value="">Menor stock</option>
-                            <option value="">Mayor stock</option>
-                            <option value="">Próximo a vencer</option>
                             <option value="">A - Z</option>
                             <option value="">Z - A</option>
                         </select>
                     </div>
-                    <a href="<?= MATRIX_HTTP_VIEWS ?>inventario/create" class="crud-add-btn">
-                        Añadir producto
+
+                    <a href="<?= MATRIX_HTTP_VIEWS ?>sucursales/create" class="crud-add-btn">
+                        Añadir sucursal
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M440-120v-320H120v-80h320v-320h80v320h320v80H520v320h-80Z"/></svg>
                     </a>
                 </div>
@@ -53,20 +41,12 @@
                 <div class="crud-middle-header">
                     <div class="details">
                         <div class="summary">
-                            <p>Total de productos</p>
-                            <span>122</span>
+                            <p>N° sucursales</p>
+                            <span>09</span>
                         </div>
                         <div class="summary">
-                            <p>Productos sin stock</p>
-                            <span>15</span>
-                        </div>
-                        <div class="summary">
-                            <p>Productos con bajo inventario</p>
-                            <span>38</span>
-                        </div>
-                        <div class="summary">
-                            <p>Productos próximos a vencer</p>
-                            <span>7</span>
+                            <p>Sucursal más reciente</p>
+                            <span>EDO. MEX. CARMELO PÉREZ</span>
                         </div>
                     </div>
                 </div>
@@ -85,7 +65,7 @@
                     </form>
 
                     <form action="" class="crud-searcher">
-                        <input type="text" name="" id="" placeholder="Buscar producto.....">
+                        <input type="text" name="" id="" placeholder="Buscar sucursal.....">
                         <button type="submit">
                             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
                         </button>
@@ -101,24 +81,22 @@
                     <a href="" class="register-details-link">
                         <div class="register-details">
                             <div class="header-register">
-                                <p>Nombre del producto</p>
-                                <span>Legendary WhitetailsLegendary</span>
+                                <p>Agrícola Oriental</p>
                             </div>
 
                             <div class="body-register">
-                                <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img">
                                 <div class="quantities">
                                     <p>
-                                        Costo por unidad
-                                        <span>$227</span>
+                                        Dirección
+                                        <span>Ote 245-C 66-Piso 2, Agrícola Oriental, Iztacalco, 08500 Ciudad de México, CDMX</span>
                                     </p>
                                     <p>
-                                        Precio sugerido
-                                        <span>$289</span>
+                                        Teléfono
+                                        <span>56-17-52-31-28</span>
                                     </p>
-                                    <p>
-                                        Unidades
-                                        <span>116</span>
+                                    <p class="created_at_date">
+                                        Añadida el
+                                        <span><?= $fecha ?></span>
                                     </p>
                                 </div>
                             </div>
@@ -143,24 +121,22 @@
                     <a href="" class="register-details-link">
                         <div class="register-details">
                             <div class="header-register">
-                                <p>Nombre del producto</p>
-                                <span>WhitetailsLegendary</span>
+                                <p>Agrícola Oriental</p>
                             </div>
 
                             <div class="body-register">
-                                <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img">
                                 <div class="quantities">
                                     <p>
-                                        Costo por unidad
-                                        <span>$227</span>
+                                        Dirección
+                                        <span>Ote 245-C 66-Piso 2, Agrícola Oriental, Iztacalco, 08500 Ciudad de México, CDMX</span>
                                     </p>
                                     <p>
-                                        Precio sugerido
-                                        <span>$289</span>
+                                        Teléfono
+                                        <span>56-17-52-31-28</span>
                                     </p>
-                                    <p>
-                                        Unidades
-                                        <span>116</span>
+                                    <p class="created_at_date">
+                                        Añadida el
+                                        <span><?= $fecha ?></span>
                                     </p>
                                 </div>
                             </div>
@@ -185,24 +161,22 @@
                     <a href="" class="register-details-link">
                         <div class="register-details">
                             <div class="header-register">
-                                <p>Nombre del productoNombre del productoNombre del productoNombre del productoNombre del productoNombre del productoNombre del producto</p>
-                                <span>Legendary WhitetailsLegendary WhitetailsLegendary WhitetailsLegendary WhitetailsLegendary WhitetailsLegendary WhitetailsLegendary WhitetailsLegendary Whitetails</span>
+                                <p>Agrícola Oriental</p>
                             </div>
 
                             <div class="body-register">
-                                <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img">
                                 <div class="quantities">
                                     <p>
-                                        Costo por unidad
-                                        <span>$227</span>
+                                        Dirección
+                                        <span>Ote 245-C 66-Piso 2, Agrícola Oriental, Iztacalco, 08500 Ciudad de México, CDMX</span>
                                     </p>
                                     <p>
-                                        Precio sugerido
-                                        <span>$289</span>
+                                        Teléfono
+                                        <span>56-17-52-31-28</span>
                                     </p>
-                                    <p>
-                                        Unidades
-                                        <span>116</span>
+                                    <p class="created_at_date">
+                                        Añadida el
+                                        <span><?= $fecha ?></span>
                                     </p>
                                 </div>
                             </div>
@@ -227,24 +201,22 @@
                     <a href="" class="register-details-link">
                         <div class="register-details">
                             <div class="header-register">
-                                <p>Nombre del producto</p>
-                                <span>Legendary WhitetailsLegendary</span>
+                                <p>Agrícola Oriental</p>
                             </div>
 
                             <div class="body-register">
-                                <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img">
                                 <div class="quantities">
                                     <p>
-                                        Costo por unidad
-                                        <span>$227</span>
+                                        Dirección
+                                        <span>Ote 245-C 66-Piso 2, Agrícola Oriental, Iztacalco, 08500 Ciudad de México, CDMX</span>
                                     </p>
                                     <p>
-                                        Precio sugerido
-                                        <span>$289</span>
+                                        Teléfono
+                                        <span>56-17-52-31-28</span>
                                     </p>
-                                    <p>
-                                        Unidades
-                                        <span>116</span>
+                                    <p class="created_at_date">
+                                        Añadida el
+                                        <span><?= $fecha ?></span>
                                     </p>
                                 </div>
                             </div>
@@ -269,24 +241,22 @@
                     <a href="" class="register-details-link">
                         <div class="register-details">
                             <div class="header-register">
-                                <p>Nombre del producto</p>
-                                <span>WhitetailsLegendary</span>
+                                <p>Agrícola Oriental</p>
                             </div>
 
                             <div class="body-register">
-                                <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img">
                                 <div class="quantities">
                                     <p>
-                                        Costo por unidad
-                                        <span>$227</span>
+                                        Dirección
+                                        <span>Ote 245-C 66-Piso 2, Agrícola Oriental, Iztacalco, 08500 Ciudad de México, CDMX</span>
                                     </p>
                                     <p>
-                                        Precio sugerido
-                                        <span>$289</span>
+                                        Teléfono
+                                        <span>56-17-52-31-28</span>
                                     </p>
-                                    <p>
-                                        Unidades
-                                        <span>116</span>
+                                    <p class="created_at_date">
+                                        Añadida el
+                                        <span><?= $fecha ?></span>
                                     </p>
                                 </div>
                             </div>
@@ -311,24 +281,22 @@
                     <a href="" class="register-details-link">
                         <div class="register-details">
                             <div class="header-register">
-                                <p>Nombre del productoNombre del productoNombre del productoNombre del productoNombre del productoNombre del productoNombre del producto</p>
-                                <span>Legendary WhitetailsLegendary WhitetailsLegendary WhitetailsLegendary WhitetailsLegendary WhitetailsLegendary WhitetailsLegendary WhitetailsLegendary Whitetails</span>
+                                <p>Agrícola Oriental</p>
                             </div>
 
                             <div class="body-register">
-                                <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img">
                                 <div class="quantities">
                                     <p>
-                                        Costo por unidad
-                                        <span>$227</span>
+                                        Dirección
+                                        <span>Ote 245-C 66-Piso 2, Agrícola Oriental, Iztacalco, 08500 Ciudad de México, CDMX</span>
                                     </p>
                                     <p>
-                                        Precio sugerido
-                                        <span>$289</span>
+                                        Teléfono
+                                        <span>56-17-52-31-28</span>
                                     </p>
-                                    <p>
-                                        Unidades
-                                        <span>116</span>
+                                    <p class="created_at_date">
+                                        Añadida el
+                                        <span><?= $fecha ?></span>
                                     </p>
                                 </div>
                             </div>
@@ -353,24 +321,22 @@
                     <a href="" class="register-details-link">
                         <div class="register-details">
                             <div class="header-register">
-                                <p>Nombre del producto</p>
-                                <span>Legendary WhitetailsLegendary</span>
+                                <p>Agrícola Oriental</p>
                             </div>
 
                             <div class="body-register">
-                                <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img">
                                 <div class="quantities">
                                     <p>
-                                        Costo por unidad
-                                        <span>$227</span>
+                                        Dirección
+                                        <span>Ote 245-C 66-Piso 2, Agrícola Oriental, Iztacalco, 08500 Ciudad de México, CDMX</span>
                                     </p>
                                     <p>
-                                        Precio sugerido
-                                        <span>$289</span>
+                                        Teléfono
+                                        <span>56-17-52-31-28</span>
                                     </p>
-                                    <p>
-                                        Unidades
-                                        <span>116</span>
+                                    <p class="created_at_date">
+                                        Añadida el
+                                        <span><?= $fecha ?></span>
                                     </p>
                                 </div>
                             </div>
@@ -395,24 +361,22 @@
                     <a href="" class="register-details-link">
                         <div class="register-details">
                             <div class="header-register">
-                                <p>Nombre del producto</p>
-                                <span>WhitetailsLegendary</span>
+                                <p>Agrícola Oriental</p>
                             </div>
 
                             <div class="body-register">
-                                <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img">
                                 <div class="quantities">
                                     <p>
-                                        Costo por unidad
-                                        <span>$227</span>
+                                        Dirección
+                                        <span>Ote 245-C 66-Piso 2, Agrícola Oriental, Iztacalco, 08500 Ciudad de México, CDMX</span>
                                     </p>
                                     <p>
-                                        Precio sugerido
-                                        <span>$289</span>
+                                        Teléfono
+                                        <span>56-17-52-31-28</span>
                                     </p>
-                                    <p>
-                                        Unidades
-                                        <span>116</span>
+                                    <p class="created_at_date">
+                                        Añadida el
+                                        <span><?= $fecha ?></span>
                                     </p>
                                 </div>
                             </div>
@@ -437,24 +401,22 @@
                     <a href="" class="register-details-link">
                         <div class="register-details">
                             <div class="header-register">
-                                <p>Nombre del productoNombre del productoNombre del productoNombre del productoNombre del productoNombre del productoNombre del producto</p>
-                                <span>Legendary WhitetailsLegendary WhitetailsLegendary WhitetailsLegendary WhitetailsLegendary WhitetailsLegendary WhitetailsLegendary WhitetailsLegendary Whitetails</span>
+                                <p>Agrícola Oriental</p>
                             </div>
 
                             <div class="body-register">
-                                <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img">
                                 <div class="quantities">
                                     <p>
-                                        Costo por unidad
-                                        <span>$227</span>
+                                        Dirección
+                                        <span>Ote 245-C 66-Piso 2, Agrícola Oriental, Iztacalco, 08500 Ciudad de México, CDMX</span>
                                     </p>
                                     <p>
-                                        Precio sugerido
-                                        <span>$289</span>
+                                        Teléfono
+                                        <span>56-17-52-31-28</span>
                                     </p>
-                                    <p>
-                                        Unidades
-                                        <span>116</span>
+                                    <p class="created_at_date">
+                                        Añadida el
+                                        <span><?= $fecha ?></span>
                                     </p>
                                 </div>
                             </div>

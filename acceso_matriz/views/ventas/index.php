@@ -1,9 +1,5 @@
-<?php
-
-use function PHPSTORM_META\map;
-
- require_once __DIR__ . '/../../config.php' ?>
-<?php $page_name = ACCESO . 'Historial de ventas' ?>
+<?php require_once __DIR__ . '/../../config.php' ?>
+<?php $page_name = ACCESO . 'Ventas' ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -58,7 +54,7 @@ use function PHPSTORM_META\map;
                         </div>
                         <div class="summary">
                             <p>Ingresos generados</p>
-                            <span>$38,951</span>
+                            <span>$381,515,159,455.°°</span>
                         </div>
                         <div class="summary">
                             <p>Ventas de hoy</p>
@@ -95,7 +91,13 @@ use function PHPSTORM_META\map;
 
             <!-- ULTIMAS VENTAS -->
             <div class="crud-grid crud-grid-last-sales">
-                <h2>Últimas ventas</h2>
+                <div class="last-sales-history">
+                    <h2>Últimas ventas</h2>
+                    <a href="<?= MATRIX_HTTP_VIEWS ?>ventas/historial" class="text-black font-black">
+                        Ver todo
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/></svg>
+                    </a>
+                </div>
 
                 <!-- MARCO DEL REGISTRO -->
                 <div class="register-frame register-frame-last-sales">
@@ -442,10 +444,11 @@ use function PHPSTORM_META\map;
             </div>
 
             <!-- VENTAS POR TIPO -->
-            <div class="sales-types-chart">
+            <div class="sales-types">
                 <h2>Ventas por tipo</h2>
-                <!-- grafica -->
-                grafica
+                <div class="sales-per-type-chart">
+                    <canvas id="sales_per_type_chart"></canvas>
+                </div>
             </div>
         </div>
     </main>

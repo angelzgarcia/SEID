@@ -110,7 +110,7 @@
 
                 <!-- PRECIO COSTO -->
                 <fieldset>
-                    <legend>Precio del Costo *</legend>
+                    <legend>Precio de Costo *</legend>
                     <p class='message-error'>
                         <?= $_SESSION['errors']['precio_costo'] ?? '' ?>
                     </p>
@@ -131,7 +131,7 @@
 
                 <!-- PRECIO MAYOREO -->
                 <fieldset>
-                    <legend>Precio de Mayoreo *</legend>
+                    <legend>Precio de Mayoreo</legend>
                     <p class='message-error'>
                         <?= $_SESSION['errors']['precio_mayoreo'] ?? '' ?>
                     </p>

@@ -11,7 +11,7 @@ const options =  {
                 color: '#fff'
             },
             grid: {
-                color: "transparent",
+                color: "#919191",
                 lineWidth: 1,
                 borderDash: [5, 5]
             }
@@ -22,7 +22,7 @@ const options =  {
                 color: "#fff"
             },
             grid: {
-                color: "#fff",
+                color: "#919191",
                 lineWidth: 1,
                 borderDash: [5, 5]
             }
@@ -37,9 +37,9 @@ const options =  {
     }
 };
 
-// B E S T  S A L E S  P O R U C T S
+// P R O D U C T O S   M A S   V E N D I D O S
+// (barras)
 const best_sellings_products_chart = document.getElementById('best_sellings_products_chart');
-
 const best_selling_products_data = {
     labels: [['Camiseta', 'Legendary', 'WhiteTails'], 'Gabardina', 'Rompevientos', 'Jeans Mezclilla', ['Camisa de', 'franela']],
     datasets: [{
@@ -113,7 +113,7 @@ new Chart(best_sellings_products_chart, {
 
 
 
-// S A L E S   P E R   P E R I O D
+// V E N T A S   P O R   P E R I O D O S
 // Ventas de la semana (barras)
 const daily_sales_per_week_bar_chart = document.getElementById('daily_sales_per_week_bar_chart');
 new Chart(daily_sales_per_week_bar_chart, {
@@ -220,6 +220,7 @@ new Chart(daily_sales_per_period_chart, {
     data: {
         labels: ['Día', 'Semana', 'Mes', 'Año'],
         datasets: [{
+            label: 'Ventas por pediodo',
             data: [500, 3500, 15000, 200000],
             backgroundColor: [
                 'rgba(255, 99, 132, 0.5)',
@@ -244,4 +245,37 @@ new Chart(daily_sales_per_period_chart, {
     options: options,
 });
 
+
+// VENTAS POR TIPO DE PRODUCTO
+// Ventas por tipo (doughnut)
+const sales_per_type_chart = document.getElementById('sales_per_type_chart');
+new Chart(sales_per_type_chart, {
+    type: 'doughnut',
+    data: {
+        labels: ['Unidad', 'Granel', 'Paquete'],
+        datasets: [{
+            label: 'Ventas por tipo',
+            data: [1700, 2500, 500],
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.5)',
+                'rgba(255, 159, 64, 0.5)',
+                'rgba(255, 205, 86, 0.5)',
+                'rgba(75, 192, 192, 0.5)',
+                'rgba(54, 162, 235, 0.5)',
+                'rgba(153, 102, 255, 0.5)',
+                'rgba(201, 203, 207, 0.5)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(255, 159, 64, 1)',
+                'rgba(255, 205, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(201, 203, 207, 1)'
+            ],
+        }]
+    },
+    options: options,
+});
 
