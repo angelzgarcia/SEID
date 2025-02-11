@@ -471,7 +471,7 @@ body {
     border-radius: 0 1rem 1rem 0;
     padding: .5rem;
     flex-wrap: wrap;
-    & a, .destroy-btn > button {
+    & a, .destroy-btn > button, .aproved-btn > button {
         display: flex;
         justify-content: space-between;
         gap: .4rem;
@@ -489,6 +489,9 @@ body {
     }
     & .destroy-btn > button {
         background-color: #d42222;
+    }
+    & .aproved-btn > button {
+        background-color: #01ad0a;
     }
 }
 
@@ -777,6 +780,92 @@ body {
     /* grid-row: 3 / 2; */
     align-self: end;
 }
+.branches-orders {
+    padding: 0 2rem;
+    & a {
+        display: flex;
+        background-color: #007bff;
+        width: max-content;
+        box-shadow: 0 .2rem .2rem 0 rgba(128, 128, 128, 0.705);
+        padding: .5rem 1.5rem;
+        color: white;
+        border-radius: .4rem;
+        font-size: large;
+        gap: .6rem;
+        align-items: center;
+        justify-content: center;
+        transition: transform .1s ease;
+        & svg {
+            width: 25px;
+            height: 25px;
+            fill: #fff;
+        }
+        &:hover { filter: invert(); }
+        &:active { transform: scale(90%); }
+    }
+}
+/*  P E D I D O S    D E   S U C U R S A L E S  */
+.branches-orders-container {
+    --received-color: #2f00ff;
+    --rejected-color: #ff0000;
+    --aproved-color: #33db00;
+}
+.orders-crud {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+.order-frame {
+    padding: 0 0 .4rem 0;
+    gap: 0;
+    border-radius: 1rem 1rem 1rem 2rem;
+    & .register-details-link {
+        border-radius: .8rem 0 0 2rem;
+        padding: 1.5rem;
+        transition: all .2s ease;
+        & .quantities { gap: .5rem; }
+        & .order-product ol {
+            transition: all .2s ease;
+            padding: .4rem 1.5rem;
+            border-radius: 0 1rem 0 1rem;
+            background-color: var(--hover-color-50);
+        }
+        & .order-product ol li {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            padding-left: 1.2em;
+            &:not(:first-of-type) p { font-weight: 400; }
+            & span { font-size: small; font-style: italic; }
+            &:first-of-type { text-transform: capitalize; }
+        }
+        & .order-product ol li:first-of-type::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            top: -7.5px;
+            font-size: 1.2em;
+            color: black;
+        }
+    }
+    & .register-actions {
+        border-radius: 0 .4rem .4rem 0;
+        padding: 1rem;
+        & button, a {
+            border-radius: .2rem .2rem .2rem .5rem;
+        }
+    }
+}
+.recived-order-frame { background-color: var(--received-color); }
+.rejected-order-frame { background-color: var(--rejected-color); }
+.aproved-order-frame { background-color: var(--aproved-color); }
+.register-details-link:hover, .register-details-link:hover ~ .register-actions {
+    background-color: rgb(248, 241, 248);
+    color: black;
+    & .order-product ol {
+        background-color: #fff;
+    }
+}
+.register-actions { justify-content: center; gap: 1rem; }
 
 
 
@@ -795,23 +884,20 @@ body {
 
 
 
-/*  I N C I D E N C I A S  */
-.incidences-container {
-    --pending-color: rgba(172, 26, 26, 0.554);
-    --in-progress-color: rgb(218, 165, 32);
-    --resolved-color: hsla(215, 55%, 53%, 0.559);
-}
-.incidences-status-colors {
+
+
+/*  G U I A   D E   C O L O R E S   P A R A   L O S   S T A T U S  */
+.status-colors {
     width: 100%;
     display: flex;
     gap: 4rem;
     font-weight: 500;
 }
-.pending-incident, .resolved-incident, .in-progress-incident {
+.status {
     display: flex;
     gap: .5rem;
     align-items: center;
-    & .pending-incident-circle, .resolved-incident-circle, .in-progress-incident-circle {
+    & .status-circle {
         width: 25px;
         height: 25px;
         border-radius: 50%;
@@ -825,9 +911,28 @@ body {
             height: 15px;
         }
     }
+    /* INCIDENCIAS */
     & .pending-incident-circle { border: 3px solid var(--pending-color); & > div { background-color: var(--pending-color); } }
     & .resolved-incident-circle { border: 3px solid var(--resolved-color); & > div { background-color: var(--resolved-color); } }
     & .in-progress-incident-circle { border: 3px solid var(--in-progress-color); & > div { background-color: var(--in-progress-color); } }
+
+    /* PEDIDOS SUCURSALES */
+    & .order-received-circle { border: 3px solid var(--received-color); & > div { background-color: var(--received-color); } }
+    & .order-rejected-circle { border: 3px solid var(--rejected-color); & > div { background-color: var(--rejected-color); } }
+    & .order-aproved-circle { border: 3px solid var(--aproved-color); & > div { background-color: var(--aproved-color); } }
+}
+
+
+
+
+
+
+
+/*  I N C I D E N C I A S  */
+.incidences-container {
+    --pending-color: rgba(172, 26, 26, 0.554);
+    --in-progress-color: rgb(218, 165, 32);
+    --resolved-color: hsla(215, 55%, 53%, 0.559);
 }
 .incidences-grid {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));

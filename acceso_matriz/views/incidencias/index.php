@@ -85,19 +85,19 @@
             </div>
 
             <!-- GUIA DE COLORES DE INCIDENCIAS -->
-            <div class="incidences-status-colors">
-                <div class="pending-incident">
-                    <div class="pending-incident-circle"><div></div></div>
+            <div class="status-colors">
+                <div class="status pending-incident">
+                    <div class="status-circle pending-incident-circle"><div></div></div>
                     <p>Pendientes</p>
                 </div>
 
-                <div class="in-progress-incident">
-                    <div class="in-progress-incident-circle"><div></div></div>
+                <div class="status in-progress-incident">
+                    <div class="status-circle in-progress-incident-circle"><div></div></div>
                     <p>En proceso</p>
                 </div>
 
-                <div class="resolved-incident">
-                    <div class="resolved-incident-circle"><div></div></div>
+                <div class="status resolved-incident">
+                    <div class="status-circle resolved-incident-circle"><div></div></div>
                     <p>Resueltas</p>
                 </div>
             </div>
@@ -138,7 +138,7 @@
                         </div>
                     </a>
                 </div>
-                
+
                 <!-- MARCO DEL REGISTRO -->
                 <div class="register-frame resolved">
                     <!-- DETALLES -->

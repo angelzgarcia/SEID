@@ -13,7 +13,6 @@
     <main class="main-content matriz-content inventory-content">
 
         <!-- FILTRAR INVENTARIOS POR SUCURSAL -->
-
         <form action="" class="subsidiaries-filter flex w-full gap-5">
             <input type="text" list="sucursales" name="sucursal_datalist" id="sucursal_datalist" placeholder="Buscar sucursal...">
             <datalist id="sucursales">
