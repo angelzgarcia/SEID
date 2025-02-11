@@ -109,12 +109,16 @@
                             <span>519</span>
                         </div>
                         <div class="summary">
+                            <p>En espera</p>
+                            <span>7</span>
+                        </div>
+                        <div class="summary">
                             <p>Rechazados</p>
-                            <span>37</span>
+                            <span>19</span>
                         </div>
                         <div class="summary">
                             <p>Aprobados</p>
-                            <span><?=519-37?></span>
+                            <span><?=519-19-7?></span>
                         </div>
                     </div>
                 </div>
@@ -134,7 +138,7 @@
             <div class="status-colors">
                 <div class="status order-received">
                     <div class="status-circle order-received-circle"><div></div></div>
-                    <p>Recibidos</p>
+                    <p>En espera</p>
                 </div>
 
                 <div class="status order-rejected">

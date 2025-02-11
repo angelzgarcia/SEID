@@ -1,21 +1,20 @@
 <?php
+if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+    redirect();
+
 require_once 'database.php';
 require_once '../../qrlib/barcode.php';
-require_once './helpers/encrypt.php';
-require_once './helpers/swal.php';
-require_once './helpers/clear.php';
+foreach(glob(__DIR__ . '/helpers/*.php') as $helper)
+    require_once $helper;
 
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST')
-    match ($_POST['accion']) {
-        'crear' => create(),
-        'ver' => show(),
-        'editar' => edit(),
-        'actualizar' => update(),
-        'eliminar' => destroy(),
-        default => throw new \Exception("Acción no válida")
-    };
-else redirect();
+match ($_POST['accion']) {
+    'crear' => create(),
+    'ver' => show(),
+    'editar' => edit(),
+    'actualizar' => update(),
+    'eliminar' => destroy(),
+    default => redirect()
+};
 
 function redirect()
 {
