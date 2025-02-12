@@ -68,18 +68,17 @@
                         <?= $_SESSION['errors']['nombre'] ?? '' ?>
                     </p>
 
-                    <input type="text" name="nombre" placeholder="Ingrese el nombre del producto" >
+                    <input type="text" name="nombre" placeholder="Ingrese el nombre del producto" value="<?= $_SESSION['olds']['nombre'] ?? '' ?>">
                 </fieldset>
 
                 <!-- TIPO DE VENTA -->
                 <fieldset>
                     <legend>Se vende por *</legend>
+                    <p class='message-error'>
+                        <?= $_SESSION['errors']['tipo_venta'] ?? '' ?>
+                    </p>
+
                     <div class="type_sales">
-                        <p class='message-error'>
-                            <?= $_SESSION['errors']['tipo_venta'] ?? '' ?>
-                        </p>
-
-
                         <input type="radio" name="tipo_venta" checked value="" class="hidden">
                         <div>
                             <input type="radio" name="tipo_venta" class="tipo_venta" value="unidad" onchange="ajustarCampos()">
@@ -178,11 +177,11 @@
 
     <!-- SWEET ALERT -->
     <?php
-        if (isset($_SESSION['swal'])):
+        if (isset($_SESSION['swal']))
             echo $_SESSION['swal'];
-            session_unset();
-            session_destroy();
-        endif;
+
+        session_unset();
+        session_destroy();
     ?>
 
     <!-- AJUSTAR PLACEHOLDER Y LEGEND DEL INPUT STOCK SEGÚN EL TIPO DE VENTA -->

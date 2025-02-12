@@ -1,4 +1,9 @@
-<?php require_once __DIR__ . '/config.php' ?>
+<?php require_once __DIR__ . '/app/config.php' ?>
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+?>
 <!DOCTYPE html>
 <html lang="es">
 <?php require_once DOC_ROOT . 'acceso_visitante/views/modules/head.php'; ?>

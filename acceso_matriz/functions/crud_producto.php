@@ -23,23 +23,32 @@ function store()
 {
     $data = [];
     $errors = [];
+    $olds = [];
     $required = ['nombre', 'tipo_venta', 'stock', 'precio_costo', 'precio_venta', 'imagen'];
 
+    array_pop($_POST);
     foreach($_POST as $key => $request) {
         $data[$key] = clearEntry($request) ?: null;
+        $olds[$key] = $request;
+
         foreach ($required as $requested)
             if ($key === $requested)
-                !$data[$requested] ? $errors[$key] = "El campo $key es obligatorio" : '';
+                $data[$requested] === null ? $errors[$key] = "El campo " . str_replace(['-','_'], ' ', $key) . " es obligatorio" : '';
     }
-
-    array_pop($data);
 
     if (count($errors) === count($required)) {
         $_SESSION['swal'] = swal('warning', '¡Completa los campos obligatorios!');
         redirect();
     }
 
-    
+    if (count($errors) > 0) {
+        $_SESSION['errors'] = $errors;
+        $_SESSION['olds'] = $olds;
+        redirect();
+    }
+
+    $
+
 }
 
 function update()

@@ -2,8 +2,8 @@
 if ($_SERVER['REQUEST_METHOD'] !== 'POST')
     redirect();
 
-require_once 'database.php';
-require_once '../../qrlib/barcode.php';
+require_once __DIR__ .'/../database.php';
+require_once __DIR__ . '/../../qrlib/barcode.php';
 foreach(glob(__DIR__ . '/helpers/*.php') as $helper)
     require_once $helper;
 

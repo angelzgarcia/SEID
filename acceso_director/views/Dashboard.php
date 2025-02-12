@@ -1,5 +1,4 @@
-<?php session_start(); ?>
-<?php require_once '../../config.php'; ?>
+<?php require_once __DIR__ . '/../config.php'; ?>
 <?php $_director_route = DOC_ROOT . 'acceso_director/views'; ?>
 <?php $page_name = 'Director Dashboard' ?>
 

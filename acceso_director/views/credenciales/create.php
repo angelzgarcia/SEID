@@ -1,6 +1,6 @@
 <?php
-    require_once __DIR__ . '/../../../config.php';
-    require_once DOC_ROOT . 'acceso_director/functions/database.php';
+    require_once __DIR__ . '/../../config.php';
+    require_once __DIR__ . '/../../database.php';
     session_start();
 
     $sql = 'SELECT * FROM sucursales';
