@@ -47,7 +47,24 @@ function store()
         redirect();
     }
 
-    $
+    $index_data = array_values($data);
+    $query = '
+        INSERT INTO productos (
+            id_categoria_fk_producto,
+            id_marca_fk_producto,
+            codigo_barras_producto,
+            nombre_producto,
+            slug_producto,
+            tipo_venta_producto,
+            stock_producto,
+            precio_costo_producto,
+            precio_venta_producto,
+            precio_mayoreo_producto,
+            vencimiento_producto,
+            imagen_producto,
+        )
+        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ';
 
 }
 

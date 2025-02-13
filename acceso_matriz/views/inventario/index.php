@@ -15,77 +15,77 @@
         <!-- FILTRAR INVENTARIOS POR SUCURSAL -->
         <div class="searcher-links">
             <form action="" class="subsidiaries-filter flex w-full gap-5">
-                 <input type="text" list="sucursales" name="sucursal_datalist" id="sucursal_datalist" placeholder="Buscar sucursal...">
-                 <datalist id="sucursales">
-                     <option value="Sucursal 1">Sucursal 1</option>
-                     <option value="Sucursal 2">Sucursal 2</option>
-                     <option value="Sucursal 3">Sucursal 3</option>
-                     <option value="Sucursal 3">Sucursal 3</option>
-                     <option value="Sucursal 3">Sucursal 3</option>
-                     <option value="Sucursal 3">Sucursal 3</option>
-                     <option value="Sucursal 3">Sucursal 3</option>
-                     <option value="Sucursal 3">Sucursal 3</option>
-                     <option value="Sucursal 3">Sucursal 3</option>
-                     <option value="Sucursal 3">Sucursal 3</option>
-                     <option value="Sucursal 3">Sucursal 3</option>
-                     <option value="Sucursal 3">Sucursal 3</option>
-                     <option value="Sucursal 3">Sucursal 3</option>
-                     <option value="Sucursal 3">Sucursal 3</option>
-                     <option value="Sucursal 3">Sucursal 3</option>
-                     <option value="Sucursal 3">Sucursal 3</option>
-                     <option value="Sucursal 3">Sucursal 3</option>
-                     <option value="Sucursal 3">Sucursal 3</option>
-                     <option value="Sucursal 3">Sucursal 3</option>
-                     <option value="Sucursal 3">Sucursal 3</option>
-                     <option value="Sucursal 3">Sucursal 3</option>
-                     <option value="Sucursal 3">Sucursal 3</option>
-                 </datalist>
+                <input type="text" list="sucursales" name="sucursal_datalist" id="sucursal_datalist" placeholder="Buscar sucursal...">
+                <datalist id="sucursales">
+                    <option value="Sucursal 1">Sucursal 1</option>
+                    <option value="Sucursal 2">Sucursal 2</option>
+                    <option value="Sucursal 3">Sucursal 3</option>
+                    <option value="Sucursal 3">Sucursal 3</option>
+                    <option value="Sucursal 3">Sucursal 3</option>
+                    <option value="Sucursal 3">Sucursal 3</option>
+                    <option value="Sucursal 3">Sucursal 3</option>
+                    <option value="Sucursal 3">Sucursal 3</option>
+                    <option value="Sucursal 3">Sucursal 3</option>
+                    <option value="Sucursal 3">Sucursal 3</option>
+                    <option value="Sucursal 3">Sucursal 3</option>
+                    <option value="Sucursal 3">Sucursal 3</option>
+                    <option value="Sucursal 3">Sucursal 3</option>
+                    <option value="Sucursal 3">Sucursal 3</option>
+                    <option value="Sucursal 3">Sucursal 3</option>
+                    <option value="Sucursal 3">Sucursal 3</option>
+                    <option value="Sucursal 3">Sucursal 3</option>
+                    <option value="Sucursal 3">Sucursal 3</option>
+                    <option value="Sucursal 3">Sucursal 3</option>
+                    <option value="Sucursal 3">Sucursal 3</option>
+                    <option value="Sucursal 3">Sucursal 3</option>
+                    <option value="Sucursal 3">Sucursal 3</option>
+                </datalist>
 
-                 <select name="sucursal_select" id="sucursal_select">
-                     <option disabled selected>Todas las sucursales</option>
-                     <option value="">Sucursal 1 Sucursal 1</option>
-                     <option value="">Sucursal 2</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                     <option value="">Sucursal 3</option>
-                 </select>
+                <select name="sucursal_select" id="sucursal_select">
+                    <option disabled selected>Todas las sucursales</option>
+                    <option value="">Sucursal 1 Sucursal 1</option>
+                    <option value="">Sucursal 2</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                    <option value="">Sucursal 3</option>
+                </select>
             </form>
 
             <div class="categories-brands">
-                <a href="">
+                <a href=" <?= MATRIX_HTTP_VIEWS.'inventario/categorias/index'?>">
                     Categorías
                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M80-140v-320h320v320H80Zm80-80h160v-160H160v160Zm60-340 220-360 220 360H220Zm142-80h156l-78-126-78 126ZM863-42 757-148q-21 14-45.5 21t-51.5 7q-75 0-127.5-52.5T480-300q0-75 52.5-127.5T660-480q75 0 127.5 52.5T840-300q0 26-7 50.5T813-204L919-98l-56 56ZM660-200q42 0 71-29t29-71q0-42-29-71t-71-29q-42 0-71 29t-29 71q0 42 29 71t71 29ZM320-380Zm120-260Z"/></svg>
                 </a>
-                <a href="">
+                <a href="<?= MATRIX_HTTP_VIEWS.'inventario/marcas/index'?>">
                     Marcas
                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M864-40 741-162q-18 11-38.5 16.5T660-140q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 23-6 43.5T797-218L920-96l-56 56ZM220-140q-66 0-113-47T60-300q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm0-80q33 0 56.5-23.5T300-300q0-33-23.5-56.5T220-380q-33 0-56.5 23.5T140-300q0 33 23.5 56.5T220-220Zm440 0q33 0 56.5-23.5T740-300q0-33-23.5-56.5T660-380q-33 0-56.5 23.5T580-300q0 33 23.5 56.5T660-220ZM220-580q-66 0-113-47T60-740q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm440 0q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm-440-80q33 0 56.5-23.5T300-740q0-33-23.5-56.5T220-820q-33 0-56.5 23.5T140-740q0 33 23.5 56.5T220-660Zm440 0q33 0 56.5-23.5T740-740q0-33-23.5-56.5T660-820q-33 0-56.5 23.5T580-740q0 33 23.5 56.5T660-660ZM220-300Zm0-440Zm440 0Z"/></svg>
                 </a>

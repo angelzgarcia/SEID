@@ -361,7 +361,7 @@ body {
                 display: flex;
                 flex-direction: column;
                 justify-content: space-between;
-                min-height: 110px;
+                /* min-height: 110px; */
                 /* min-width: max-content; */
                 &:last-of-type { box-shadow: none; }
                 &:first-of-type { padding-inline-start: 0; flex-shrink: 2; }
@@ -374,7 +374,7 @@ body {
                     display: block;
                     color: var(--primary-color);
                     font-weight: 900;
-                    font-size: xx-large;
+                    font-size: 1.6rem;
                 }
             }
         }
@@ -461,6 +461,7 @@ body {
         white-space: nowrap;
         overflow: hidden;
         max-width: 300px;
+        font-family: Arial, Helvetica, sans-serif;
         /* width: 100%; */
     }
     & p { font-weight: 700; }
@@ -489,6 +490,7 @@ body {
         flex-direction: column;
         gap: .2rem;
         & p {
+            font-family: Arial, Helvetica, sans-serif;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -518,6 +520,7 @@ body {
     padding: .5rem;
     flex-wrap: wrap;
     & a, .destroy-btn > button, .aproved-btn > button {
+        font-family: Arial, Helvetica, sans-serif;
         display: flex;
         justify-content: space-between;
         gap: .4rem;
@@ -675,7 +678,71 @@ body {
     }
 }
 
-/*  E D I T A R    P R O D  U C T O  */
+/*  E D I T A R    P R O D U C T O  */
+
+
+
+
+
+
+
+
+
+
+
+/*  C A T E G O R I A S  */         /*  M A R C A S  */
+.crud-grid-category, .crud-grid-brand {
+    grid-template-columns: repeat(auto-fit, minmax(110px, 340px));
+    justify-content: space-between;
+    gap: 1.8rem 0;
+}
+.crud-grid-category :is(.category-frame, .brand-frame) {
+    max-height: 100px;
+    border-radius: .6rem;
+    & .category-details-link, .brand-details-link {
+        display: flex;
+        border-radius: .6rem;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        min-width: max-content;
+        font-family: Arial, Helvetica, sans-serif;
+        & p {
+            max-width: 170px;
+            font-size: .9rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+    }
+    & .register-actions {
+        border-radius: .6rem;
+        flex-direction: row;
+        align-items: center;
+        min-width: max-content;
+        font-family: Arial, Helvetica, sans-serif;
+        & a, button {
+            border-radius: .5rem;
+            padding: .5rem;
+            & svg {
+                width: 17px;
+                height: 17px;
+            }
+        }
+    }
+}
+
+.form-create-container :is(.category-add, .brand-add) {
+    grid-template-columns: 1fr 200px;
+    & fieldset, input {
+        min-width: 100%;-
+    }
+}
+
+
+
+
+
+
 
 
 
@@ -918,6 +985,10 @@ body {
 
 
 
+
+
+
+
 /*  U S U A R I O S  */
 .user-header-info :is(span, p) {
     text-transform: capitalize;
@@ -967,6 +1038,8 @@ body {
     & .order-rejected-circle { border: 3px solid var(--rejected-color); & > div { background-color: var(--rejected-color); } }
     & .order-aproved-circle { border: 3px solid var(--aproved-color); & > div { background-color: var(--aproved-color); } }
 }
+
+
 
 
 
