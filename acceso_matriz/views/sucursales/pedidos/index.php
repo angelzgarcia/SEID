@@ -95,6 +95,7 @@
                             <option selected disabled>Ordenar por</option>
                             <option value="">Todos</option>
                             <option value="">Más recientes</option>
+                            <option value="">En espera</option>
                             <option value="">Aprobados</option>
                             <option value="">Rechazados</option>
                         </select>

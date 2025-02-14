@@ -105,7 +105,6 @@ function create()
         ...$index_arr
     );
 
-
     if (!$query -> execute()) {
         $_SESSION['swal'] = swal('error', '¡Ocurrió al registrar la credencial!');
         $query -> close();

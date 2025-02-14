@@ -2,6 +2,8 @@
 
 function clearEntry($entry)
 {
+    if (!isset($entry) || empty($entry)) return false;
+
     $entry = trim($entry);
     $entry = stripslashes($entry);
     $entry = htmlspecialchars($entry);

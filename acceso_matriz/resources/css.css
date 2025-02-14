@@ -22,8 +22,8 @@
     --hover-color-75: #dce1e7b6;
     --hover-color-50: #dce1e78a;
     --bg-color: #f8f8f8;
-    --header-height: 70px;
-    --sidebar-width: 250px;
+    --header-height: 60px;
+    --sidebar-width: 215px;
 }
 
 
@@ -105,8 +105,8 @@ body {
         }
         & svg {
             fill: #111;
-            width: 25px;
-            height: 25px;
+            width: 22px;
+            height: 22px;
         }
         &:hover {
             color: var(--primary-color);
@@ -121,8 +121,8 @@ body {
     width: 100%;
     border-radius: .3rem;
     & img {
-        height: 55px;
-        width: 55px;
+        height: 50px;
+        width: 50px;
         min-width: 40px;
         border-radius: 50%;
         object-fit: cover;
@@ -159,8 +159,9 @@ body {
         border-radius: 30%;
         /* background-color: #021741; */
         /* box-shadow: 0 .2rem .3rem 0 rgba(128, 128, 128, 0.485); */
+        z-index: 11111;
         & svg {
-            fill: #fff;
+            fill: var(--primary-color);
             width: 21px;
             height: 21px;
         }
@@ -175,7 +176,7 @@ body {
     height: 100%;
     display: flex;
     flex-direction: column;
-    padding-block-end: 5rem;
+    /* padding-block-end: 15rem; */
     padding-inline: .3rem;
 }
 .date {
@@ -183,13 +184,11 @@ body {
     top: 20px;
     left: 0;
     width: calc(100% - 50px);
-    padding: 0 .5rem;
+    /* padding: 0 .5rem; */
     text-align: end;
     text-transform: capitalize;
-    font-size: smaller;
-    font-weight: 600;
+    font-size: .75rem;
     color: #fff;
-    font-weight: 700;
 }
 .sidebar-links-container, .sidebar-links, .sidebar-links-list{ height: inherit; }
 .sidebar-links-container { margin-block-start: 4rem; }
@@ -197,7 +196,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: .8rem;
-    padding-block-end: 1rem;
+    padding-block-end: 6rem;
     & li a {
         padding: .9rem 1rem;
         /* background-color: #fde8be; */
@@ -205,9 +204,10 @@ body {
         border-radius: .85rem;
         color: #fff;
         text-transform: capitalize;
-        font-size: large;
+        /* font-size: large; */
+        /* justify-content: space-between; */
         display: flex;
-        gap: 3rem;
+        gap: 1.7rem;
         transition: transform .2s ease;
         &.active {
             /* filter: invert(); */
@@ -219,8 +219,10 @@ body {
             & svg { fill: #000; }
         }
         & svg {
-            width: 25px;
-            height: 25px;
+            min-width: 22px;
+            min-height: 22px;
+            max-width: 22px;
+            max-height: 22px;
             fill: #fff;
         }
         &:hover {
@@ -261,6 +263,7 @@ body {
         outline: none;
         border-radius: .4rem;
         padding: .6rem 1.2rem;
+        font-size: small;
     }
 }
 .searcher-links {
@@ -271,7 +274,7 @@ body {
         gap: 1rem;
         & a {
             box-shadow: 0 .2rem .2rem 0 rgba(128,128,128,0.850);
-            padding: .6rem 1.5rem;
+            padding: 0 1.2rem;
             border-radius: .4rem;
             color: white;
             min-width: 120px;
@@ -280,13 +283,14 @@ body {
             align-items: center;
             justify-content: center;
             gap: .7rem;
+            font-size: small;
             &:first-child { background-color: var(--primary-color); }
             &:last-child { background-color: var(--primary-color); }
             &:hover { filter: invert(); }
             & svg {
                 fill: #fff;
-                width: 25px;
-                height: 25px;
+                width: 20px;
+                height: 20px;
             }
         }
     }
@@ -327,7 +331,7 @@ body {
                 font-size: x-large;
             }
             & p {
-                font-size: large;
+                font-size: medium;
             }
         }
         & .crud-add-btn {
@@ -337,13 +341,14 @@ body {
             gap: .6rem;
             background-color:var(--deep-blue-2);
             color: #fff;
-            padding: .6rem 1.2rem;
+            padding: .5rem 1rem;
+            font-size: small;
             border-radius: .4rem;
             box-shadow: 0 .2rem .3rem 0 rgba(128, 128, 128, 0.151);
             & svg{
                 fill: white;
-                width: 25px;
-                height: 25px;
+                width: 22px;
+                height: 22px;
             }
             &:hover { filter: invert(); }
         }
@@ -368,13 +373,13 @@ body {
                 &:nth-of-type(2) { flex-shrink: 2;  }
                 & p {
                     display: block;
-                    font-size: 1.1rem;
+                    font-size: 1rem;
                 }
                 & span {
                     display: block;
                     color: var(--primary-color);
                     font-weight: 900;
-                    font-size: 1.6rem;
+                    font-size: 1.3rem;
                 }
             }
         }
@@ -417,7 +422,7 @@ body {
     color: #fff;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    grid-auto-rows: auto;
+    grid-template-rows: repeat(auto-fill, minmax(150px, 1fr));
     gap: 1rem;
 }
 .register-frame {
@@ -452,8 +457,9 @@ body {
 .register-details {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-evenly;
     gap: .7rem;
+    height: 100%;
 }
 .header-register {
     & p, span {
@@ -463,6 +469,7 @@ body {
         max-width: 300px;
         font-family: Arial, Helvetica, sans-serif;
         /* width: 100%; */
+        font-size: smaller;
     }
     & p { font-weight: 700; }
     & span {
@@ -494,7 +501,7 @@ body {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: small;
+            font-size: .65rem;
             font-weight: 600;
             gap: 1rem;
             & span {
@@ -525,12 +532,15 @@ body {
         justify-content: space-between;
         gap: .4rem;
         cursor: pointer;
-        font-weight: 600;
         border-radius: 0 .7rem .7rem 0;
         text-transform: capitalize;
-        padding: .5rem 1rem;
+        padding: .4rem;
         &:hover {
             filter: invert();
+        }
+        & svg {
+            width: 27px;
+            height: 27px;
         }
     }
     & a {
@@ -585,11 +595,13 @@ body {
             gap: 1rem;
             & p {
                 font-size: small;
+                padding-bottom: .6rem;
                 color: rgb(235, 26, 26);
             }
             & legend {
                 font-weight: 600;
                 color: rgb(102, 97, 97);
+                font-size: smaller;
             }
             & .type_sales, .type_sales > div {
                 display: flex;
@@ -606,10 +618,12 @@ body {
         & .field-select {
             grid-column-start: 1;
             grid-column-end: -1;
-            & select { width: 100%; }
+            /* overflow: hidden; */
+            & select { width: 100%; font-size: small; }
         }
-        & input[type="text"], input[type="date"], input[type="file"], select {
+        & input[type="text"], input[type="date"], input[type="file"], input[type="number"], select {
             border-radius: .3rem;
+            font-size: small;
             padding: .6rem;
             border: none;
             outline: none;
@@ -634,16 +648,19 @@ body {
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: larger;
+            font-size: medium;
             text-transform: capitalize;
             color: #fff;
             padding: .5rem 0;
             border-radius: .5rem;
             letter-spacing: .1rem;
+            width: 60%;
+            max-width: 100%;
+            place-self: end;
             & svg {
                 fill: #fff;
-                width: 25px;
-                height: 25px;
+                width: 22px;
+                height: 22px;
             }
             &:hover{
                 filter: invert();
@@ -734,7 +751,7 @@ body {
 .form-create-container :is(.category-add, .brand-add) {
     grid-template-columns: 1fr 200px;
     & fieldset, input {
-        min-width: 100%;-
+        min-width: 100%;
     }
 }
 
@@ -903,14 +920,14 @@ body {
         padding: .5rem 1.5rem;
         color: white;
         border-radius: .4rem;
-        font-size: large;
+        font-size: smaller;
         gap: .6rem;
         align-items: center;
         justify-content: center;
         transition: transform .1s ease;
         & svg {
-            width: 25px;
-            height: 25px;
+            width: 22px;
+            height: 22px;
             fill: #fff;
         }
         &:hover { filter: invert(); }
@@ -926,6 +943,7 @@ body {
 .orders-crud {
     grid-template-columns: 1fr;
     gap: 1.5rem;
+    grid-template-rows: auto;
 }
 .order-frame {
     padding: 0 0 .4rem 0;
