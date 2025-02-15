@@ -25,6 +25,11 @@
     --bg-color: #f8f8f8;
     --header-height: 60px;
     --sidebar-width: 215px;
+
+    & ::selection {
+        background-color: #435385;
+        color: white;
+    }
 }
 
 textarea {
@@ -315,7 +320,7 @@ body {
 }
 .inventory-content {
     padding: 2rem 1rem;
-    gap: .8rem;
+    gap: 1rem;
     & select, input{
         background-color: #fff;
         box-shadow: 0 .2rem .3rem 0 rgba(128, 128, 128, 0.151);
@@ -385,125 +390,141 @@ body {
 }
 .crud-header {
     gap: 3rem;
-    & .crud-top-header {
-        & .crud-tittle {
+}
+.crud-top-header {
+    & .crud-tittle {
+        display: flex;
+        flex-direction: column;
+        gap: .7rem;
+        & .title-shortcut-inventory {
+            display: flex;
+            gap: 1.3rem;
+            align-items: center;
+            & h1 {
+                display: flex;
+                gap: 1rem;
+                align-items: center;
+            }
+            & > svg {
+                fill: #111;
+                width: 18px;
+                height: 18px;
+            }
+        }
+        & h1 {
+            text-transform: capitalize;
+            font-weight: 700;
+            font-size: x-large;
+        }
+        & p {
+            font-size: medium;
+        }
+    }
+    & .crud-add-btn {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: .6rem;
+        background-color:var(--deep-blue-2);
+        color: #fff;
+        padding: .5rem 1rem;
+        font-size: small;
+        border-radius: .4rem;
+        box-shadow: 0 .2rem .3rem 0 rgba(128, 128, 128, 0.151);
+        & svg{
+            fill: white;
+            width: 22px;
+            height: 22px;
+        }
+        &:hover { filter: invert(); }
+    }
+}
+.crud-middle-header {
+    box-shadow: 0 .05rem 0 0 rgba(128, 128, 128, 0.401);
+    & .details {
+        padding-block-end: .6rem;
+        justify-content: baseline;
+        & .summary {
+            /* max-width: 100%; */
+            min-width: 200px;
+            padding: 0 1.5rem 1rem 1.5rem;
+            box-shadow: .08rem 0 0 0 rgba(128, 128, 128, 0.401);
             display: flex;
             flex-direction: column;
-            gap: .7rem;
-            & .title-shortcut-inventory {
-                display: flex;
-                gap: 1.3rem;
-                align-items: center;
-                & svg {
-                    fill: #111;
-                    width: 18px;
-                    height: 18px;
-                }
-                & a {
-                    display: flex;
-                    gap: 1rem;
-                    justify-content: center;
-                    align-items: center;
-                    box-shadow: 0 .2rem .2rem 0 rgba(128, 128, 128, 0.719);
-                    background-color: #bd6742;
-                    border-radius: .4rem;
-                    padding: .4rem .55rem;
-                    & svg {
-                        fill: #fff;
-                        width: 18px;
-                        height: 18px;
-                    }
-                }
-            }
-            & h1 {
-                text-transform: capitalize;
-                font-weight: 700;
-                font-size: x-large;
-            }
-            & p {
-                font-size: medium;
-            }
-        }
-        & .crud-add-btn {
-            display: flex;
             justify-content: space-between;
-            align-items: center;
-            gap: .6rem;
-            background-color:var(--deep-blue-2);
-            color: #fff;
-            padding: .5rem 1rem;
-            font-size: small;
-            border-radius: .4rem;
-            box-shadow: 0 .2rem .3rem 0 rgba(128, 128, 128, 0.151);
-            & svg{
-                fill: white;
-                width: 22px;
-                height: 22px;
+            /* min-height: 110px; */
+            /* min-width: max-content; */
+            &:last-of-type { box-shadow: none; }
+            &:first-of-type { padding-inline-start: 0; flex-shrink: 2; }
+            &:nth-of-type(2) { flex-shrink: 2;  }
+            & p {
+                display: block;
+                font-size: 1rem;
             }
-            &:hover { filter: invert(); }
-        }
-    }
-    & .crud-middle-header {
-        box-shadow: 0 .05rem 0 0 rgba(128, 128, 128, 0.401);
-        & .details {
-            padding-block-end: .6rem;
-            justify-content: baseline;
-            & .summary {
-                /* max-width: 100%; */
-                min-width: 200px;
-                padding: 0 1.5rem 1rem 1.5rem;
-                box-shadow: .08rem 0 0 0 rgba(128, 128, 128, 0.401);
-                display: flex;
-                flex-direction: column;
-                justify-content: space-between;
-                /* min-height: 110px; */
-                /* min-width: max-content; */
-                &:last-of-type { box-shadow: none; }
-                &:first-of-type { padding-inline-start: 0; flex-shrink: 2; }
-                &:nth-of-type(2) { flex-shrink: 2;  }
-                & p {
-                    display: block;
-                    font-size: 1rem;
-                }
-                & span {
-                    display: block;
-                    color: var(--primary-color);
-                    font-weight: 900;
-                    font-size: 1.3rem;
-                }
+            & span {
+                display: block;
+                color: var(--primary-color);
+                font-weight: 900;
+                font-size: 1.3rem;
             }
         }
     }
-    & .crud-bottom-header {
-        gap: 2rem;
-        & .delete-all-form, .crud-searcher {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 1rem;
+}
+.crud-bottom-header {
+    gap: 2rem;
+    & .delete-all-form, .crud-searcher {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+    }
+    & .delete-all-form > input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+    }
+    & .crud-searcher {
+        width: 50%;
+        gap: 0;
+        & input {
+            width: 100%;
         }
-        & .delete-all-form > input[type="checkbox"] {
-            width: 20px;
-            height: 20px;
-        }
-        & .crud-searcher {
-            width: 50%;
-            gap: 0;
-            & input {
-                width: 100%;
+        & button {
+            height: 100%;
+            padding: .5rem;
+            border-radius: 0 .4rem .4rem 0;
+            background-color: #252f3f;
+            & svg {
+                fill: #fff;
+                width: 25px;
+                height: 25px;
             }
-            & button {
-                height: 100%;
-                padding: .5rem;
-                border-radius: 0 .4rem .4rem 0;
-                background-color: #252f3f;
-                & svg {
-                    fill: #fff;
-                    width: 25px;
-                    height: 25px;
-                }
-            }
         }
+    }
+}
+.shortcut-link-btn {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 .2rem .2rem 0 rgba(128, 128, 128, 0.719);
+    background-color: #bd6742;
+    border-radius: .4rem;
+    padding: .4rem .55rem;
+    & > svg {
+        fill: #fff;
+        width: 18px;
+        height: 18px;
+    }
+    &:hover {
+        filter: invert();
+    }
+    &:active > svg {
+        fill: #000;
+    }
+    &.active {
+        filter: invert();
+        box-shadow: 0 .2rem .2rem 0 rgba(255, 255, 255, 0.719);
+        & svg { fill: #000; }
     }
 }
 .crud-grid {
@@ -632,7 +653,7 @@ body {
     border-radius: 0 1.5rem 1.5rem 0;
     padding: .5rem;
     flex-wrap: wrap;
-    & a, .destroy-btn > button, .aproved-btn > button {
+    & a, .status-btn > button, .aproved-btn > button {
         font-family: Arial, Helvetica, sans-serif;
         display: flex;
         justify-content: space-between;
@@ -652,7 +673,10 @@ body {
     & a {
         background-color: #1f73c6;
     }
-    & .destroy-btn > button {
+    & .active-btn > button {
+        background-color: #b4822a;
+    }
+    & .inactive-btn > button {
         background-color: #d42222;
     }
     & .aproved-btn > button {
@@ -676,7 +700,7 @@ body {
         background-color: #fff;
         box-shadow: 0 0 .1rem 0 rgba(128, 128, 128, 0.689);
         border-radius: .3rem;
-        padding: .3rem 2rem;
+        padding: .5rem 2rem;
         & h1 {
             text-transform: capitalize;
             font-size: x-large;
@@ -684,14 +708,14 @@ body {
         }
         & .shortcuts-links{
             display: flex;
-            gap: 1.5rem;
+            gap: 1.1rem;
             align-items: center;
-            & svg {
+            & > svg {
                 fill: #111111c2;
-                width: 25px;
-                height: 25px;
+                width: 22px;
+                height: 22px;
             }
-            & a {
+            /* & a {
                 display: flex;
                 gap: 1rem;
                 align-items: center;
@@ -705,7 +729,7 @@ body {
                     width: 25px;
                     height: 25px;
                 }
-            }
+            } */
         }
     }
     & .form-create {

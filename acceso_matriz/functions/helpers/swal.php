@@ -11,6 +11,10 @@ function swal($icon, $title, $type = 'toast', $time = 3000)
                     showConfirmButton: false,
                     timer: "{$time}",
                     timerProgressBar: true,
+                    iconColor: 'white',
+                    customClass: {
+                        popup: 'colored-toast',
+                    },
                     didOpen: (toast) => {
                         toast.onmouseenter = Swal.stopTimer;
                         toast.onmouseleave = Swal.resumeTimer;
@@ -22,25 +26,20 @@ function swal($icon, $title, $type = 'toast', $time = 3000)
                     });
             </script>
         HTML,
-        
+
         'fire' => <<<HTML
         HTML,
-        
+
         'modal' => <<<HTML
         HTML,
-        
+
         'confirm_status' => <<<HTML
             <script>
                 document.addEventListener("DOMContentLoaded", function() {
-                    document.querySelectorAll(".destroy-btn button").forEach(button => {
+                    document.querySelectorAll(".status-btn button").forEach(button => {
                         button.addEventListener("click", function() {
-                            const formId = this.dataset.form;
-                            const form = document.getElementById(formId);
-                            
-                            if (!form) {
-                                console.error("Formulario no encontrado:", formId);
-                                return;
-                            }
+                            // const formId = this.dataset.form;
+                            const form = this.closest("form");
 
                             Swal.fire({
                                 title: "{$title}",

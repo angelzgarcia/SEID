@@ -2,12 +2,22 @@
 <?php require_once MATRIX_DOC_ROOT . 'database.php' ?>
 <?php require_once MATRIX_DOC_ROOT . 'functions/helpers/encrypt.php' ?>
 <?php require_once MATRIX_DOC_ROOT . 'functions/helpers/swal.php' ?>
+
 <?php $page_name = ACCESO . 'Inventario | Categorias ' ?>
 <?php
     $sql = 'SELECT * FROM categorias';
     $consulta = $conn -> query($sql);
 
     $categorias = $consulta -> fetch_all(MYSQLI_ASSOC) ?: [];
+
+    if (!empty($categorias)) {
+        $count_categorias = count($categorias);
+
+        $categorias_activas = array_filter($categorias, fn($categoria) => (int)$categoria['status_categoria'] === 0 );
+        $count_categorias_activas = count($categorias_activas);
+
+        $count_categorias_inactivas = $count_categorias - $count_categorias_activas;
+    }
 ?>
 
 <!DOCTYPE html>
@@ -28,14 +38,16 @@
                 <div class="crud-top-header">
                     <div class="crud-tittle">
                         <div class="title-shortcut-inventory">
-                            <h1 class="flex gap-2 items-center">
+                            <h1>
                                 Categorías
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#111"><path d="m260-520 220-360 220 360H260ZM700-80q-75 0-127.5-52.5T520-260q0-75 52.5-127.5T700-440q75 0 127.5 52.5T880-260q0 75-52.5 127.5T700-80Zm-580-20v-320h320v320H120Zm580-60q42 0 71-29t29-71q0-42-29-71t-71-29q-42 0-71 29t-29 71q0 42 29 71t71 29Zm-500-20h160v-160H200v160Zm202-420h156l-78-126-78 126Zm78 0ZM360-340Zm340 80Z"/></svg>
+                                <a class="shortcut-link-btn <?= strpos($_SERVER['PHP_SELF'], 'categorias/index') ? 'active' : '' ?>">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#111"><path d="m260-520 220-360 220 360H260ZM700-80q-75 0-127.5-52.5T520-260q0-75 52.5-127.5T700-440q75 0 127.5 52.5T880-260q0 75-52.5 127.5T700-80Zm-580-20v-320h320v320H120Zm580-60q42 0 71-29t29-71q0-42-29-71t-71-29q-42 0-71 29t-29 71q0 42 29 71t71 29Zm-500-20h160v-160H200v160Zm202-420h156l-78-126-78 126Zm78 0ZM360-340Zm340 80Z"/></svg>
+                                </a>
                             </h1>
 
                             <svg xmlns="http://www.w3.org/2000/svg" height="25px" viewBox="0 -960 960 960" width="25px" fill="#111111c2"><path d="M480-120q-75 0-140.5-28.5t-114-77q-48.5-48.5-77-114T120-480q0-75 28.5-140.5t77-114q48.5-48.5 114-77T480-840v80q-117 0-198.5 81.5T200-480q0 117 81.5 198.5T480-200v80Zm160-160-56-57 103-103H360v-80h327L584-624l56-56 200 200-200 200Z"/></svg>
 
-                            <a href="../index" title="Inventario">
+                            <a href="../index" title="Inventario" class="shortcut-link-btn">
                                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M440-183v-274L200-596v274l240 139Zm80 0 240-139v-274L520-457v274Zm-80 92L160-252q-19-11-29.5-29T120-321v-318q0-22 10.5-40t29.5-29l280-161q19-11 40-11t40 11l280 161q19 11 29.5 29t10.5 40v318q0 22-10.5 40T800-252L520-91q-19 11-40 11t-40-11Zm200-528 77-44-237-137-78 45 238 136Zm-160 93 78-45-237-137-78 45 237 137Z"/></svg>
                             </a>
                         </div>
@@ -51,7 +63,7 @@
                         </select>
                     </div>
                     <a href="<?= MATRIX_HTTP_VIEWS ?>inventario/categorias/create" class="crud-add-btn">
-                        Añadir categoria
+                        Añadir categoría
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M440-120v-320H120v-80h320v-320h80v320h320v80H520v320h-80Z"/></svg>
                     </a>
                 </div>
@@ -61,7 +73,21 @@
                     <div class="details">
                         <div class="summary">
                             <p>N° de categorías</p>
-                            <span>22</span>
+                            <span><?= $count_categorias ?></span>
+                        </div>
+                    </div>
+
+                    <div class="details">
+                        <div class="summary">
+                            <p>Categorías activas</p>
+                            <span><?= $count_categorias_activas ?></span>
+                        </div>
+                    </div>
+
+                    <div class="details">
+                        <div class="summary">
+                            <p>Categorías inactivas</p>
+                            <span><?= $count_categorias_inactivas?></span>
                         </div>
                     </div>
                 </div>
@@ -103,31 +129,36 @@
                             <div href="" class="register-details-link category-details-link">
                                 <p>
                                     Nombre:
-                                    <span><?= $categoria['nombre_categoria'] ?></span>
+                                    <span><?= ucfirst($categoria['nombre_categoria']) ?></span>
                                 </p>
                                 <p>
                                     Descripción:
-                                    <span><?= $categoria['descripcion_categoria'] ?></span>
+                                    <span><?= ucfirst($categoria['descripcion_categoria']) ?></span>
                                 </p>
                                 <p>
                                     Status:
-                                    <span><?= (int)$categoria['status_categoria'] === 1 ? 'Activa' : 'Inactiva'; ?></span>
+                                    <span><?= (int)$categoria['status_categoria'] === 0 ? 'Activa' : 'Inactiva'; ?></span>
                                 </p>
                             </div>
 
+                            <?php $c = encryptValue($categoria['id_categoria'], SECRETKEY) ?>
+                            <?php $status = (int)$categoria['status_categoria'] ?>
+
                             <!-- ACCIONES -->
                             <div class="register-actions">
-                                <a href="./edit?c=<?= encryptValue($categoria['id_categoria'], SECRETKEY) ?>">
+                                <a href="./edit?c=<?=$c?>">
                                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M160-120v-170l527-526q12-12 27-18t30-6q16 0 30.5 6t25.5 18l56 56q12 11 18 25.5t6 30.5q0 15-6 30t-18 27L330-120H160Zm80-80h56l393-392-28-29-29-28-392 393v56Zm560-503-57-57 57 57Zm-139 82-29-28 57 57-28-29ZM560-120q74 0 137-37t63-103q0-36-19-62t-51-45l-59 59q23 10 36 22t13 26q0 23-36.5 41.5T560-200q-17 0-28.5 11.5T520-160q0 17 11.5 28.5T560-120ZM183-426l60-60q-20-8-31.5-16.5T200-520q0-12 18-24t76-37q88-38 117-69t29-70q0-55-44-87.5T280-840q-45 0-80.5 16T145-785q-11 13-9 29t15 26q13 11 29 9t27-13q14-14 31-20t42-6q41 0 60.5 12t19.5 28q0 14-17.5 25.5T262-654q-80 35-111 63.5T120-520q0 32 17 54.5t46 39.5Z"/></svg>
                                 </a>
 
-                                <form action="<?= MATRIX_HTTP_URL ?>functions/crud_categoria?c=<?= encryptValue($categoria['id_categoria'], SECRETKEY) ?>" class="destroy-btn" id="destroy-btn" method="POST">
+                                <form action="<?= MATRIX_HTTP_URL ?>functions/crud_categoria?c=<?=$c?>" class="status-btn <?= $status === 0 ? 'inactive-btn' : 'active-btn' ?>" data-id="<?=$c?>" method="POST">
                                     <input type="hidden" name="accion" value="modificar">
 
-                                    <button type="button" data-form="destroy-btn" data-title="Cambiar status">
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
-                                            <path d="M280-240q-100 0-170-70T40-480q0-100 70-170t170-70h400q100 0 170 70t70 170q0 100-70 170t-170 70H280Zm0-80h400q66 0 113-47t47-113q0-66-47-113t-113-47H280q-66 0-113 47t-47 113q0 66 47 113t113 47Zm0-40q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35Zm200-120Z"/>
-                                        </svg>
+                                    <button type="button" title="Cambiar status">
+                                        <?php if( $status === 0): ?>
+                                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M280-240q-100 0-170-70T40-480q0-100 70-170t170-70h400q100 0 170 70t70 170q0 100-70 170t-170 70H280Zm0-80h400q66 0 113-47t47-113q0-66-47-113t-113-47H280q-66 0-113 47t-47 113q0 66 47 113t113 47Zm0-40q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35Zm200-120Z"/></svg>
+                                        <?php else: ?>
+                                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M280-240q-100 0-170-70T40-480q0-100 70-170t170-70h400q100 0 170 70t70 170q0 100-70 170t-170 70H280Zm0-80h400q66 0 113-47t47-113q0-66-47-113t-113-47H280q-66 0-113 47t-47 113q0 66 47 113t113 47Zm400-40q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35ZM480-480Z"/></svg>
+                                        <?php endif; ?>
                                     </button>
                                 </form>
                             </div>

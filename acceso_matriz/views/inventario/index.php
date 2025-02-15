@@ -5,6 +5,8 @@
     $sql = 'SELECT * FROM productos ';
     $query = $conn -> query($sql);
     $productos = $query -> fetch_all(MYSQLI_ASSOC) ?: [];
+
+
 ?>
 
 <!DOCTYPE html>
@@ -105,7 +107,14 @@
                 <!-- HEADER SUPERIOR -->
                 <div class="crud-top-header">
                     <div class="crud-tittle">
-                        <h1>inventario</h1>
+                        <div class="title-shortcut-inventory">
+                            <h1>
+                                inventario
+                                <a class="shortcut-link-btn <?= strpos($_SERVER['PHP_SELF'], 'inventario/index') ? 'active' : '' ?>">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M440-183v-274L200-596v274l240 139Zm80 0 240-139v-274L520-457v274Zm-80 92L160-252q-19-11-29.5-29T120-321v-318q0-22 10.5-40t29.5-29l280-161q19-11 40-11t40 11l280 161q19 11 29.5 29t10.5 40v318q0 22-10.5 40T800-252L520-91q-19 11-40 11t-40-11Zm200-528 77-44-237-137-78 45 238 136Zm-160 93 78-45-237-137-78 45 237 137Z"/></svg>
+                                </a>
+                            </h1>
+                        </div>
                         <p>Consulte y gestiones su invetario</p>
                     </div>
                     <div class="crud-order-by">
@@ -173,11 +182,10 @@
             <div class="crud-grid">
 
                 <?php if (empty($productos)): ?>
-
                     <div class="registers-empty">
-                        AÚN NO HAY PRODUCTOS REGISTRADOS
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M40.1 467.1l-11.2 9c-3.2 2.5-7.1 3.9-11.1 3.9C8 480 0 472 0 462.2L0 192C0 86 86 0 192 0S384 86 384 192l0 270.2c0 9.8-8 17.8-17.8 17.8c-4 0-7.9-1.4-11.1-3.9l-11.2-9c-13.4-10.7-32.8-9-44.1 3.9L269.3 506c-3.3 3.8-8.2 6-13.3 6s-9.9-2.2-13.3-6l-26.6-30.5c-12.7-14.6-35.4-14.6-48.2 0L141.3 506c-3.3 3.8-8.2 6-13.3 6s-9.9-2.2-13.3-6L84.2 471c-11.3-12.9-30.7-14.6-44.1-3.9zM160 192a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zm96 32a32 32 0 1 0 0-64 32 32 0 1 0 0 64z"/></svg>
+                        <p>AÚN NO HAY PRODUCTOS REGISTRADOS.</p>
                     </div>
-
                 <?php else: ?>
                     <?php foreach($productos as $producto): ?>
                         <!-- MARCO DEL REGISTRO -->
