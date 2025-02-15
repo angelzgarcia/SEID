@@ -80,7 +80,7 @@
         </form>
 
         <!-- CRUD -->
-        <div class="crud-container">
+        <div class="crud-container curd-history-sales-container">
             <!-- CRUD HEADER -->
             <div class="crud-header">
                 <!-- HEADER SUPERIOR -->
@@ -144,676 +144,678 @@
             </div>
 
             <!-- ULTIMAS VENTAS -->
-            <div class="crud-grid crud-grid-last-sales-history">
+            <div class="crud-element">
                 <div class="last-sales-history">
                     <h2>Ventas</h2>
                 </div>
+                <div class="crud-grid crud-grid-last-sales-history">
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame register-frame-sale">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link register-link-sale">
-                        <div class="register-details">
-                            <div class="header-register header-last-sale">
-                                <p>Fecha</p>
-                                <span><?=  $fecha_ab ?></span>
-                            </div>
+                    <!-- MARCO DEL REGISTRO -->
+                    <div class="register-frame register-frame-sale">
+                        <!-- DETALLES -->
+                        <a href="" class="register-details-link register-link-sale">
+                            <div class="register-details">
+                                <div class="header-register header-last-sale">
+                                    <p>Fecha</p>
+                                    <span><?=  $fecha_ab ?></span>
+                                </div>
 
-                            <div class="body-register sale-history-register-body">
-                                <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                <div class="quantities">
-                                    <p>
-                                        Folio
-                                        <span>248510</span>
-                                    </p>
-                                    <p>
-                                        Productos
-                                        <span>17</span>
-                                    </p>
-                                    <p>
-                                        Total
-                                        <span>$589</span>
-                                    </p>
-                                    <p>
-                                        Sucursal
-                                        <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
-                                    </p>
+                                <div class="body-register sale-history-register-body">
+                                    <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
+                                    <div class="quantities">
+                                        <p>
+                                            Folio
+                                            <span>248510</span>
+                                        </p>
+                                        <p>
+                                            Productos
+                                            <span>17</span>
+                                        </p>
+                                        <p>
+                                            Total
+                                            <span>$589</span>
+                                        </p>
+                                        <p>
+                                            Sucursal
+                                            <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame register-frame-sale">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link register-link-sale">
-                        <div class="register-details">
-                            <div class="header-register header-last-sale">
-                                <p>Fecha</p>
-                                <span><?=  $fecha_ab ?></span>
-                            </div>
+                    <!-- MARCO DEL REGISTRO -->
+                    <div class="register-frame register-frame-sale">
+                        <!-- DETALLES -->
+                        <a href="" class="register-details-link register-link-sale">
+                            <div class="register-details">
+                                <div class="header-register header-last-sale">
+                                    <p>Fecha</p>
+                                    <span><?=  $fecha_ab ?></span>
+                                </div>
 
-                            <div class="body-register sale-history-register-body">
-                                <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                <div class="quantities">
-                                    <p>
-                                        Folio
-                                        <span>248510</span>
-                                    </p>
-                                    <p>
-                                        Productos
-                                        <span>17</span>
-                                    </p>
-                                    <p>
-                                        Total
-                                        <span>$589</span>
-                                    </p>
-                                    <p>
-                                        Sucursal
-                                        <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
-                                    </p>
+                                <div class="body-register sale-history-register-body">
+                                    <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
+                                    <div class="quantities">
+                                        <p>
+                                            Folio
+                                            <span>248510</span>
+                                        </p>
+                                        <p>
+                                            Productos
+                                            <span>17</span>
+                                        </p>
+                                        <p>
+                                            Total
+                                            <span>$589</span>
+                                        </p>
+                                        <p>
+                                            Sucursal
+                                            <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame register-frame-sale">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link register-link-sale">
-                        <div class="register-details">
-                            <div class="header-register header-last-sale">
-                                <p>Fecha</p>
-                                <span><?=  $fecha_ab ?></span>
-                            </div>
+                    <!-- MARCO DEL REGISTRO -->
+                    <div class="register-frame register-frame-sale">
+                        <!-- DETALLES -->
+                        <a href="" class="register-details-link register-link-sale">
+                            <div class="register-details">
+                                <div class="header-register header-last-sale">
+                                    <p>Fecha</p>
+                                    <span><?=  $fecha_ab ?></span>
+                                </div>
 
-                            <div class="body-register sale-history-register-body">
-                                <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                <div class="quantities">
-                                    <p>
-                                        Folio
-                                        <span>248510</span>
-                                    </p>
-                                    <p>
-                                        Productos
-                                        <span>17</span>
-                                    </p>
-                                    <p>
-                                        Total
-                                        <span>$589</span>
-                                    </p>
-                                    <p>
-                                        Sucursal
-                                        <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
-                                    </p>
+                                <div class="body-register sale-history-register-body">
+                                    <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
+                                    <div class="quantities">
+                                        <p>
+                                            Folio
+                                            <span>248510</span>
+                                        </p>
+                                        <p>
+                                            Productos
+                                            <span>17</span>
+                                        </p>
+                                        <p>
+                                            Total
+                                            <span>$589</span>
+                                        </p>
+                                        <p>
+                                            Sucursal
+                                            <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame register-frame-sale">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link register-link-sale">
-                        <div class="register-details">
-                            <div class="header-register header-last-sale">
-                                <p>Fecha</p>
-                                <span><?=  $fecha_ab ?></span>
-                            </div>
+                    <!-- MARCO DEL REGISTRO -->
+                    <div class="register-frame register-frame-sale">
+                        <!-- DETALLES -->
+                        <a href="" class="register-details-link register-link-sale">
+                            <div class="register-details">
+                                <div class="header-register header-last-sale">
+                                    <p>Fecha</p>
+                                    <span><?=  $fecha_ab ?></span>
+                                </div>
 
-                            <div class="body-register sale-history-register-body">
-                                <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                <div class="quantities">
-                                    <p>
-                                        Folio
-                                        <span>248510</span>
-                                    </p>
-                                    <p>
-                                        Productos
-                                        <span>17</span>
-                                    </p>
-                                    <p>
-                                        Total
-                                        <span>$589</span>
-                                    </p>
-                                    <p>
-                                        Sucursal
-                                        <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
-                                    </p>
+                                <div class="body-register sale-history-register-body">
+                                    <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
+                                    <div class="quantities">
+                                        <p>
+                                            Folio
+                                            <span>248510</span>
+                                        </p>
+                                        <p>
+                                            Productos
+                                            <span>17</span>
+                                        </p>
+                                        <p>
+                                            Total
+                                            <span>$589</span>
+                                        </p>
+                                        <p>
+                                            Sucursal
+                                            <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame register-frame-sale">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link register-link-sale">
-                        <div class="register-details">
-                            <div class="header-register header-last-sale">
-                                <p>Fecha</p>
-                                <span><?=  $fecha_ab ?></span>
-                            </div>
+                    <!-- MARCO DEL REGISTRO -->
+                    <div class="register-frame register-frame-sale">
+                        <!-- DETALLES -->
+                        <a href="" class="register-details-link register-link-sale">
+                            <div class="register-details">
+                                <div class="header-register header-last-sale">
+                                    <p>Fecha</p>
+                                    <span><?=  $fecha_ab ?></span>
+                                </div>
 
-                            <div class="body-register sale-history-register-body">
-                                <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                <div class="quantities">
-                                    <p>
-                                        Folio
-                                        <span>248510</span>
-                                    </p>
-                                    <p>
-                                        Productos
-                                        <span>17</span>
-                                    </p>
-                                    <p>
-                                        Total
-                                        <span>$589</span>
-                                    </p>
-                                    <p>
-                                        Sucursal
-                                        <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
-                                    </p>
+                                <div class="body-register sale-history-register-body">
+                                    <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
+                                    <div class="quantities">
+                                        <p>
+                                            Folio
+                                            <span>248510</span>
+                                        </p>
+                                        <p>
+                                            Productos
+                                            <span>17</span>
+                                        </p>
+                                        <p>
+                                            Total
+                                            <span>$589</span>
+                                        </p>
+                                        <p>
+                                            Sucursal
+                                            <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame register-frame-sale">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link register-link-sale">
-                        <div class="register-details">
-                            <div class="header-register header-last-sale">
-                                <p>Fecha</p>
-                                <span><?=  $fecha_ab ?></span>
-                            </div>
+                    <!-- MARCO DEL REGISTRO -->
+                    <div class="register-frame register-frame-sale">
+                        <!-- DETALLES -->
+                        <a href="" class="register-details-link register-link-sale">
+                            <div class="register-details">
+                                <div class="header-register header-last-sale">
+                                    <p>Fecha</p>
+                                    <span><?=  $fecha_ab ?></span>
+                                </div>
 
-                            <div class="body-register sale-history-register-body">
-                                <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                <div class="quantities">
-                                    <p>
-                                        Folio
-                                        <span>248510</span>
-                                    </p>
-                                    <p>
-                                        Productos
-                                        <span>17</span>
-                                    </p>
-                                    <p>
-                                        Total
-                                        <span>$589</span>
-                                    </p>
-                                    <p>
-                                        Sucursal
-                                        <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
-                                    </p>
+                                <div class="body-register sale-history-register-body">
+                                    <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
+                                    <div class="quantities">
+                                        <p>
+                                            Folio
+                                            <span>248510</span>
+                                        </p>
+                                        <p>
+                                            Productos
+                                            <span>17</span>
+                                        </p>
+                                        <p>
+                                            Total
+                                            <span>$589</span>
+                                        </p>
+                                        <p>
+                                            Sucursal
+                                            <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame register-frame-sale">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link register-link-sale">
-                        <div class="register-details">
-                            <div class="header-register header-last-sale">
-                                <p>Fecha</p>
-                                <span><?=  $fecha_ab ?></span>
-                            </div>
+                    <!-- MARCO DEL REGISTRO -->
+                    <div class="register-frame register-frame-sale">
+                        <!-- DETALLES -->
+                        <a href="" class="register-details-link register-link-sale">
+                            <div class="register-details">
+                                <div class="header-register header-last-sale">
+                                    <p>Fecha</p>
+                                    <span><?=  $fecha_ab ?></span>
+                                </div>
 
-                            <div class="body-register sale-history-register-body">
-                                <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                <div class="quantities">
-                                    <p>
-                                        Folio
-                                        <span>248510</span>
-                                    </p>
-                                    <p>
-                                        Productos
-                                        <span>17</span>
-                                    </p>
-                                    <p>
-                                        Total
-                                        <span>$589</span>
-                                    </p>
-                                    <p>
-                                        Sucursal
-                                        <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
-                                    </p>
+                                <div class="body-register sale-history-register-body">
+                                    <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
+                                    <div class="quantities">
+                                        <p>
+                                            Folio
+                                            <span>248510</span>
+                                        </p>
+                                        <p>
+                                            Productos
+                                            <span>17</span>
+                                        </p>
+                                        <p>
+                                            Total
+                                            <span>$589</span>
+                                        </p>
+                                        <p>
+                                            Sucursal
+                                            <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame register-frame-sale">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link register-link-sale">
-                        <div class="register-details">
-                            <div class="header-register header-last-sale">
-                                <p>Fecha</p>
-                                <span><?=  $fecha_ab ?></span>
-                            </div>
+                    <!-- MARCO DEL REGISTRO -->
+                    <div class="register-frame register-frame-sale">
+                        <!-- DETALLES -->
+                        <a href="" class="register-details-link register-link-sale">
+                            <div class="register-details">
+                                <div class="header-register header-last-sale">
+                                    <p>Fecha</p>
+                                    <span><?=  $fecha_ab ?></span>
+                                </div>
 
-                            <div class="body-register sale-history-register-body">
-                                <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                <div class="quantities">
-                                    <p>
-                                        Folio
-                                        <span>248510</span>
-                                    </p>
-                                    <p>
-                                        Productos
-                                        <span>17</span>
-                                    </p>
-                                    <p>
-                                        Total
-                                        <span>$589</span>
-                                    </p>
-                                    <p>
-                                        Sucursal
-                                        <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
-                                    </p>
+                                <div class="body-register sale-history-register-body">
+                                    <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
+                                    <div class="quantities">
+                                        <p>
+                                            Folio
+                                            <span>248510</span>
+                                        </p>
+                                        <p>
+                                            Productos
+                                            <span>17</span>
+                                        </p>
+                                        <p>
+                                            Total
+                                            <span>$589</span>
+                                        </p>
+                                        <p>
+                                            Sucursal
+                                            <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame register-frame-sale">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link register-link-sale">
-                        <div class="register-details">
-                            <div class="header-register header-last-sale">
-                                <p>Fecha</p>
-                                <span><?=  $fecha_ab ?></span>
-                            </div>
+                    <!-- MARCO DEL REGISTRO -->
+                    <div class="register-frame register-frame-sale">
+                        <!-- DETALLES -->
+                        <a href="" class="register-details-link register-link-sale">
+                            <div class="register-details">
+                                <div class="header-register header-last-sale">
+                                    <p>Fecha</p>
+                                    <span><?=  $fecha_ab ?></span>
+                                </div>
 
-                            <div class="body-register sale-history-register-body">
-                                <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                <div class="quantities">
-                                    <p>
-                                        Folio
-                                        <span>248510</span>
-                                    </p>
-                                    <p>
-                                        Productos
-                                        <span>17</span>
-                                    </p>
-                                    <p>
-                                        Total
-                                        <span>$589</span>
-                                    </p>
-                                    <p>
-                                        Sucursal
-                                        <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
-                                    </p>
+                                <div class="body-register sale-history-register-body">
+                                    <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
+                                    <div class="quantities">
+                                        <p>
+                                            Folio
+                                            <span>248510</span>
+                                        </p>
+                                        <p>
+                                            Productos
+                                            <span>17</span>
+                                        </p>
+                                        <p>
+                                            Total
+                                            <span>$589</span>
+                                        </p>
+                                        <p>
+                                            Sucursal
+                                            <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame register-frame-sale">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link register-link-sale">
-                        <div class="register-details">
-                            <div class="header-register header-last-sale">
-                                <p>Fecha</p>
-                                <span><?=  $fecha_ab ?></span>
-                            </div>
+                    <!-- MARCO DEL REGISTRO -->
+                    <div class="register-frame register-frame-sale">
+                        <!-- DETALLES -->
+                        <a href="" class="register-details-link register-link-sale">
+                            <div class="register-details">
+                                <div class="header-register header-last-sale">
+                                    <p>Fecha</p>
+                                    <span><?=  $fecha_ab ?></span>
+                                </div>
 
-                            <div class="body-register sale-history-register-body">
-                                <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                <div class="quantities">
-                                    <p>
-                                        Folio
-                                        <span>248510</span>
-                                    </p>
-                                    <p>
-                                        Productos
-                                        <span>17</span>
-                                    </p>
-                                    <p>
-                                        Total
-                                        <span>$589</span>
-                                    </p>
-                                    <p>
-                                        Sucursal
-                                        <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
-                                    </p>
+                                <div class="body-register sale-history-register-body">
+                                    <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
+                                    <div class="quantities">
+                                        <p>
+                                            Folio
+                                            <span>248510</span>
+                                        </p>
+                                        <p>
+                                            Productos
+                                            <span>17</span>
+                                        </p>
+                                        <p>
+                                            Total
+                                            <span>$589</span>
+                                        </p>
+                                        <p>
+                                            Sucursal
+                                            <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame register-frame-sale">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link register-link-sale">
-                        <div class="register-details">
-                            <div class="header-register header-last-sale">
-                                <p>Fecha</p>
-                                <span><?=  $fecha_ab ?></span>
-                            </div>
+                    <!-- MARCO DEL REGISTRO -->
+                    <div class="register-frame register-frame-sale">
+                        <!-- DETALLES -->
+                        <a href="" class="register-details-link register-link-sale">
+                            <div class="register-details">
+                                <div class="header-register header-last-sale">
+                                    <p>Fecha</p>
+                                    <span><?=  $fecha_ab ?></span>
+                                </div>
 
-                            <div class="body-register sale-history-register-body">
-                                <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                <div class="quantities">
-                                    <p>
-                                        Folio
-                                        <span>248510</span>
-                                    </p>
-                                    <p>
-                                        Productos
-                                        <span>17</span>
-                                    </p>
-                                    <p>
-                                        Total
-                                        <span>$589</span>
-                                    </p>
-                                    <p>
-                                        Sucursal
-                                        <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
-                                    </p>
+                                <div class="body-register sale-history-register-body">
+                                    <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
+                                    <div class="quantities">
+                                        <p>
+                                            Folio
+                                            <span>248510</span>
+                                        </p>
+                                        <p>
+                                            Productos
+                                            <span>17</span>
+                                        </p>
+                                        <p>
+                                            Total
+                                            <span>$589</span>
+                                        </p>
+                                        <p>
+                                            Sucursal
+                                            <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame register-frame-sale">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link register-link-sale">
-                        <div class="register-details">
-                            <div class="header-register header-last-sale">
-                                <p>Fecha</p>
-                                <span><?=  $fecha_ab ?></span>
-                            </div>
+                    <!-- MARCO DEL REGISTRO -->
+                    <div class="register-frame register-frame-sale">
+                        <!-- DETALLES -->
+                        <a href="" class="register-details-link register-link-sale">
+                            <div class="register-details">
+                                <div class="header-register header-last-sale">
+                                    <p>Fecha</p>
+                                    <span><?=  $fecha_ab ?></span>
+                                </div>
 
-                            <div class="body-register sale-history-register-body">
-                                <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                <div class="quantities">
-                                    <p>
-                                        Folio
-                                        <span>248510</span>
-                                    </p>
-                                    <p>
-                                        Productos
-                                        <span>17</span>
-                                    </p>
-                                    <p>
-                                        Total
-                                        <span>$589</span>
-                                    </p>
-                                    <p>
-                                        Sucursal
-                                        <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
-                                    </p>
+                                <div class="body-register sale-history-register-body">
+                                    <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
+                                    <div class="quantities">
+                                        <p>
+                                            Folio
+                                            <span>248510</span>
+                                        </p>
+                                        <p>
+                                            Productos
+                                            <span>17</span>
+                                        </p>
+                                        <p>
+                                            Total
+                                            <span>$589</span>
+                                        </p>
+                                        <p>
+                                            Sucursal
+                                            <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame register-frame-sale">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link register-link-sale">
-                        <div class="register-details">
-                            <div class="header-register header-last-sale">
-                                <p>Fecha</p>
-                                <span><?=  $fecha_ab ?></span>
-                            </div>
+                    <!-- MARCO DEL REGISTRO -->
+                    <div class="register-frame register-frame-sale">
+                        <!-- DETALLES -->
+                        <a href="" class="register-details-link register-link-sale">
+                            <div class="register-details">
+                                <div class="header-register header-last-sale">
+                                    <p>Fecha</p>
+                                    <span><?=  $fecha_ab ?></span>
+                                </div>
 
-                            <div class="body-register sale-history-register-body">
-                                <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                <div class="quantities">
-                                    <p>
-                                        Folio
-                                        <span>248510</span>
-                                    </p>
-                                    <p>
-                                        Productos
-                                        <span>17</span>
-                                    </p>
-                                    <p>
-                                        Total
-                                        <span>$589</span>
-                                    </p>
-                                    <p>
-                                        Sucursal
-                                        <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
-                                    </p>
+                                <div class="body-register sale-history-register-body">
+                                    <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
+                                    <div class="quantities">
+                                        <p>
+                                            Folio
+                                            <span>248510</span>
+                                        </p>
+                                        <p>
+                                            Productos
+                                            <span>17</span>
+                                        </p>
+                                        <p>
+                                            Total
+                                            <span>$589</span>
+                                        </p>
+                                        <p>
+                                            Sucursal
+                                            <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame register-frame-sale">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link register-link-sale">
-                        <div class="register-details">
-                            <div class="header-register header-last-sale">
-                                <p>Fecha</p>
-                                <span><?=  $fecha_ab ?></span>
-                            </div>
+                    <!-- MARCO DEL REGISTRO -->
+                    <div class="register-frame register-frame-sale">
+                        <!-- DETALLES -->
+                        <a href="" class="register-details-link register-link-sale">
+                            <div class="register-details">
+                                <div class="header-register header-last-sale">
+                                    <p>Fecha</p>
+                                    <span><?=  $fecha_ab ?></span>
+                                </div>
 
-                            <div class="body-register sale-history-register-body">
-                                <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                <div class="quantities">
-                                    <p>
-                                        Folio
-                                        <span>248510</span>
-                                    </p>
-                                    <p>
-                                        Productos
-                                        <span>17</span>
-                                    </p>
-                                    <p>
-                                        Total
-                                        <span>$589</span>
-                                    </p>
-                                    <p>
-                                        Sucursal
-                                        <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
-                                    </p>
+                                <div class="body-register sale-history-register-body">
+                                    <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
+                                    <div class="quantities">
+                                        <p>
+                                            Folio
+                                            <span>248510</span>
+                                        </p>
+                                        <p>
+                                            Productos
+                                            <span>17</span>
+                                        </p>
+                                        <p>
+                                            Total
+                                            <span>$589</span>
+                                        </p>
+                                        <p>
+                                            Sucursal
+                                            <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame register-frame-sale">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link register-link-sale">
-                        <div class="register-details">
-                            <div class="header-register header-last-sale">
-                                <p>Fecha</p>
-                                <span><?=  $fecha_ab ?></span>
-                            </div>
+                    <!-- MARCO DEL REGISTRO -->
+                    <div class="register-frame register-frame-sale">
+                        <!-- DETALLES -->
+                        <a href="" class="register-details-link register-link-sale">
+                            <div class="register-details">
+                                <div class="header-register header-last-sale">
+                                    <p>Fecha</p>
+                                    <span><?=  $fecha_ab ?></span>
+                                </div>
 
-                            <div class="body-register sale-history-register-body">
-                                <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                <div class="quantities">
-                                    <p>
-                                        Folio
-                                        <span>248510</span>
-                                    </p>
-                                    <p>
-                                        Productos
-                                        <span>17</span>
-                                    </p>
-                                    <p>
-                                        Total
-                                        <span>$589</span>
-                                    </p>
-                                    <p>
-                                        Sucursal
-                                        <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
-                                    </p>
+                                <div class="body-register sale-history-register-body">
+                                    <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
+                                    <div class="quantities">
+                                        <p>
+                                            Folio
+                                            <span>248510</span>
+                                        </p>
+                                        <p>
+                                            Productos
+                                            <span>17</span>
+                                        </p>
+                                        <p>
+                                            Total
+                                            <span>$589</span>
+                                        </p>
+                                        <p>
+                                            Sucursal
+                                            <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame register-frame-sale">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link register-link-sale">
-                        <div class="register-details">
-                            <div class="header-register header-last-sale">
-                                <p>Fecha</p>
-                                <span><?=  $fecha_ab ?></span>
-                            </div>
+                    <!-- MARCO DEL REGISTRO -->
+                    <div class="register-frame register-frame-sale">
+                        <!-- DETALLES -->
+                        <a href="" class="register-details-link register-link-sale">
+                            <div class="register-details">
+                                <div class="header-register header-last-sale">
+                                    <p>Fecha</p>
+                                    <span><?=  $fecha_ab ?></span>
+                                </div>
 
-                            <div class="body-register sale-history-register-body">
-                                <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                <div class="quantities">
-                                    <p>
-                                        Folio
-                                        <span>248510</span>
-                                    </p>
-                                    <p>
-                                        Productos
-                                        <span>17</span>
-                                    </p>
-                                    <p>
-                                        Total
-                                        <span>$589</span>
-                                    </p>
-                                    <p>
-                                        Sucursal
-                                        <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
-                                    </p>
+                                <div class="body-register sale-history-register-body">
+                                    <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
+                                    <div class="quantities">
+                                        <p>
+                                            Folio
+                                            <span>248510</span>
+                                        </p>
+                                        <p>
+                                            Productos
+                                            <span>17</span>
+                                        </p>
+                                        <p>
+                                            Total
+                                            <span>$589</span>
+                                        </p>
+                                        <p>
+                                            Sucursal
+                                            <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame register-frame-sale">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link register-link-sale">
-                        <div class="register-details">
-                            <div class="header-register header-last-sale">
-                                <p>Fecha</p>
-                                <span><?=  $fecha_ab ?></span>
-                            </div>
+                    <!-- MARCO DEL REGISTRO -->
+                    <div class="register-frame register-frame-sale">
+                        <!-- DETALLES -->
+                        <a href="" class="register-details-link register-link-sale">
+                            <div class="register-details">
+                                <div class="header-register header-last-sale">
+                                    <p>Fecha</p>
+                                    <span><?=  $fecha_ab ?></span>
+                                </div>
 
-                            <div class="body-register sale-history-register-body">
-                                <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                <div class="quantities">
-                                    <p>
-                                        Folio
-                                        <span>248510</span>
-                                    </p>
-                                    <p>
-                                        Productos
-                                        <span>17</span>
-                                    </p>
-                                    <p>
-                                        Total
-                                        <span>$589</span>
-                                    </p>
-                                    <p>
-                                        Sucursal
-                                        <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
-                                    </p>
+                                <div class="body-register sale-history-register-body">
+                                    <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
+                                    <div class="quantities">
+                                        <p>
+                                            Folio
+                                            <span>248510</span>
+                                        </p>
+                                        <p>
+                                            Productos
+                                            <span>17</span>
+                                        </p>
+                                        <p>
+                                            Total
+                                            <span>$589</span>
+                                        </p>
+                                        <p>
+                                            Sucursal
+                                            <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame register-frame-sale">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link register-link-sale">
-                        <div class="register-details">
-                            <div class="header-register header-last-sale">
-                                <p>Fecha</p>
-                                <span><?=  $fecha_ab ?></span>
-                            </div>
+                    <!-- MARCO DEL REGISTRO -->
+                    <div class="register-frame register-frame-sale">
+                        <!-- DETALLES -->
+                        <a href="" class="register-details-link register-link-sale">
+                            <div class="register-details">
+                                <div class="header-register header-last-sale">
+                                    <p>Fecha</p>
+                                    <span><?=  $fecha_ab ?></span>
+                                </div>
 
-                            <div class="body-register sale-history-register-body">
-                                <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                <div class="quantities">
-                                    <p>
-                                        Folio
-                                        <span>248510</span>
-                                    </p>
-                                    <p>
-                                        Productos
-                                        <span>17</span>
-                                    </p>
-                                    <p>
-                                        Total
-                                        <span>$589</span>
-                                    </p>
-                                    <p>
-                                        Sucursal
-                                        <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
-                                    </p>
+                                <div class="body-register sale-history-register-body">
+                                    <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
+                                    <div class="quantities">
+                                        <p>
+                                            Folio
+                                            <span>248510</span>
+                                        </p>
+                                        <p>
+                                            Productos
+                                            <span>17</span>
+                                        </p>
+                                        <p>
+                                            Total
+                                            <span>$589</span>
+                                        </p>
+                                        <p>
+                                            Sucursal
+                                            <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame register-frame-sale">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link register-link-sale">
-                        <div class="register-details">
-                            <div class="header-register header-last-sale">
-                                <p>Fecha</p>
-                                <span><?=  $fecha_ab ?></span>
-                            </div>
+                    <!-- MARCO DEL REGISTRO -->
+                    <div class="register-frame register-frame-sale">
+                        <!-- DETALLES -->
+                        <a href="" class="register-details-link register-link-sale">
+                            <div class="register-details">
+                                <div class="header-register header-last-sale">
+                                    <p>Fecha</p>
+                                    <span><?=  $fecha_ab ?></span>
+                                </div>
 
-                            <div class="body-register sale-history-register-body">
-                                <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                <div class="quantities">
-                                    <p>
-                                        Folio
-                                        <span>248510</span>
-                                    </p>
-                                    <p>
-                                        Productos
-                                        <span>17</span>
-                                    </p>
-                                    <p>
-                                        Total
-                                        <span>$589</span>
-                                    </p>
-                                    <p>
-                                        Sucursal
-                                        <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
-                                    </p>
+                                <div class="body-register sale-history-register-body">
+                                    <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
+                                    <div class="quantities">
+                                        <p>
+                                            Folio
+                                            <span>248510</span>
+                                        </p>
+                                        <p>
+                                            Productos
+                                            <span>17</span>
+                                        </p>
+                                        <p>
+                                            Total
+                                            <span>$589</span>
+                                        </p>
+                                        <p>
+                                            Sucursal
+                                            <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
 
+                </div>
             </div>
         </div>
     </main>

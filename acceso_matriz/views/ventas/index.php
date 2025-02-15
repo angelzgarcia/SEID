@@ -23,7 +23,7 @@
         </form>
 
         <!-- CRUD -->
-        <div class="crud-container">
+        <div class="crud-container curd-history-sales-container">
             <!-- CRUD HEADER -->
             <div class="crud-header">
                 <!-- HEADER SUPERIOR -->
@@ -90,7 +90,7 @@
             </div>
 
             <!-- ULTIMAS VENTAS -->
-            <div class="crud-grid crud-grid-last-sales">
+            <div class="crud-element">
                 <div class="last-sales-history">
                     <h2>Últimas ventas</h2>
                     <a href="<?= MATRIX_HTTP_VIEWS ?>ventas/historial" class="text-black font-black">
@@ -98,356 +98,360 @@
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/></svg>
                     </a>
                 </div>
+                <div class="crud-grid crud-grid-last-sales">
+                    <!-- MARCO DEL REGISTRO -->
+                    <div class="register-frame register-frame-last-sales">
+                        <!-- DETALLES -->
+                        <a href="" class="register-details-link register-link-last-sale">
+                            <div class="register-details">
+                                <div class="header-register header-last-sale">
+                                    <p>Fecha</p>
+                                    <span><?=  $fecha_ab ?></span>
+                                </div>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame register-frame-last-sales">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link register-link-last-sale">
-                        <div class="register-details">
-                            <div class="header-register header-last-sale">
-                                <p>Fecha</p>
-                                <span><?=  $fecha_ab ?></span>
-                            </div>
-
-                            <div class="body-register">
-                                <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                <div class="quantities">
-                                    <p>
-                                        Folio
-                                        <span>248510</span>
-                                    </p>
-                                    <p>
-                                        Productos
-                                        <span>17</span>
-                                    </p>
-                                    <p>
-                                        Total
-                                        <span>$589</span>
-                                    </p>
-                                    <p>
-                                        Sucursal
-                                        <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
-                                    </p>
+                                <div class="body-register">
+                                    <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
+                                    <div class="quantities">
+                                        <p>
+                                            Folio
+                                            <span>248510</span>
+                                        </p>
+                                        <p>
+                                            Productos
+                                            <span>17</span>
+                                        </p>
+                                        <p>
+                                            Total
+                                            <span>$589</span>
+                                        </p>
+                                        <p>
+                                            Sucursal
+                                            <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame register-frame-last-sales">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link register-link-last-sale">
-                        <div class="register-details">
-                            <div class="header-register header-last-sale">
-                                <p>Fecha</p>
-                                <span><?=  $fecha_ab ?></span>
-                            </div>
+                    <!-- MARCO DEL REGISTRO -->
+                    <div class="register-frame register-frame-last-sales">
+                        <!-- DETALLES -->
+                        <a href="" class="register-details-link register-link-last-sale">
+                            <div class="register-details">
+                                <div class="header-register header-last-sale">
+                                    <p>Fecha</p>
+                                    <span><?=  $fecha_ab ?></span>
+                                </div>
 
-                            <div class="body-register">
-                                <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                <div class="quantities">
-                                    <p>
-                                        Folio
-                                        <span>248510</span>
-                                    </p>
-                                    <p>
-                                        Productos
-                                        <span>17</span>
-                                    </p>
-                                    <p>
-                                        Total
-                                        <span>$589</span>
-                                    </p>
-                                    <p>
-                                        Sucursal
-                                        <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
-                                    </p>
+                                <div class="body-register">
+                                    <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
+                                    <div class="quantities">
+                                        <p>
+                                            Folio
+                                            <span>248510</span>
+                                        </p>
+                                        <p>
+                                            Productos
+                                            <span>17</span>
+                                        </p>
+                                        <p>
+                                            Total
+                                            <span>$589</span>
+                                        </p>
+                                        <p>
+                                            Sucursal
+                                            <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame register-frame-last-sales">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link register-link-last-sale">
-                        <div class="register-details">
-                            <div class="header-register header-last-sale">
-                                <p>Fecha</p>
-                                <span><?=  $fecha_ab ?></span>
-                            </div>
+                    <!-- MARCO DEL REGISTRO -->
+                    <div class="register-frame register-frame-last-sales">
+                        <!-- DETALLES -->
+                        <a href="" class="register-details-link register-link-last-sale">
+                            <div class="register-details">
+                                <div class="header-register header-last-sale">
+                                    <p>Fecha</p>
+                                    <span><?=  $fecha_ab ?></span>
+                                </div>
 
-                            <div class="body-register">
-                                <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                <div class="quantities">
-                                    <p>
-                                        Folio
-                                        <span>248510</span>
-                                    </p>
-                                    <p>
-                                        Productos
-                                        <span>17</span>
-                                    </p>
-                                    <p>
-                                        Total
-                                        <span>$589</span>
-                                    </p>
-                                    <p>
-                                        Sucursal
-                                        <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
-                                    </p>
+                                <div class="body-register">
+                                    <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
+                                    <div class="quantities">
+                                        <p>
+                                            Folio
+                                            <span>248510</span>
+                                        </p>
+                                        <p>
+                                            Productos
+                                            <span>17</span>
+                                        </p>
+                                        <p>
+                                            Total
+                                            <span>$589</span>
+                                        </p>
+                                        <p>
+                                            Sucursal
+                                            <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame register-frame-last-sales">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link register-link-last-sale">
-                        <div class="register-details">
-                            <div class="header-register header-last-sale">
-                                <p>Fecha</p>
-                                <span><?=  $fecha_ab ?></span>
-                            </div>
+                    <!-- MARCO DEL REGISTRO -->
+                    <div class="register-frame register-frame-last-sales">
+                        <!-- DETALLES -->
+                        <a href="" class="register-details-link register-link-last-sale">
+                            <div class="register-details">
+                                <div class="header-register header-last-sale">
+                                    <p>Fecha</p>
+                                    <span><?=  $fecha_ab ?></span>
+                                </div>
 
-                            <div class="body-register">
-                                <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                <div class="quantities">
-                                    <p>
-                                        Folio
-                                        <span>248510</span>
-                                    </p>
-                                    <p>
-                                        Productos
-                                        <span>17</span>
-                                    </p>
-                                    <p>
-                                        Total
-                                        <span>$589</span>
-                                    </p>
-                                    <p>
-                                        Sucursal
-                                        <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
-                                    </p>
+                                <div class="body-register">
+                                    <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
+                                    <div class="quantities">
+                                        <p>
+                                            Folio
+                                            <span>248510</span>
+                                        </p>
+                                        <p>
+                                            Productos
+                                            <span>17</span>
+                                        </p>
+                                        <p>
+                                            Total
+                                            <span>$589</span>
+                                        </p>
+                                        <p>
+                                            Sucursal
+                                            <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame register-frame-last-sales">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link register-link-last-sale">
-                        <div class="register-details">
-                            <div class="header-register header-last-sale">
-                                <p>Fecha</p>
-                                <span><?=  $fecha_ab ?></span>
-                            </div>
+                    <!-- MARCO DEL REGISTRO -->
+                    <div class="register-frame register-frame-last-sales">
+                        <!-- DETALLES -->
+                        <a href="" class="register-details-link register-link-last-sale">
+                            <div class="register-details">
+                                <div class="header-register header-last-sale">
+                                    <p>Fecha</p>
+                                    <span><?=  $fecha_ab ?></span>
+                                </div>
 
-                            <div class="body-register">
-                                <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                <div class="quantities">
-                                    <p>
-                                        Folio
-                                        <span>248510</span>
-                                    </p>
-                                    <p>
-                                        Productos
-                                        <span>17</span>
-                                    </p>
-                                    <p>
-                                        Total
-                                        <span>$589</span>
-                                    </p>
-                                    <p>
-                                        Sucursal
-                                        <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
-                                    </p>
+                                <div class="body-register">
+                                    <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
+                                    <div class="quantities">
+                                        <p>
+                                            Folio
+                                            <span>248510</span>
+                                        </p>
+                                        <p>
+                                            Productos
+                                            <span>17</span>
+                                        </p>
+                                        <p>
+                                            Total
+                                            <span>$589</span>
+                                        </p>
+                                        <p>
+                                            Sucursal
+                                            <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
-                </div>
+                        </a>
+                    </div>
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame register-frame-last-sales">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link register-link-last-sale">
-                        <div class="register-details">
-                            <div class="header-register header-last-sale">
-                                <p>Fecha</p>
-                                <span><?=  $fecha_ab ?></span>
-                            </div>
+                    <!-- MARCO DEL REGISTRO -->
+                    <div class="register-frame register-frame-last-sales">
+                        <!-- DETALLES -->
+                        <a href="" class="register-details-link register-link-last-sale">
+                            <div class="register-details">
+                                <div class="header-register header-last-sale">
+                                    <p>Fecha</p>
+                                    <span><?=  $fecha_ab ?></span>
+                                </div>
 
-                            <div class="body-register">
-                                <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                <div class="quantities">
-                                    <p>
-                                        Folio
-                                        <span>248510</span>
-                                    </p>
-                                    <p>
-                                        Productos
-                                        <span>17</span>
-                                    </p>
-                                    <p>
-                                        Total
-                                        <span>$589</span>
-                                    </p>
-                                    <p>
-                                        Sucursal
-                                        <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
-                                    </p>
+                                <div class="body-register">
+                                    <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
+                                    <div class="quantities">
+                                        <p>
+                                            Folio
+                                            <span>248510</span>
+                                        </p>
+                                        <p>
+                                            Productos
+                                            <span>17</span>
+                                        </p>
+                                        <p>
+                                            Total
+                                            <span>$589</span>
+                                        </p>
+                                        <p>
+                                            Sucursal
+                                            <span>EDO. MEX. CARMELO PÉREZCARMELO PÉREZ</span>
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </a>
+                        </a>
+                    </div>
                 </div>
-
             </div>
 
             <!-- PRODUCTOS MAS VENDIDOS -->
-            <div class="crud-grid crud-grid-best-sales">
+            <div class="crud-element">
                 <h2>Productos más vendidos</h2>
+                <div class="crud-grid crud-grid-best-sales">
+                    <div class="registers-frames-container">
+                        <!-- MARCO DEL REGISTRO -->
+                        <div class="register-frame">
+                            <!-- DETALLES -->
+                            <a href="" class="register-details-link register-link-best-sales">
+                                <div class="register-details">
+                                    <div class="header-register">
+                                        <p>Camiseta 100% algodón</p>
+                                        <span>Legendary Whitetails</span>
+                                    </div>
 
-                <div class="registers-frames-container">
-                    <!-- MARCO DEL REGISTRO -->
-                    <div class="register-frame">
-                        <!-- DETALLES -->
-                        <a href="" class="register-details-link register-link-best-sales">
-                            <div class="register-details">
-                                <div class="header-register">
-                                    <p>Camiseta 100% algodón</p>
-                                    <span>Legendary Whitetails</span>
-                                </div>
-
-                                <div class="body-register">
-                                    <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img">
-                                    <div class="quantities">
-                                        <p>
-                                            Unidades vendidas
-                                            <span>179</span>
-                                        </p>
-                                        <p>
-                                            Unidades en stock
-                                            <span>116</span>
-                                        </p>
-                                        <p>
-                                            Precio sugerido
-                                            <span>$289</span>
-                                        </p>
+                                    <div class="body-register">
+                                        <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img">
+                                        <div class="quantities">
+                                            <p>
+                                                Unidades vendidas
+                                                <span>179</span>
+                                            </p>
+                                            <p>
+                                                Unidades en stock
+                                                <span>116</span>
+                                            </p>
+                                            <p>
+                                                Precio sugerido
+                                                <span>$289</span>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </a>
-                    </div>
+                            </a>
+                        </div>
 
-                    <!-- MARCO DEL REGISTRO -->
-                    <div class="register-frame">
-                        <!-- DETALLES -->
-                        <a href="" class="register-details-link register-link-best-sales">
-                            <div class="register-details">
-                                <div class="header-register">
-                                    <p>Camiseta 100% algodón</p>
-                                    <span>Legendary Whitetails</span>
-                                </div>
+                        <!-- MARCO DEL REGISTRO -->
+                        <div class="register-frame">
+                            <!-- DETALLES -->
+                            <a href="" class="register-details-link register-link-best-sales">
+                                <div class="register-details">
+                                    <div class="header-register">
+                                        <p>Camiseta 100% algodón</p>
+                                        <span>Legendary Whitetails</span>
+                                    </div>
 
-                                <div class="body-register">
-                                    <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img">
-                                    <div class="quantities">
-                                        <p>
-                                            Unidades vendidas
-                                            <span>179</span>
-                                        </p>
-                                        <p>
-                                            Unidades en stock
-                                            <span>116</span>
-                                        </p>
-                                        <p>
-                                            Precio sugerido
-                                            <span>$289</span>
-                                        </p>
+                                    <div class="body-register">
+                                        <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img">
+                                        <div class="quantities">
+                                            <p>
+                                                Unidades vendidas
+                                                <span>179</span>
+                                            </p>
+                                            <p>
+                                                Unidades en stock
+                                                <span>116</span>
+                                            </p>
+                                            <p>
+                                                Precio sugerido
+                                                <span>$289</span>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </a>
-                    </div>
+                            </a>
+                        </div>
 
-                    <!-- MARCO DEL REGISTRO -->
-                    <div class="register-frame">
-                        <!-- DETALLES -->
-                        <a href="" class="register-details-link register-link-best-sales">
-                            <div class="register-details">
-                                <div class="header-register">
-                                    <p>Camiseta 100% algodón</p>
-                                    <span>Legendary Whitetails</span>
-                                </div>
+                        <!-- MARCO DEL REGISTRO -->
+                        <div class="register-frame">
+                            <!-- DETALLES -->
+                            <a href="" class="register-details-link register-link-best-sales">
+                                <div class="register-details">
+                                    <div class="header-register">
+                                        <p>Camiseta 100% algodón</p>
+                                        <span>Legendary Whitetails</span>
+                                    </div>
 
-                                <div class="body-register">
-                                    <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img">
-                                    <div class="quantities">
-                                        <p>
-                                            Unidades vendidas
-                                            <span>179</span>
-                                        </p>
-                                        <p>
-                                            Unidades en stock
-                                            <span>116</span>
-                                        </p>
-                                        <p>
-                                            Precio sugerido
-                                            <span>$289</span>
-                                        </p>
+                                    <div class="body-register">
+                                        <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img">
+                                        <div class="quantities">
+                                            <p>
+                                                Unidades vendidas
+                                                <span>179</span>
+                                            </p>
+                                            <p>
+                                                Unidades en stock
+                                                <span>116</span>
+                                            </p>
+                                            <p>
+                                                Precio sugerido
+                                                <span>$289</span>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                        </a>
+                            </a>
+                        </div>
                     </div>
-                </div>
 
-                <!-- GRAFICA -->
-                <div class="chart best-selling-products-chart">
-                    <canvas id="best_sellings_products_chart"></canvas>
+                    <!-- GRAFICA -->
+                    <div class="chart best-selling-products-chart">
+                        <canvas id="best_sellings_products_chart"></canvas>
+                    </div>
                 </div>
             </div>
 
             <!-- TOTAL DE VENTAS POR PERIODO -->
-            <div class="sales-per-period">
+            <div class="crud-element">
                 <h2>Total de ventas</h2>
+                <div class="sales-per-period">
+                    <div class="sales-charts-grid-period">
+                        <!-- VENTAS DE LA SEMANA BARRAS -->
+                        <div class="sales-chart daily-sales-per-week-bar-chart">
+                            <canvas id="daily_sales_per_week_bar_chart"></canvas>
+                        </div>
 
-                <div class="sales-charts-grid-period">
-                    <!-- VENTAS DE LA SEMANA BARRAS -->
-                    <div class="sales-chart daily-sales-per-week-bar-chart">
-                        <canvas id="daily_sales_per_week_bar_chart"></canvas>
-                    </div>
+                        <!-- VENTAS MENSUALES LINEAS -->
+                        <div class="sales-chart daily-sales-per-month-line-chart">
+                            <canvas id="daily_sales_per_month_line_chart"></canvas>
+                        </div>
 
-                    <!-- VENTAS MENSUALES LINEAS -->
-                    <div class="sales-chart daily-sales-per-month-line-chart">
-                        <canvas id="daily_sales_per_month_line_chart"></canvas>
-                    </div>
+                        <!-- VENTAS DEL AÑO LINEAS -->
+                        <div class="sales-chart daily-sales-per-year-chart">
+                            <canvas id="daily_sales_per_year_chart"></canvas>
+                        </div>
 
-                    <!-- VENTAS DEL AÑO LINEAS -->
-                    <div class="sales-chart daily-sales-per-year-chart">
-                        <canvas id="daily_sales_per_year_chart"></canvas>
-                    </div>
-
-                    <!-- VENTAS POR PERIODO PASTEL -->
-                    <div class="sales-chart daily-sales-per-period-chart">
-                        <canvas id="daily_sales_per_period_chart"></canvas>
+                        <!-- VENTAS POR PERIODO PASTEL -->
+                        <div class="sales-chart daily-sales-per-period-chart">
+                            <canvas id="daily_sales_per_period_chart"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- VENTAS POR TIPO -->
-            <div class="sales-types">
+            <div class="crud-element">
                 <h2>Ventas por tipo</h2>
-                <div class="sales-per-type-chart">
-                    <canvas id="sales_per_type_chart"></canvas>
+                <div class="sales-types">
+                    <div class="sales-per-type-chart">
+                        <canvas id="sales_per_type_chart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>

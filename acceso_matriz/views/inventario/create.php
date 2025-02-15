@@ -13,7 +13,7 @@
         <!-- CREAR PRODUCTO -->
         <div class="form-create-container">
             <h1>
-                Añadir producto
+                Añadir producto📦
                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="m260-520 220-360 220 360H260ZM700-80q-75 0-127.5-52.5T520-260q0-75 52.5-127.5T700-440q75 0 127.5 52.5T880-260q0 75-52.5 127.5T700-80Zm-580-20v-320h320v320H120Zm580-60q42 0 71-29t29-71q0-42-29-71t-71-29q-42 0-71 29t-29 71q0 42 29 71t71 29Zm-500-20h160v-160H200v160Zm202-420h156l-78-126-78 126Zm78 0ZM360-340Zm340 80Z"/></svg>
             </h1>
 
@@ -96,7 +96,7 @@
                         <option value="pieza">Pieza</option>
                         <option value="paquete">Paquete</option>
                         <option value="caja">Caja</option>
-                        <option value="saco">Saco</option>
+                        <!-- <option value="saco">Saco</option>
                         <option value="bulto">Bulto</option>
                         <option value="rollo">Rollo</option>
                         <option value="botella">Botella</option>
@@ -108,7 +108,7 @@
                         <option value="mililitro">Mililitros</option>
                         <option value="metro">Metros</option>
                         <option value="centimetro">Centímetros</option>
-                        <option value="milimetro">Milímetros</option>
+                        <option value="milimetro">Milímetros</option> -->
                     </select>
                 </fieldset>
 
@@ -127,7 +127,7 @@
                         <option value="pieza">Pieza</option>
                         <option value="paquete">Paquete</option>
                         <option value="caja">Caja</option>
-                        <option value="saco">Saco</option>
+                        <!-- <option value="saco">Saco</option>
                         <option value="bulto">Bulto</option>
                         <option value="rollo">Rollo</option>
                         <option value="botella">Botella</option>
@@ -139,7 +139,7 @@
                         <option value="mililitro">Mililitros</option>
                         <option value="metro">Metros</option>
                         <option value="centimetro">Centímetros</option>
-                        <option value="milimetro">Milímetros</option>
+                        <option value="milimetro">Milímetros</option> -->
                     </select>
                 </fieldset>
 
@@ -165,10 +165,13 @@
                         </p>
                     </legend>
 
-                    <small>¿Cuántas unidades de venta hay en una unidad de compra?</small>
+                    <small class="flex gap-1">
+                        (Especifique cuántas unidades de venta equivalen a una unidad de compra)
+                        <span title="Ejemplo: Si un bulto contiene 25 kg, escribe 25"> <span class="border-dashed border-[1px] border-black shadow-sm text-center p-0.5 rounded-full">❓</span></span>
+                    </small>
                     <div class="flex flex-col justify-between">
                         <p id="conversion_result" class="font-black"></p>
-                        <input type="number" id="cantidad_conversion" step="0.01" placeholder="Ej. 25 si un bulto tiene 25 kg">
+                        <input type="number" id="cantidad_conversion" step="0.01" placeholder="Ej. 25 si un bulto tiene 25 kg" oninput="validarNumero(this)">
                         <input type="hidden" name="factor_conversion" id="factor_conversion">
                     </div>
                 </fieldset>
@@ -182,7 +185,7 @@
                         </p>
                     </legend>
 
-                    <input type="text" id="precio_costo" name="precio_costo" step="0.01" placeholder="Ingrese el precio de costo" oninput="validarNumero(this)">
+                    <input type="number" id="precio_costo" name="precio_costo" step="0.01" placeholder="Ingrese el precio de costo" oninput="validarNumero(this)">
                 </fieldset>
 
                 <!-- PRECIO VENTA -->
@@ -194,7 +197,7 @@
                         </p>
                     </legend>
 
-                    <input type="text" id="precio_venta" name="precio_venta" step="0.01" placeholder="Ingrese el precio de venta" oninput="validarNumero(this)">
+                    <input type="number" id="precio_venta" name="precio_venta" step="0.01" placeholder="Ingrese el precio de venta" oninput="validarNumero(this)">
                 </fieldset>
 
                 <!-- PRECIO MAYOREO -->
@@ -206,7 +209,7 @@
                         </p>
                     </legend>
 
-                    <input type="text" id="precio_mayoreo" name="precio_mayoreo" step="0.01" placeholder="Ingrese el precio de mayoreo" oninput="validarNumero(this)">
+                    <input type="number" id="precio_mayoreo" name="precio_mayoreo" step="0.01" placeholder="Ingrese el precio de mayoreo" oninput="validarNumero(this)">
                 </fieldset>
 
                 <!-- VENCIMIENTO -->
@@ -259,6 +262,23 @@
         session_destroy();
     ?>
 
+    <!-- REEMPLAZAR NUMEROS NEGATIVOS -->
+    <script>
+        function validarNumero(input) {
+            input.value = input.value.replace(/[^0-9.]/g, '');
+            let partes = input.value.split('.');
+
+            if (partes.length > 2) {
+                input.value = partes[0] + '.' + partes.slice((1)).join('');
+            }
+
+            if (partes.length === 2 && partes[1].length > 3) {
+                input.value = partes[0] + '.' + partes[1].substring(0, 3);
+            }
+        }
+    </script>
+
+    <!-- FACTOR DE CONVERSION -->
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const unidadCompra = document.getElementById("unidad_compra");

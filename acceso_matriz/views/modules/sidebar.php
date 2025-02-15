@@ -2,15 +2,11 @@
 <aside class="sidebar-container">
     <!-- MINIMIZAR SIDEBAR -->
     <div class="minimize minimize-btn">
-        <svg xmlns="http://www.w3.org/2000/svg"  viewBox="0 -960 960 960"  fill="#e8eaed"><path d="m136-80-56-56 264-264H160v-80h320v320h-80v-184L136-80Zm344-400v-320h80v184l264-264 56 56-264 264h184v80H480Z"/></svg>
+        <span>Menú</span>
+        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M440-440v240h-80v-160H200v-80h240Zm160-320v160h160v80H520v-240h80Z"/></svg>
     </div>
 
     <div class="sidebar matriz-sidebar">
-        <!-- FECHA -->
-        <div class="date">
-            <?= $fecha ?>
-        </div>
-
         <!-- ENLACES -->
         <div class="sidebar-links-container">
             <div class="sidebar-links">
@@ -80,6 +76,13 @@
                     </li>
                 </ul>
             </div>
+
+            <!-- FECHA -->
+            <div class="date">
+                <p><?= $date ?></p>
+                <p><?= $hora ?></p>
+            </div>
         </div>
+
     </div>
 </aside>

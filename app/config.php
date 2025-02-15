@@ -25,7 +25,28 @@
         'dd MMM HH:mm'
     );
 
-    $timestamp = time();
+    $formatterFecha = new IntlDateFormatter(
+        'es_MX',
+        IntlDateFormatter::FULL,
+        IntlDateFormatter::NONE, 
+        'America/Mexico_City',
+        IntlDateFormatter::GREGORIAN
+    );
 
+    $formatterHora = new IntlDateFormatter(
+        'es_MX',
+        IntlDateFormatter::NONE,
+        IntlDateFormatter::FULL, 
+        'America/Mexico_City',
+        IntlDateFormatter::GREGORIAN
+    );
+
+    $timestamp = time();
+    
     $fecha = $formatter -> format($timestamp);
     $fecha_ab = $formatter_abreviado -> format($timestamp);
+
+    $date = $formatterFecha->format($timestamp);
+    $hora = $formatterHora->format($timestamp);
+    
+    

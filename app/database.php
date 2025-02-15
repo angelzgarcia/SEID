@@ -23,7 +23,11 @@
 
         if (!empty($params)) $result -> bind_param($types, ...$params);
 
-        if ($result -> execute()) return true;
-
+        if ($result -> execute())  {
+            $result -> close();
+            return true;
+        }
+        
+        $result -> close();
         return false;
     }
