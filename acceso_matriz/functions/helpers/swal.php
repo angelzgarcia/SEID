@@ -96,6 +96,10 @@ function swal($icon, $title, $type = 'toast', $time = 3000)
                     showConfirmButton: false,
                     timer: "{$time}",
                     timerProgressBar: true,
+                    iconColor: 'white',
+                    customClass: {
+                        popup: 'colored-toast',
+                    },
                     didOpen: (toast) => {
                         toast.onmouseenter = Swal.stopTimer;
                         toast.onmouseleave = Swal.resumeTimer;

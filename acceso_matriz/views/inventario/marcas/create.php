@@ -17,27 +17,33 @@
 
                 <!-- ACCESOS DIRECTOS -->
                 <div class="shortcuts-links">
-                    <a href="../index" title="Inventario">
+                    <a href="../index" title="Inventario" class="shortcut-link-btn">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M440-183v-274L200-596v274l240 139Zm80 0 240-139v-274L520-457v274Zm-80 92L160-252q-19-11-29.5-29T120-321v-318q0-22 10.5-40t29.5-29l280-161q19-11 40-11t40 11l280 161q19 11 29.5 29t10.5 40v318q0 22-10.5 40T800-252L520-91q-19 11-40 11t-40-11Zm200-528 77-44-237-137-78 45 238 136Zm-160 93 78-45-237-137-78 45 237 137Z"/></svg>
                     </a>
 
-                    <span>
-                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M480-120q-75 0-140.5-28.5t-114-77q-48.5-48.5-77-114T120-480q0-75 28.5-140.5t77-114q48.5-48.5 114-77T480-840v80q-117 0-198.5 81.5T200-480q0 117 81.5 198.5T480-200v80Zm160-160-56-57 103-103H360v-80h327L584-624l56-56 200 200-200 200Z"/></svg>
-                    </span>
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M480-120q-75 0-140.5-28.5t-114-77q-48.5-48.5-77-114T120-480q0-75 28.5-140.5t77-114q48.5-48.5 114-77T480-840v80q-117 0-198.5 81.5T200-480q0 117 81.5 198.5T480-200v80Zm160-160-56-57 103-103H360v-80h327L584-624l56-56 200 200-200 200Z"/></svg>
 
-                    <a href="index.php" title="Marcas">
+                    <a href="index.php" title="Marcas" class="shortcut-link-btn">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M864-40 741-162q-18 11-38.5 16.5T660-140q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 23-6 43.5T797-218L920-96l-56 56ZM220-140q-66 0-113-47T60-300q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm0-80q33 0 56.5-23.5T300-300q0-33-23.5-56.5T220-380q-33 0-56.5 23.5T140-300q0 33 23.5 56.5T220-220Zm440 0q33 0 56.5-23.5T740-300q0-33-23.5-56.5T660-380q-33 0-56.5 23.5T580-300q0 33 23.5 56.5T660-220ZM220-580q-66 0-113-47T60-740q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm440 0q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm-440-80q33 0 56.5-23.5T300-740q0-33-23.5-56.5T220-820q-33 0-56.5 23.5T140-740q0 33 23.5 56.5T220-660Zm440 0q33 0 56.5-23.5T740-740q0-33-23.5-56.5T660-820q-33 0-56.5 23.5T580-740q0 33 23.5 56.5T660-660ZM220-300Zm0-440Zm440 0Z"/></svg>
+                    </a>
+
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M480-120q-75 0-140.5-28.5t-114-77q-48.5-48.5-77-114T120-480q0-75 28.5-140.5t77-114q48.5-48.5 114-77T480-840v80q-117 0-198.5 81.5T200-480q0 117 81.5 198.5T480-200v80Zm160-160-56-57 103-103H360v-80h327L584-624l56-56 200 200-200 200Z"/></svg>
+
+                    <a title="Añadir marca" class="shortcut-link-btn <?= strpos($_SERVER['PHP_SELF'], 'marcas/create') ? 'active' : '' ?>">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M440-120v-320H120v-80h320v-320h80v320h320v80H520v320h-80Z"/></svg>
                     </a>
                 </div>
             </div>
 
-            <form class="form-create category-add" action="<?= MATRIX_FNS ?>crud_marca.php" method="POST" autocomplete="off">
+            <form class="form-create category-add" action="<?= MATRIX_FNS ?>crud_marca.php" method="POST" autocomplete="off" enctype="multipart/form-data">
                 <!-- NOMBRE -->
                 <fieldset class="category-field-name">
-                    <legend>Nombre *</legend>
-                    <p class='message-error'>
-                        <?= $_SESSION['errors']['nombre'] ?? '' ?>
-                    </p>
+                    <legend>
+                        Nombre *
+                        <p class='message-error'>
+                            <?= $_SESSION['errors']['nombre'] ?? '' ?>
+                        </p>
+                    </legend>
 
                     <input type="text" name="nombre" placeholder="Ingrese el nombre de la marca" value="<?= $_SESSION['olds']['nombre'] ?? '' ?>">
                 </fieldset>
@@ -45,10 +51,12 @@
 
                 <!-- DESCRIPCIÓN -->
                 <fieldset class="category-field-description">
-                    <legend>Descripción *</legend>
-                    <p class='message-error'>
-                        <?= $_SESSION['errors']['descripcion'] ?? '' ?>
-                    </p>
+                    <legend>
+                        Descripción *
+                        <p class='message-error'>
+                            <?= $_SESSION['errors']['descripcion'] ?? '' ?>
+                        </p>
+                    </legend>
 
                     <textarea name="descripcion" rows="4" placeholder="Ingrese la descripcion de la marca"><?=$_SESSION['olds']['descripcion'] ?? ''?></textarea>
                 </fieldset>
@@ -82,6 +90,8 @@
         </div>
     </main>
 
+    <?php unset($_SESSION['olds']) ?>
+    <?php unset($_SESSION['errors']); ?>
     <!-- SWEET ALERT -->
     <?php
         if (isset($_SESSION['swal'])) {

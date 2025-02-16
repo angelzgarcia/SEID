@@ -5,10 +5,8 @@
 
 <?php $page_name = ACCESO . 'Inventario | Categorias ' ?>
 <?php
-    $sql = 'SELECT * FROM categorias';
-    $consulta = $conn -> query($sql);
-
-    $categorias = $consulta -> fetch_all(MYSQLI_ASSOC) ?: [];
+    $sql = 'SELECT * FROM categorias ORDER BY id_categoria DESC';
+    $categorias = simpleQuery($sql) ?: [];
 
     if (!empty($categorias)) {
         $count_categorias = count($categorias);
@@ -55,9 +53,10 @@
                     </div>
 
                     <div class="crud-order-by">
-                        <select name="" id="">
+                        <select name="" class="crud-header-select">
                             <option selected disabled>Ordenar por</option>
                             <option value="">Ver todos</option>
+                            <option value="">Más antiguas</option>
                             <option value="">A - Z</option>
                             <option value="">Z - A</option>
                         </select>
@@ -98,7 +97,7 @@
                         <input type="checkbox" name="" id="">
                         <p>Seleccionar todo</p>
 
-                        <select name="" id="">
+                        <select name="" class="crud-header-select">
                             <option value="">Acciones</option>
                             <option value="">Eliminar registros</option>
                         </select>
@@ -165,19 +164,18 @@
                         </div>
                     <?php endforeach; ?>
                 <?php endif; ?>
-
-                <!-- CAMBIAR STATUS -->
-                <?= swal('question', '¿Estás seguro de realizar esta acción?', 'confirm_status') ?>
-
-                <?php
-                    if (isset($_SESSION['swal'])) {
-                        echo $_SESSION['swal'];
-                        unset($_SESSION['swal']);
-                    }
-                ?>
             </div>
         </div>
     </main>
 
+    <!-- CAMBIAR STATUS -->
+    <?= swal('question', '¿Estás seguro de realizar esta acción?', 'confirm_status') ?>
+
+    <?php
+        if (isset($_SESSION['swal'])) {
+            echo $_SESSION['swal'];
+            unset($_SESSION['swal']);
+        }
+    ?>
 </body>
 </html>

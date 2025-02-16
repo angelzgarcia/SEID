@@ -90,7 +90,7 @@
                         <p>Consulte sus ventas generales y por sucursal</p>
                     </div>
                     <div class="crud-order-by">
-                        <select name="" id="">
+                        <select name="" class="crud-header-select">
                             <option selected disabled>Ordenar por</option>
                             <option value="">Fecha</option>
                             <option value="">Mayor venta</option>
@@ -127,7 +127,7 @@
                         <input type="checkbox" name="" id="">
                         <p>Seleccionar todo</p>
 
-                        <select name="" id="">
+                        <select name="" class="crud-header-select">
                             <option value="">Acciones</option>
                             <option value="">Eliminar registros</option>
                         </select>

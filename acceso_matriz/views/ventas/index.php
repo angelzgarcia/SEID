@@ -14,7 +14,33 @@
 
         <!-- FILTRAR INVENTARIOS POR SUCURSAL -->
         <form action="" class="subsidiaries-filter">
-            <select name="" id="">
+            <input type="text" list="sucursales" name="sucursal_datalist" id="sucursal_datalist" placeholder="Buscar sucursal...">
+            <datalist id="sucursales">
+                <option value="Sucursal 1">Sucursal 1</option>
+                <option value="Sucursal 2">Sucursal 2</option>
+                <option value="Sucursal 3">Sucursal 3</option>
+                <option value="Sucursal 3">Sucursal 3</option>
+                <option value="Sucursal 3">Sucursal 3</option>
+                <option value="Sucursal 3">Sucursal 3</option>
+                <option value="Sucursal 3">Sucursal 3</option>
+                <option value="Sucursal 3">Sucursal 3</option>
+                <option value="Sucursal 3">Sucursal 3</option>
+                <option value="Sucursal 3">Sucursal 3</option>
+                <option value="Sucursal 3">Sucursal 3</option>
+                <option value="Sucursal 3">Sucursal 3</option>
+                <option value="Sucursal 3">Sucursal 3</option>
+                <option value="Sucursal 3">Sucursal 3</option>
+                <option value="Sucursal 3">Sucursal 3</option>
+                <option value="Sucursal 3">Sucursal 3</option>
+                <option value="Sucursal 3">Sucursal 3</option>
+                <option value="Sucursal 3">Sucursal 3</option>
+                <option value="Sucursal 3">Sucursal 3</option>
+                <option value="Sucursal 3">Sucursal 3</option>
+                <option value="Sucursal 3">Sucursal 3</option>
+                <option value="Sucursal 3">Sucursal 3</option>
+            </datalist>
+
+            <select name="" class="crud-header-select sucursal-select">
                 <option disabled selected>Todas las sucursales</option>
                 <option value="">Sucursal 1 Sucursal 1</option>
                 <option value="">Sucursal 2</option>
@@ -33,7 +59,7 @@
                         <p>Consulte sus ventas generales y por sucursal</p>
                     </div>
                     <div class="crud-order-by">
-                        <select name="" id="">
+                        <select name="" class="crud-header-select">
                             <option selected disabled>Ordenar por</option>
                             <option value="">Ver todos</option>
                             <option value="">Menor stock</option>
@@ -73,7 +99,7 @@
                         <input type="checkbox" name="" id="">
                         <p>Seleccionar todo</p>
 
-                        <select name="" id="">
+                        <select name="" class="crud-header-select">
                             <option value="">Acciones</option>
                             <option value="">Eliminar registros</option>
                         </select>

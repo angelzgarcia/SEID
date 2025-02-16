@@ -48,7 +48,6 @@
                     <input type="text" name="nombre" placeholder="Ingrese el nombre de la categoria" value="<?= $_SESSION['olds']['nombre'] ?? '' ?>">
                 </fieldset>
 
-
                 <!-- DESCRIPCIÓN -->
                 <fieldset class="category-field-description">
                     <legend>
@@ -90,13 +89,14 @@
         </div>
     </main>
 
+    <?php unset($_SESSION['olds']) ?>
+    <?php unset($_SESSION['errors']); ?>
     <!-- SWEET ALERT -->
     <?php
-        if (isset($_SESSION['swal']))
+        if (isset($_SESSION['swal'])) {
             echo $_SESSION['swal'];
-
-        session_unset();
-        session_destroy();
+            unset($_SESSION['swal']);
+        }
     ?>
 
     <!-- VISTA PREVIA DEL INPUT FILE -->
