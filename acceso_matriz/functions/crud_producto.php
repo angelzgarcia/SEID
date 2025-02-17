@@ -11,7 +11,7 @@ foreach (glob(__DIR__ . "/helpers/*.php") as $helper)
 match ($_POST['accion']) {
     'guardar' => store(),
     'actualizar' => update(),
-    'eliminar' => destroy(),
+    'modificar' => destroy(),
     default => redirect()
 };
 
@@ -23,24 +23,21 @@ function redirect()
 
 function store()
 {
-    ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
     $data = [];
     $errors = [];
     $olds = [];
-    $required = ['nombre', 'tipo_venta', 'stock', 'precio_costo', 'precio_venta', 'imagen'];
+    $unfillable = ['categoria' => '', 'marca' => '', 'precio_mayoreo' => '', 'vencimiento' => ''];
 
     array_pop($_POST);
     foreach($_POST as $key => $request) {
-        $data[$key] = $request ?: null;
-        $olds[$key] = $request;
+        $data[$key] = clearEntry($request) ?: null;
+        $olds[$key] = $request ?: '';
 
-        foreach ($required as $requested)
-            if ($key === $requested)
-                $data[$requested] === null ? $errors[$key] = "El campo " . str_replace(['-','_'], ' ', $key) . " es obligatorio" : '';
+        if (!array_key_exists($key, $unfillable) && !isset($data[$key]))
+            $errors[$key] = "El campo " . str_replace(['-','_'], ' ', $key) . " es obligatorio";
     }
+
+    $_SESSION['olds'] = $olds;
 
     $file = $_FILES['imagen']['tmp_name'];
     if ($file) {
@@ -54,14 +51,13 @@ error_reporting(E_ALL);
 
     !$file ? $errors['imagen'] = "La imagen es obligatoria" : '';
 
-    if (count($errors) === count($required)) {
+    if (count($errors) === ((count($_POST) + 1) - count($unfillable))) {
         $_SESSION['swal'] = swal('warning', '¡Completa los campos obligatorios!');
         redirect();
     }
 
     if (count($errors) > 0) {
         $_SESSION['errors'] = $errors;
-        $_SESSION['olds'] = $olds;
         redirect();
     }
 
@@ -72,8 +68,8 @@ error_reporting(E_ALL);
     // C R E A R   S L U G
     $slug = createSlug($data['nombre']);
 
-    $data['categoria'] = !empty($data['id_categoria_fk_producto']) ? (int) $data['id_categoria_fk_producto'] : null;
-    $data['marca'] = !empty($data['id_marca_fk_producto']) ? (int) $data['id_marca_fk_producto'] : null;
+    $data['categoria'] = !empty($data['marca']) ? (int) $data['marca'] : null;
+    $data['marca'] = !empty($data['marca']) ? (int) $data['marca'] : null;
     $data['codigo_barras'] = !empty($data['codigo_barras']) ? (int) $data['codigo_barras'] : null;
     $data['stock'] = (float) $data['stock'];
     $data['precio_costo'] = (float) $data['precio_costo'];

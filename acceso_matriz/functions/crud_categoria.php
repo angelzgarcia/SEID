@@ -136,6 +136,8 @@ function update()
     $errors = [];
 
     $id = decryptValue($_GET['c'], SECRETKEY);
+    if (!$id) redirect();
+
     $category = clearEntry($_POST['nombre']) ?: null;
     $descripcion = clearEntry($_POST['descripcion']) ?: null;
     $file_name = $_FILES['imagen'];
@@ -282,6 +284,7 @@ function update()
 function changeStatus()
 {
     $id = (int)decryptValue($_GET['c'], SECRETKEY);
+    if (!$id) redirect();
 
     global $conn;
     $sql = '

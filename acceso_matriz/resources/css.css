@@ -90,7 +90,9 @@ body {
     height: 100%;
     padding-block-end: 5rem !important;
 }
-
+.matriz-content {
+    padding: 2rem 1rem;
+}
 
 
 
@@ -328,7 +330,6 @@ body {
     flex-direction: column;
 }
 .inventory-content {
-    padding: 2rem 1rem;
     gap: 1rem;
     & select, input{
         background-color: #fff;
@@ -1316,10 +1317,10 @@ select.crud-header-select {
     grid-template-rows: auto;
     gap: .5rem;
     & .register-frame {
-        border-radius: 2rem;
         padding: .2rem;
         max-height: max-content;
-        box-shadow: none;
+        /* box-shadow: none; */
+        transition: border-radius .2s ease;
         &.resolved { background-color: var(--resolved-color); }
         &.progress { background-color: var(--in-progress-color); }
         &.pending { background-color: var(--pending-color); }
@@ -1361,6 +1362,9 @@ select.crud-header-select {
                     text-decoration: underline;
                 }
             }
+        }
+        &:hover {
+            border-radius: 2rem;
         }
     }
 }

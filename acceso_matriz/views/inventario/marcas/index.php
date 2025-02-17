@@ -8,7 +8,14 @@
     $sql = 'SELECT * FROM marcas ORDER BY id_marca DESC';
     $marcas = simpleQuery($sql) ?: [];
 
-    
+    if (!empty($marcas)) {
+        $count_marcas = count($marcas);
+
+        $marcas_activas = array_filter($marcas, fn($marca) => (int)$marca['status_marca'] === 0);
+        $count_marcas_activas = count($marcas_activas);
+
+        $count_marcas_inactivas = $count_marcas - $count_marcas_activas;
+    }
 
 ?>
 
@@ -65,9 +72,24 @@
                     <div class="details">
                         <div class="summary">
                             <p>N° de marca</p>
-                            <span>22</span>
+                            <span><?= $count_marcas ?></span>
                         </div>
                     </div>
+
+                    <div class="details">
+                        <div class="summary">
+                            <p>Marcas activas</p>
+                            <span><?= $count_marcas_activas ?></span>
+                        </div>
+                    </div>
+
+                    <div class="details">
+                        <div class="summary">
+                            <p>Marcas inactivas</p>
+                            <span><?= $count_marcas_inactivas ?></span>
+                        </div>
+                    </div>
+
                 </div>
 
                 <!-- HEADER INFERIOR -->

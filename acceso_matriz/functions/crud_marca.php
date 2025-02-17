@@ -136,6 +136,8 @@ function update()
     $errors = [];
 
     $id = decryptValue($_GET['c'], SECRETKEY);
+    if (!$id) redirect();
+
     $brand = clearEntry($_POST['nombre']) ?: null;
     $descripcion = clearEntry($_POST['descripcion']) ?: null;
     $file_name = $_FILES['imagen'];
@@ -282,7 +284,7 @@ function update()
 
     $_SESSION['swal'] = !simpleQuery($sql, $params, $types) ?
     swal("error", "¡Ocurrió un error al actualizar la marca!") :
-    swal("success", "¡marca actualizada exitosamente!");
+    swal("success", "¡mMrca actualizada exitosamente!");
 
     unset($_SESSION['olds']);
     unset($_SESSION['errors']);
@@ -292,6 +294,7 @@ function update()
 function changeStatus()
 {
     $id = (int)decryptValue($_GET['c'], SECRETKEY);
+    if (!$id) redirect();
 
     global $conn;
     $sql = '
