@@ -139,7 +139,7 @@
 <!-- RESIZING SIDEBAR -->
 <script>
     document.addEventListener('DOMContentLoaded', () => {
-        const minimizeBtns = document.querySelectorAll('.minimize-btn'); // Obtener todos los botones
+        const minimizeBtns = document.querySelectorAll('.minimize-btn'); 
         const sidebarFull = document.querySelector('.sidebar-full');
         const sidebarMinimized = document.querySelector('.sidebar-minimized');
 
