@@ -44,7 +44,7 @@ textarea {
 
 
 /*  S W E E T     A L E R T S  */
-.colored-toast { font-size: .87rem; max-width: max-content; }
+.colored-toast { font-size: .87rem; max-width: max-content !important; }
 .colored-toast.swal2-icon-success { background-color: #9cd37d !important; }
 .colored-toast.swal2-icon-warning { background-color: #5c9e61 !important; }
 .colored-toast.swal2-icon-error { background-color: #ee4130 !important; }
@@ -53,6 +53,45 @@ textarea {
 .colored-toast .swal2-title { color: white; }
 .colored-toast .swal2-close { color: white; }
 .colored-toast .swal2-html-container { color: white; }
+.swal-custom-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 .2rem .1rem 0 rgba(0, 0, 0, 0.197) !important;
+    span {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: large;
+    }
+    svg {
+        width: 20px;
+        height: 20px;
+        fill: white;
+    }
+}
+.swal-pay-btn { background-color: #00bd5f !important; margin-inline-end: 9rem !important; }
+.swal-cancel-btn { background-color: rgba(255, 0, 0, 0.801) !important; }
+.swal-custom-form {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    /* background-color: #fff; */
+    padding: 2rem;
+    /* border-radius: .8rem; */
+    /* box-shadow: 0 .2rem .1rem 0 rgba(0, 0, 0, 0.197); */
+    legend, h2   {
+        font-size: larger;
+        font-weight: 700;
+    }
+}
+
+
+
 
 
 
@@ -176,8 +215,52 @@ body {
     box-shadow: 0 .2rem .2rem 0 rgba(128, 128, 128, 0.341);
 }
 
+.sale-details-container, .sale-details ul, .sale-product-details, .sale-product-body {
+    display: flex;
+    flex-direction: column;
+}
 .sale-details-container {
     grid-area: details;
+    gap: 1rem;
+    & h1 {
+        font-size: xx-large;
+        display: flex;
+        gap: .3rem;
+        /* justify-content: space-between; */
+    }
+    & .sale-details {
+        font-size: .6rem;
+        & ul { gap: 1rem; }
+        & ul li {
+            border-block-end: 1px solid rgba(128, 128, 128, 0.516);;
+            padding-block-end: .8rem;
+        }
+    }
+    .sale-product-details {
+        gap: .2rem;
+    }
+    & .sale-product-details div {
+        gap: .2rem;
+        border-radius: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        background-color: #dce1e756;
+        & span {
+            font-weight: 500;
+            font-style: italic;
+        }
+        &.sale-product-header {
+            padding: .3rem .8rem;
+        }
+        &.sale-product-body {
+            background-color: transparent;
+            & div {
+                padding: .3rem .8rem;
+            }
+        }
+    }
 }
 .resizer {
     border-radius: .5rem;
@@ -199,7 +282,8 @@ body {
     grid-area: list;
     & .searcher {
         display: flex;
-        position: relative;
+        position: sticky;
+        top: 0;
         align-items: center;
         box-shadow: 0 0 .1rem 0 rgba(128, 128, 128, 1);
         border-radius: .5rem;
@@ -361,6 +445,44 @@ body {
 }
 .sale-summary-container {
     grid-area: summary;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    & div {
+        flex: 1;
+        display: flex;
+        align-items: baseline;
+        justify-content: center;
+        gap: .5rem;
+        & p {
+            font-size: larger;
+        }
+        & span { font-weight: 500; color: var(--primary-color); letter-spacing: .1rem; }
+    }
+    & div:not(:first-child) {
+        border-inline-start: 1px solid gray;
+    }
+    & .pay-confirm-form form  {
+        min-width: 100%;
+        & button {
+            box-shadow: 0 .2rem .2rem 0 rgba(128, 128, 128, 0.734);
+            place-self: center;
+            gap: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            width: 80%;
+            font-size: larger;
+            padding: .2rem;
+            letter-spacing: .1rem;
+            border-radius: .4rem;
+            background-color: var(--primary-color);
+            cursor: pointer;
+            &:hover { filter: invert(); }
+            &:active svg { fill: #000; }
+        }
+    }
 }
 
 .add-remove-btns.compact button {

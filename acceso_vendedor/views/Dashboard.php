@@ -14,7 +14,105 @@
             <div class="point-of-sale-grid-container">
                 <!-- DETALLES DE LA VENTA -->
                 <div class="sale-details-container">
+                    <h1>Venta en curso <span>📋</span></h1>
 
+                    <div class="sale-details">
+                        <ul>
+                            <li>
+                                <div class="sale-product-details">
+                                    <div class="sale-product-header">
+                                        <p>Camiseta clown 100% algodón color negro</p>
+                                        <span>7 piezas</span>
+                                    </div>
+
+                                    <div class="sale-product-body">
+                                        <div class="unit-price">
+                                            <p>Precio unitario:</p>
+                                            <span>$153.°°</span>
+                                        </div>
+
+                                        <div class="wholesale-price">
+                                            <p>Precio al por mayor:</p>
+                                            <span>$140.°°</span>
+                                        </div>
+
+                                        <div class="subtotal">
+                                            <p>Subtotal:</p>
+                                            <span>$1020.°°</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li>
+                                <div class="sale-product-details">
+                                    <div class="sale-product-header">
+                                        <p>Camiseta clown 100% algodón color negro</p>
+                                        <span>7 piezas</span>
+                                    </div>
+
+                                    <div class="sale-product-body">
+                                        <div class="unit-price">
+                                            <p>Precio unitario:</p>
+                                            <span>$153.°°</span>
+                                        </div>
+
+                                        <div class="subtotal">
+                                            <p>Subtotal:</p>
+                                            <span>$1020.°°</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li>
+                                <div class="sale-product-details">
+                                    <div class="sale-product-header">
+                                        <p>Camiseta clown 100% algodón color negro</p>
+                                        <span>7 piezas</span>
+                                    </div>
+
+                                    <div class="sale-product-body">
+                                        <div class="unit-price">
+                                            <p>Precio unitario:</p>
+                                            <span>$153.°°</span>
+                                        </div>
+
+                                        <div class="wholesale-price">
+                                            <p>Precio al por mayor:</p>
+                                            <span>$140.°°</span>
+                                        </div>
+
+                                        <div class="subtotal">
+                                            <p>Subtotal:</p>
+                                            <span>$1020.°°</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+
+                            <li>
+                                <div class="sale-product-details">
+                                    <div class="sale-product-header">
+                                        <p>Camiseta clown 100% algodón color negro</p>
+                                        <span>7 piezas</span>
+                                    </div>
+
+                                    <div class="sale-product-body">
+                                        <div class="unit-price">
+                                            <p>Precio unitario:</p>
+                                            <span>$153.°°</span>
+                                        </div>
+
+                                        <div class="subtotal">
+                                            <p>Subtotal:</p>
+                                            <span>$1020.°°</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
 
                 <!-- RESIZESABLE -->
@@ -102,12 +200,446 @@
                             </div>
                         </div>
 
+                        <div class="content-product-found">
+                            <div class="product-header">
+                                <div class="product-img">
+                                    <img src="https://www.hubspot.com/hs-fs/hubfs/Shell_logo.svg.png?width=450&height=417&name=Shell_logo.svg.png" alt="product image">
+                                </div>
+
+                                <div class="product-name">
+                                    <p>Camiseta clown 100% algodón color negro Camiseta clown 100% algodón color negro</p>
+                                    <span>
+                                        💲176.°° c/u
+                                    </span>
+                                </div>
+
+                                <div class="add-remove-btns">
+                                    <button type="button" class="remove-btn">➖</button>
+                                    <input type="text" id="product-quantity" autocomplete="off">
+                                    <button type="button" class="add-btn">➕</button>
+                                </div>
+                            </div>
+
+                            <div class="product-footer">
+                                <div class="is-not-wholesale">
+                                    <span>No aplica mayoreo</span>
+                                </div>
+
+                                <div class="stock">
+                                    <span>Existencias:</span>
+                                    <span>#️⃣162</span>
+                                </div>
+                            </div>
+
+                            <div class="product-details">
+                                <details>
+                                    <summary>Detalles del producto</summary>
+                                    <div class="details">
+                                        <div>
+                                            <p> Se vende por:</p>
+                                            <strong>📦 <span>caja</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Precio al por mayor:</p>
+                                            <strong>💲<span>149</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Cantidad mínima aplicable a mayoreo:</p>
+                                            <strong>#️⃣ <span>5</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Marca:</p>
+                                            <strong>📑 <span>Legendary Whitetails</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Categoría:</p>
+                                            <strong>📑 <span>Legendary Whitetails Legendary Whitetails</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Codigo de barras:</p>
+                                            <strong>🏷️ <span>051987124515482</span></strong>
+                                        </div>
+                                    </div>
+                                </details>
+                            </div>
+                        </div>
+
+                        <div class="content-product-found">
+                            <div class="product-header">
+                                <div class="product-img">
+                                    <img src="https://www.hubspot.com/hs-fs/hubfs/Shell_logo.svg.png?width=450&height=417&name=Shell_logo.svg.png" alt="product image">
+                                </div>
+
+                                <div class="product-name">
+                                    <p>Camiseta clown 100% algodón color negro Camiseta clown 100% algodón color negro</p>
+                                    <span>
+                                        💲176.°° c/u
+                                    </span>
+                                </div>
+
+                                <div class="add-remove-btns">
+                                    <button type="button" class="remove-btn">➖</button>
+                                    <input type="text" id="product-quantity" autocomplete="off">
+                                    <button type="button" class="add-btn">➕</button>
+                                </div>
+                            </div>
+
+                            <div class="product-footer">
+                                <div class="is-not-wholesale">
+                                    <span>No aplica mayoreo</span>
+                                </div>
+
+                                <div class="stock">
+                                    <span>Existencias:</span>
+                                    <span>#️⃣162</span>
+                                </div>
+                            </div>
+
+                            <div class="product-details">
+                                <details>
+                                    <summary>Detalles del producto</summary>
+                                    <div class="details">
+                                        <div>
+                                            <p> Se vende por:</p>
+                                            <strong>📦 <span>caja</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Precio al por mayor:</p>
+                                            <strong>💲<span>149</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Cantidad mínima aplicable a mayoreo:</p>
+                                            <strong>#️⃣ <span>5</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Marca:</p>
+                                            <strong>📑 <span>Legendary Whitetails</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Categoría:</p>
+                                            <strong>📑 <span>Legendary Whitetails Legendary Whitetails</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Codigo de barras:</p>
+                                            <strong>🏷️ <span>051987124515482</span></strong>
+                                        </div>
+                                    </div>
+                                </details>
+                            </div>
+                        </div>
+
+                        <div class="content-product-found">
+                            <div class="product-header">
+                                <div class="product-img">
+                                    <img src="https://www.hubspot.com/hs-fs/hubfs/Shell_logo.svg.png?width=450&height=417&name=Shell_logo.svg.png" alt="product image">
+                                </div>
+
+                                <div class="product-name">
+                                    <p>Camiseta clown 100% algodón color negro Camiseta clown 100% algodón color negro</p>
+                                    <span>
+                                        💲176.°° c/u
+                                    </span>
+                                </div>
+
+                                <div class="add-remove-btns">
+                                    <button type="button" class="remove-btn">➖</button>
+                                    <input type="text" id="product-quantity" autocomplete="off">
+                                    <button type="button" class="add-btn">➕</button>
+                                </div>
+                            </div>
+
+                            <div class="product-footer">
+                                <div class="is-not-wholesale">
+                                    <span>No aplica mayoreo</span>
+                                </div>
+
+                                <div class="stock">
+                                    <span>Existencias:</span>
+                                    <span>#️⃣162</span>
+                                </div>
+                            </div>
+
+                            <div class="product-details">
+                                <details>
+                                    <summary>Detalles del producto</summary>
+                                    <div class="details">
+                                        <div>
+                                            <p> Se vende por:</p>
+                                            <strong>📦 <span>caja</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Precio al por mayor:</p>
+                                            <strong>💲<span>149</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Cantidad mínima aplicable a mayoreo:</p>
+                                            <strong>#️⃣ <span>5</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Marca:</p>
+                                            <strong>📑 <span>Legendary Whitetails</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Categoría:</p>
+                                            <strong>📑 <span>Legendary Whitetails Legendary Whitetails</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Codigo de barras:</p>
+                                            <strong>🏷️ <span>051987124515482</span></strong>
+                                        </div>
+                                    </div>
+                                </details>
+                            </div>
+                        </div>
+
+                        <div class="content-product-found">
+                            <div class="product-header">
+                                <div class="product-img">
+                                    <img src="https://www.hubspot.com/hs-fs/hubfs/Shell_logo.svg.png?width=450&height=417&name=Shell_logo.svg.png" alt="product image">
+                                </div>
+
+                                <div class="product-name">
+                                    <p>Camiseta clown 100% algodón color negro Camiseta clown 100% algodón color negro</p>
+                                    <span>
+                                        💲176.°° c/u
+                                    </span>
+                                </div>
+
+                                <div class="add-remove-btns">
+                                    <button type="button" class="remove-btn">➖</button>
+                                    <input type="text" id="product-quantity" autocomplete="off">
+                                    <button type="button" class="add-btn">➕</button>
+                                </div>
+                            </div>
+
+                            <div class="product-footer">
+                                <div class="is-not-wholesale">
+                                    <span>No aplica mayoreo</span>
+                                </div>
+
+                                <div class="stock">
+                                    <span>Existencias:</span>
+                                    <span>#️⃣162</span>
+                                </div>
+                            </div>
+
+                            <div class="product-details">
+                                <details>
+                                    <summary>Detalles del producto</summary>
+                                    <div class="details">
+                                        <div>
+                                            <p> Se vende por:</p>
+                                            <strong>📦 <span>caja</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Precio al por mayor:</p>
+                                            <strong>💲<span>149</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Cantidad mínima aplicable a mayoreo:</p>
+                                            <strong>#️⃣ <span>5</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Marca:</p>
+                                            <strong>📑 <span>Legendary Whitetails</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Categoría:</p>
+                                            <strong>📑 <span>Legendary Whitetails Legendary Whitetails</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Codigo de barras:</p>
+                                            <strong>🏷️ <span>051987124515482</span></strong>
+                                        </div>
+                                    </div>
+                                </details>
+                            </div>
+                        </div>
+
+                        <div class="content-product-found">
+                            <div class="product-header">
+                                <div class="product-img">
+                                    <img src="https://www.hubspot.com/hs-fs/hubfs/Shell_logo.svg.png?width=450&height=417&name=Shell_logo.svg.png" alt="product image">
+                                </div>
+
+                                <div class="product-name">
+                                    <p>Camiseta clown 100% algodón color negro Camiseta clown 100% algodón color negro</p>
+                                    <span>
+                                        💲176.°° c/u
+                                    </span>
+                                </div>
+
+                                <div class="add-remove-btns">
+                                    <button type="button" class="remove-btn">➖</button>
+                                    <input type="text" id="product-quantity" autocomplete="off">
+                                    <button type="button" class="add-btn">➕</button>
+                                </div>
+                            </div>
+
+                            <div class="product-footer">
+                                <div class="is-not-wholesale">
+                                    <span>No aplica mayoreo</span>
+                                </div>
+
+                                <div class="stock">
+                                    <span>Existencias:</span>
+                                    <span>#️⃣162</span>
+                                </div>
+                            </div>
+
+                            <div class="product-details">
+                                <details>
+                                    <summary>Detalles del producto</summary>
+                                    <div class="details">
+                                        <div>
+                                            <p> Se vende por:</p>
+                                            <strong>📦 <span>caja</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Precio al por mayor:</p>
+                                            <strong>💲<span>149</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Cantidad mínima aplicable a mayoreo:</p>
+                                            <strong>#️⃣ <span>5</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Marca:</p>
+                                            <strong>📑 <span>Legendary Whitetails</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Categoría:</p>
+                                            <strong>📑 <span>Legendary Whitetails Legendary Whitetails</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Codigo de barras:</p>
+                                            <strong>🏷️ <span>051987124515482</span></strong>
+                                        </div>
+                                    </div>
+                                </details>
+                            </div>
+                        </div>
+
+                        <div class="content-product-found">
+                            <div class="product-header">
+                                <div class="product-img">
+                                    <img src="https://www.hubspot.com/hs-fs/hubfs/Shell_logo.svg.png?width=450&height=417&name=Shell_logo.svg.png" alt="product image">
+                                </div>
+
+                                <div class="product-name">
+                                    <p>Camiseta clown 100% algodón color negro Camiseta clown 100% algodón color negro</p>
+                                    <span>
+                                        💲176.°° c/u
+                                    </span>
+                                </div>
+
+                                <div class="add-remove-btns">
+                                    <button type="button" class="remove-btn">➖</button>
+                                    <input type="text" id="product-quantity" autocomplete="off">
+                                    <button type="button" class="add-btn">➕</button>
+                                </div>
+                            </div>
+
+                            <div class="product-footer">
+                                <div class="is-not-wholesale">
+                                    <span>No aplica mayoreo</span>
+                                </div>
+
+                                <div class="stock">
+                                    <span>Existencias:</span>
+                                    <span>#️⃣162</span>
+                                </div>
+                            </div>
+
+                            <div class="product-details">
+                                <details>
+                                    <summary>Detalles del producto</summary>
+                                    <div class="details">
+                                        <div>
+                                            <p> Se vende por:</p>
+                                            <strong>📦 <span>caja</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Precio al por mayor:</p>
+                                            <strong>💲<span>149</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Cantidad mínima aplicable a mayoreo:</p>
+                                            <strong>#️⃣ <span>5</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Marca:</p>
+                                            <strong>📑 <span>Legendary Whitetails</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Categoría:</p>
+                                            <strong>📑 <span>Legendary Whitetails Legendary Whitetails</span></strong>
+                                        </div>
+
+                                        <div>
+                                            <p>Codigo de barras:</p>
+                                            <strong>🏷️ <span>051987124515482</span></strong>
+                                        </div>
+                                    </div>
+                                </details>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
                 <!-- RESUMEN DE LA VENTA -->
                 <div class="sale-summary-container">
+                    <div class="total-sale-summary">
+                        <p>Total:</p>
+                        <p>
+                            $<span id="total-pay">50237</span>.°°
+                        </p>
+                    </div>
 
+                    <div class="total-products-summary">
+                        <p>Total de productos:</p>
+                        <span>35</span>
+                    </div>
+
+                    <div class="pay-confirm-form">
+                        <form action="<?= SELLER_HTTP_URL ?>functions/crear_venta" method="POST" autocomplete="off">
+                            <button type="button" title="Cobrar" id="pay-button">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="m700-300-57-56 84-84H120v-80h607l-83-84 57-56 179 180-180 180Z"/></svg>
+                                <!-- <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M560-440q-50 0-85-35t-35-85q0-50 35-85t85-35q50 0 85 35t35 85q0 50-35 85t-85 35ZM280-320q-33 0-56.5-23.5T200-400v-320q0-33 23.5-56.5T280-800h560q33 0 56.5 23.5T920-720v320q0 33-23.5 56.5T840-320H280Zm80-80h400q0-33 23.5-56.5T840-480v-160q-33 0-56.5-23.5T760-720H360q0 33-23.5 56.5T280-640v160q33 0 56.5 23.5T360-400Zm440 240H120q-33 0-56.5-23.5T40-240v-440h80v440h680v80ZM280-400v-320 320Z"/></svg> -->
+                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="m40-240 20-80h220l-20 80H40Zm80-160 20-80h260l-20 80H120Zm623 240 20-160 29-240 10-79-59 479ZM240-80q-33 0-56.5-23.5T160-160h583l59-479H692l-11 85q-2 17-15 26.5t-30 7.5q-17-2-26.5-14.5T602-564l9-75H452l-11 84q-2 17-15 27t-30 8q-17-2-27-15t-8-30l9-74H220q4-34 26-57.5t54-23.5h80q8-75 51.5-117.5T550-880q64 0 106.5 47.5T698-720h102q36 1 60 28t19 63l-60 480q-4 30-26.5 49.5T740-80H240Zm220-640h159q1-33-22.5-56.5T540-800q-35 0-55.5 21.5T460-720Z"/></svg>
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
 
@@ -142,20 +674,158 @@
     <!-- R E Z I E   O B S E R V E R -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const productHeader = document.querySelector(".searcher-products-list-container");
-            const addRemoveBtns = document.querySelector(".add-remove-btns");
+            const productHeaders = document.querySelectorAll(".product-header");
 
-            const observer = new ResizeObserver(entries => {
-                for (let entry of entries) {
-                    if (entry.contentRect.width < 400) {
-                        addRemoveBtns.classList.add("compact");
-                    } else {
-                        addRemoveBtns.classList.remove("compact");
+            productHeaders.forEach(productHeader => {
+                const addRemoveBtns = productHeader.querySelector(".add-remove-btns");
+
+                if (!addRemoveBtns) return;
+
+                const observer = new ResizeObserver(entries => {
+                    for (let entry of entries) {
+                        if (entry.contentRect.width < 400) {
+                            addRemoveBtns.classList.add("compact");
+                        } else {
+                            addRemoveBtns.classList.remove("compact");
+                        }
                     }
-                }
-            });
+                });
 
-            observer.observe(productHeader);
+                observer.observe(productHeader);
+            });
+        });
+    </script>
+
+    <!-- VALIDAR CANTIDAD A PAGAR -->
+    <script>
+        function validarPrecios(input) {
+            let cursorPos = input.selectionStart;
+            let longitudAntes = input.value.length;
+
+            input.value = input.value.replace(/^0+(\d)/, '$1')
+                                    .replace(/[^0-9.]/g, '')
+                                    .replace(/(\..*)\./g, '$1')
+                                    .replace(/^(\d+\.\d{2})\d+$/, '$1');
+
+            if (input.value === "0") input.value = "";
+
+            if (input.value.startsWith('.')) input.value = '';
+        }
+    </script>
+
+    <!-- SEET ALERT -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const payButton = document.getElementById('pay-button');
+
+            payButton.addEventListener('click', () => {
+                let timerInterval;
+                const totalPay = document.getElementById('total-pay').textContent;
+
+                Swal.fire({
+                    title: "Cargando...",
+                    timer: 1200,
+                    timerProgressBar: true,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    toast: true,
+                    showConfirmButton: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                        const timer = Swal.getPopup().querySelector("b");
+
+                        timerInterval = setInterval(() => {
+                            if (timer) {
+                                timer.textContent = `${Swal.getTimerLeft()}`;
+                            }
+                        }, 100);
+                    },
+                    willClose: () => {
+                        clearInterval(timerInterval);
+                    }
+                }).then(() => {
+                    Swal.fire({
+                        title: "Finalizar venta ✅",
+                        focusConfirm: false,
+                        allowOutsideClick: false,
+                        showCancelButton: true,
+                        confirmButtonText: `
+                            <span class="swal-custom-text">Pagar</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                                <path d="M560-440q-50 0-85-35t-35-85q0-50 35-85t85-35q50 0 85 35t35 85q0 50-35 85t-85 35ZM280-320q-33 0-56.5-23.5T200-400v-320q0-33 23.5-56.5T280-800h560q33 0 56.5 23.5T920-720v320q0 33-23.5 56.5T840-320H280Zm80-80h400q0-33 23.5-56.5T840-480v-160q-33 0-56.5-23.5T760-720H360q0 33-23.5 56.5T280-640v160q33 0 56.5 23.5T360-400Zm440 240H120q-33 0-56.5-23.5T40-240v-440h80v440h680v80ZM280-400v-320 320Z"/>
+                            </svg>
+                        `,
+                        cancelButtonText: `
+                            <span class="swal-custom-text">Cancelar</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="m336-280 144-144 144 144 56-56-144-144 144-144-56-56-144 144-144-144-56 56 144 144-144 144 56 56ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>
+                        `,
+                        buttonsStyling: true,
+                        customClass: {
+                            confirmButton: "swal-custom-btn swal-pay-btn",
+                            cancelButton: "swal-custom-btn swal-cancel-btn"
+                        },
+                        html: `
+                            <div class="swal-custom-form">
+                                <fieldset>
+                                    <legend>Pagó con:</legend>
+                                    <input id="swal-pay" class="swal2-input" onInput="validarPrecios(this)" placeholder="💲">
+                                </fieldset>
+
+                                <div>
+                                    <h2>Total:</h2>
+                                    <p id="swal-total">💲${parseFloat(totalPay)}.°°</p>
+                                </div>
+
+                                <div>
+                                    <h2>Su cambio:</h2>
+                                    <p id="swal-change">💲0.00.°°</p>
+                                </div>
+                            </div>
+                        `,
+                        didOpen: () => {
+                            const inputPago = document.getElementById('swal-pay');
+                            const cambioSpan = document.getElementById('swal-change');
+
+                            inputPago.addEventListener('input', () => {
+                                let pago = parseFloat(inputPago.value) || 0;
+                                let cambio = pago - parseFloat(totalPay);
+
+                                cambioSpan.textContent = cambio >= 0 ? `💲${cambio}.°°` : '💲0.00.°°';
+                            });
+                        },
+                        preConfirm: () => {
+                            return [
+                                document.getElementById("swal-pay").value,
+                            ];
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            if (result.value)
+                                Swal.fire(JSON.stringify(result.value));
+                        } else {
+                            const Toast = Swal.mixin({
+                                toast: true,
+                                position: "top-end",
+                                showConfirmButton: false,
+                                timer: 3000,
+                                iconColor: 'white',
+                                timerProgressBar: true,
+                                customClass: {
+                                    popup: 'colored-toast',
+                                },
+                                didOpen: (toast) => {
+                                    toast.onmouseenter = Swal.stopTimer;
+                                    toast.onmouseleave = Swal.resumeTimer;
+                                }
+                            });
+                            Toast.fire({
+                                icon: "info",
+                                title: "Operación cancelada"
+                            });
+                        }
+                    });
+                });
+            });
         });
     </script>
 </body>
