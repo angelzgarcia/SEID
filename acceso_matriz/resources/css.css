@@ -821,7 +821,7 @@ select.crud-header-select {
             /* overflow: hidden; */
             & select { width: 100%; font-size: small; }
         }
-        & input[type="text"], input[type="date"], input[type="file"], input[type="number"], textarea, select {
+        & input[type="text"], input[type="date"], input[type="file"], input[type="number"], input[type="radio"], textarea, select {
             border-radius: .3rem;
             font-size: small;
             padding: .6rem;
@@ -836,6 +836,7 @@ select.crud-header-select {
                 border-inline-start: .3rem solid rgba(128, 128, 128, 0.685);
             }
         }
+        & input[type="radio"] { box-shadow: none; }
         & .form-btn {
             gap: .5rem;
             grid-column: -2 / -1;

@@ -9,7 +9,7 @@ function encryptValue($value, $secretKey) {
 }
 
 function decryptValue($encryptedValue, $secretKey) {
-    list($ciphertext, $iv) = explode('::', base64_decode($encryptedValue), 2);
+    [$ciphertext, $iv] = explode('::', base64_decode($encryptedValue), 2);
     $iv = base64_decode($iv);
     return openssl_decrypt($ciphertext, 'aes-256-cbc', $secretKey, 0, $iv);
 }

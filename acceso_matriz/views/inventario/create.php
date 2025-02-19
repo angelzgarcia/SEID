@@ -3,10 +3,10 @@
 <?php require_once __DIR__ . '/../../functions/helpers/encrypt.php' ?>
 <?php $page_name = ACCESO . 'Añadir producto' ?>
 <?php
-    $sql_categorias = 'SELECT nombre_categoria FROM categorias WHERE status_categoria = 0 ORDER BY nombre_categoria ASC';
+    $sql_categorias = 'SELECT id_categoria, nombre_categoria FROM categorias WHERE status_categoria = 0 ORDER BY nombre_categoria ASC';
     $categorias = simpleQuery($sql_categorias, [], '', true) ?: [];
 
-    $sql_marcas = 'SELECT nombre_marca FROM marcas WHERE status_marca = 0 ORDER BY nombre_marca ASC';
+    $sql_marcas = 'SELECT id_marca, nombre_marca FROM marcas WHERE status_marca = 0 ORDER BY nombre_marca ASC';
     $marcas = simpleQuery($sql_marcas) ?: [];
 ?>
 
@@ -42,7 +42,7 @@
                 <!-- CATEGORIA -->
                 <fieldset class="field-select">
                     <legend>
-                        Categoría
+                        Categoría *
                         <p class='message-error'>
                             <?= $_SESSION['errors']['categoria'] ?? '' ?>
                         </p>
@@ -56,7 +56,7 @@
                         <?php else: ?>
 
                             <?php foreach ($categorias as $categoria): ?>
-                                <option value="<?= strtolower($categoria['nombre_categoria']) ?>"><?= ucfirst($categoria['nombre_categoria']) ?></option>
+                                <option value="<?= encryptValue($categoria['id_categoria'], SECRETKEY) ?>"><?= ucfirst($categoria['nombre_categoria']) ?></option>
                             <?php endforeach; ?>
 
                         <?php endif; ?>
@@ -66,7 +66,7 @@
                 <!-- MARCA -->
                 <fieldset class="field-select">
                     <legend>
-                        Marca
+                        Marca *
                         <p class='message-error'>
                             <?= $_SESSION['errors']['marca'] ?? '' ?>
                         </p>
@@ -80,7 +80,7 @@
                         <?php else: ?>
 
                             <?php foreach ($marcas as $marca): ?>
-                                <option value="<?= strtolower($marca['nombre_marca']) ?>"><?= ucfirst($marca['nombre_marca']) ?></option>
+                                <option value="<?= encryptValue($marca['id_marca'], SECRETKEY) ?>"><?= ucfirst($marca['nombre_marca']) ?></option>
                             <?php endforeach; ?>
 
                         <?php endif; ?>
@@ -232,10 +232,43 @@
                     <input type="text" id="precio_venta" name="precio_venta" value="<?= $_SESSION['olds']['precio_venta'] ?? '' ?>" placeholder="Ingrese el precio de venta" oninput="validarPrecios(this)">
                 </fieldset>
 
-                <!-- PRECIO MAYOREO -->
+                <!-- APLICA MAYOREO -->
                 <fieldset>
                     <legend>
-                        Precio de Mayoreo💲
+                        Aplica venta al por mayor *
+                        <p class='message-error'>
+                            <?= $_SESSION['errors']['aplica_mayoreo'] ?? '' ?>
+                        </p>
+                    </legend>
+
+                    <div class="flex justify-start gap-8 items-center">
+                        <div class="flex gap-2 items-center">
+                            <input type="radio" name="aplica_mayoreo" value="si" <?= $_SESSION['olds']['aplica_mayoreo'] === 'si' ? 'checked' : '' ?>>
+                            <span>Sí</span>
+                        </div>
+                        <div class="flex gap-2 items-center">
+                            <input type="radio" name="aplica_mayoreo" value="no" <?= $_SESSION['olds']['aplica_mayoreo'] === 'no' ? 'checked' : '' ?>>
+                            <span>No</span>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- CANTIDAD MINIMA APLICABLE AL POR MAYOR -->
+                <fieldset style="display: none;" id="min-quantity-wholesale">
+                    <legend>
+                        Cantidad mínima aplicable al por mayor *
+                        <p class='message-error'>
+                            <?= $_SESSION['errors']['cantidad_minima_mayoreo'] ?? '' ?>
+                        </p>
+                    </legend>
+
+                    <input type="text" id="cantidad_minima_mayoreo" name="cantidad_minima_mayoreo" value="<?= $_SESSION['olds']['cantidad_minima_mayoreo'] ?? '' ?>" placeholder="Ingrese la cantidad mínima aplicable a mayoreo" oninput="validarPrecios(this)">
+                </fieldset>
+
+                <!-- PRECIO MAYOREO -->
+                <fieldset style="display: none;" id="wholesale-price">
+                    <legend>
+                        Precio al por mayor *💲
                         <p class='message-error'>
                             <?= $_SESSION['errors']['precio_mayoreo'] ?? '' ?>
                         </p>
@@ -287,12 +320,35 @@
 
     <!-- SWEET ALERT -->
     <?php
-        if (isset($_SESSION['swal']))
+        if (isset($_SESSION['swal'])) {
             echo $_SESSION['swal'];
+            unset($_SESSION['swal']);
+        }
 
         unset($_SESSION['olds']);
         unset($_SESSION['errors']);
     ?>
+
+    <!-- MOSTRAR CAMPOS PARA MAYOREO -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const radios = document.querySelectorAll('input[name="aplica_mayoreo"]');
+            const minQuantityWholesale = document.getElementById('min-quantity-wholesale');
+            const wholesalePrice = document.getElementById('wholesale-price');
+
+            radios.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    if (radio.value === 'si') {
+                        minQuantityWholesale.style.display = 'flex';
+                        wholesalePrice.style.display = 'flex';
+                    } else {
+                        minQuantityWholesale.style.display = 'none';
+                        wholesalePrice.style.display = 'none';
+                    }
+                });
+            });
+        });
+    </script>
 
     <!-- REEMPLAZAR NUMEROS NEGATIVOS -->
     <script>

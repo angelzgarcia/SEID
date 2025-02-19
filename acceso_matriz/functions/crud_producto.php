@@ -26,15 +26,22 @@ function store()
     $data = [];
     $errors = [];
     $olds = [];
-    $unfillable = ['categoria' => '', 'marca' => '', 'precio_mayoreo' => '', 'vencimiento' => ''];
+    $unfillable = ['precio_mayoreo' => '', 'cantidad_minima_mayoreo' => '', 'vencimiento' => ''];
 
-    array_pop($_POST);
+    $vencimiento = !isset($_POST['vencimiento']) ? clearEntry($_POST['vencimiento']) : null;
+    unset($_POST['vencimiento']);
+    unset($_POST['accion']);
+
+    isset($_POST['categoria']) ? $_POST['categoria'] = decryptValue($_POST['categoria'], SECRETKEY) : '';
+    isset($_POST['marca']) ? $_POST['marca'] = decryptValue($_POST['marca'], SECRETKEY) : '';
+
     foreach($_POST as $key => $request) {
         $data[$key] = clearEntry($request) ?: null;
         $olds[$key] = $request ?: '';
 
-        if (!array_key_exists($key, $unfillable) && !isset($data[$key]))
-            $errors[$key] = "El campo " . str_replace(['-','_'], ' ', $key) . " es obligatorio";
+        if ($data['aplica_mayoreo'] === 'si' || !array_key_exists($key, $unfillable))
+            if (!isset($data[$key]))
+                $errors[$key] = "El campo " . str_replace(['-','_'], ' ', $key) . " es obligatorio";
     }
 
     $_SESSION['olds'] = $olds;
@@ -68,14 +75,6 @@ function store()
     // C R E A R   S L U G
     $slug = createSlug($data['nombre']);
 
-    $data['categoria'] = !empty($data['marca']) ? (int) $data['marca'] : null;
-    $data['marca'] = !empty($data['marca']) ? (int) $data['marca'] : null;
-    $data['codigo_barras'] = !empty($data['codigo_barras']) ? (int) $data['codigo_barras'] : null;
-    $data['stock'] = (float) $data['stock'];
-    $data['precio_costo'] = (float) $data['precio_costo'];
-    $data['precio_venta'] = (float) $data['precio_venta'];
-    $data['precio_mayoreo'] = !empty($data['precio_mayoreo']) ? (float) $data['precio_mayoreo'] : null;
-
     $index_data = array_values($data);
     array_push($index_data, $file_name, $slug);
 
@@ -85,16 +84,19 @@ function store()
             id_marca_fk_producto,
             codigo_barras_producto,
             nombre_producto,
-            tipo_venta_producto,
+            unidad_compra_producto,
+            unidad_venta_producto,
             stock_producto,
+            factor_conversion,
             precio_costo_producto,
             precio_venta_producto,
+            aplica_mayoreo,
+            cantidad_minima_mayoreo_producto,
             precio_mayoreo_producto,
-            vencimiento_producto,
             imagen_producto,
             slug_producto
         )
-        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ';
     global $conn;
 
@@ -108,12 +110,11 @@ function store()
         'null'    => 's',
     ];
 
-
     foreach ($index_data as $key => &$value) {
         if ($value === null) {
-            $value = null;
+            $value = '';
         }
-        $types .= $type_map[gettype($value)] ?? 's'; // Si es un tipo desconocido, lo trata como 's'
+        $types .= $type_map[gettype($value)] ?? 's';
     }
 
     $query = $conn -> prepare($sql);
@@ -147,7 +148,7 @@ function storeImage($file, $file_name)
         redirect();
     }
 
-    $path = DOC_ROOT . 'storage/imgs/uploads/';
+    $path = DOC_ROOT . 'imgs_productos/';
     $file_type = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
     $file_size = $_FILES['imagen']['size'];
     $max_size = 3;

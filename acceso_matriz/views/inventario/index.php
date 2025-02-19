@@ -2,11 +2,12 @@
 <?php require_once __DIR__ . '/../../database.php' ?>
 <?php $page_name = ACCESO . 'Inventario' ?>
 <?php
-    $sql = 'SELECT * FROM productos ';
+    $sql = '
+        SELECT * FROM productos
+        JOIN marcas
+    ';
     $query = $conn -> query($sql);
     $productos = $query -> fetch_all(MYSQLI_ASSOC) ?: [];
-
-
 ?>
 
 <!DOCTYPE html>
@@ -194,21 +195,21 @@
                             <a href="" class="register-details-link">
                                 <div class="register-details">
                                     <div class="header-register">
-                                        <p><?= $producto['nombre_producto'] ?></p>
+                                        <p><?= $producto['nombre_producto'] ?? '' ?></p>
                                         <span><?= $producto['marca_producto'] ?? '' ?></span>
                                         <span><?= $producto['categoria_producto'] ?? '' ?></span>
                                     </div>
 
                                     <div class="body-register">
                                         <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                        <img src="<?= HTTP_URL . 'storage/imgs/uploads/' . $producto['imagen_producto'] ?>" alt="product-img">
+                                        <img src="<?= HTTP_URL . 'imgs_productos/' . $producto['imagen_producto'] ?>" alt="product image">
                                         <div class="quantities">
                                             <p>
                                                 <?=
-                                                    match($producto['tipo_venta_producto']) {
-                                                        'unidad' => 'Costo por unidad',
-                                                        'granel' => 'Costo a granel',
-                                                        'paquete' => 'Costo por paquete',
+                                                    match($producto['unidad_venta_producto']) {
+                                                        'pieza' => 'Costo de venta por unidad',
+                                                        'paquete' => 'Costo de venta por paquete',
+                                                        'caja' => 'Costo de venta por caja',
                                                     };
                                                 ?>
                                                 <span>$<?= $producto['precio_costo_producto'] ?></span>
@@ -218,7 +219,7 @@
                                                 <span>$<?= $producto['precio_venta_producto'] ?></span>
                                             </p>
                                             <p>
-                                                Unidades
+                                                Existencias
                                                 <span><?= $producto['stock_producto'] ?></span>
                                             </p>
                                         </div>
