@@ -4,11 +4,11 @@
 <?php $page_name = ACCESO . 'Editar marca' ?>
 
 <?php
-    $id_marca = decryptValue($_GET['c'], SECRETKEY);
+    $id_marca = decryptValue($_GET['m'], SECRETKEY);
 
     $sql = 'SELECT * FROM marcas WHERE id_marca = ?';
 
-    $marca = simpleQuery($sql, [$id_marca], 'i', true);
+    $marca = simpleQuery($sql, [(int)$id_marca], 'i', true)[0];
 
     if (!$marca) {
         header("Location: {$_SERVER['HTTP_REFERER']}");
@@ -50,7 +50,7 @@
                 </div>
             </div>
 
-            <form class="form-create category-add" action="<?= MATRIX_FNS ?>crud_marca.php?c=<?= encryptValue($marca['id_marca'], SECRETKEY) ?>" method="POST" autocomplete="off" enctype="multipart/form-data">
+            <form class="form-create category-add" action="<?= MATRIX_FNS ?>crud_marca.php?m=<?= encryptValue($id_marca, SECRETKEY) ?>" method="POST" autocomplete="off" enctype="multipart/form-data">
                 <!-- NOMBRE -->
                 <fieldset class="category-field-name">
                     <legend>
@@ -60,7 +60,7 @@
                         </p>
                     </legend>
 
-                    <input type="text" name="nombre" placeholder="Ingrese el nombre de la marca" value="<?= ucfirst($marca['nombre_marca']) ?: ($_SESSION['olds']['nombre'] ?? ''); ?>">
+                    <input type="text" name="nombre" placeholder="Ingrese el nombre de la marca" value="<?= ucfirst($marca['nombre_marca'] ?? '') ?: ($_SESSION['olds']['nombre'] ?? ''); ?>">
                 </fieldset>
 
 
@@ -73,7 +73,7 @@
                         </p>
                     </legend>
 
-                    <textarea name="descripcion" rows="4" placeholder="Ingrese la descripcion de la marca"><?= ucfirst($marca['descripcion_marca']) ?: ($_SESSION['olds']['descripcion'] ?? ''); ?></textarea>
+                    <textarea name="descripcion" rows="4" placeholder="Ingrese la descripcion de la marca"><?= ucfirst($marca['descripcion_marca'] ?? '') ?: ($_SESSION['olds']['descripcion'] ?? ''); ?></textarea>
                 </fieldset>
 
                 <!-- IMAGEN -->
@@ -95,7 +95,7 @@
 
                     <span class="font-medium text-gray-500"><small>Imgen actual</small></span>
                     <div class="current-image-container">
-                        <img src="<?= $marca['imagen_marca'] ?>" alt="Imagen actual">
+                        <img src="<?= $marca['imagen_marca'] ?? '' ?>" alt="Imagen actual">
                     </div>
                 </fieldset>
 

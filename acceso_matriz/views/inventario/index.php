@@ -1,13 +1,51 @@
 <?php require_once __DIR__ . '/../../config.php' ?>
 <?php require_once __DIR__ . '/../../database.php' ?>
+<?php require_once __DIR__ . '/../../functions/helpers/encrypt.php' ?>
 <?php $page_name = ACCESO . 'Inventario' ?>
 <?php
     $sql = '
-        SELECT * FROM productos
-        JOIN marcas
+        SELECT p.stock_producto, p.id_producto, v.*
+        FROM productos AS p
+        LEFT JOIN lotes_vencimientos AS v
+        ON p.id_producto = v.id_producto_fk_lote_vencimiento
     ';
-    $query = $conn -> query($sql);
-    $productos = $query -> fetch_all(MYSQLI_ASSOC) ?: [];
+    $products = simpleQuery($sql) ?: [];
+
+    if (!empty($products)) {
+        $count_products = count($products);
+
+        $count_out_stock_products = 0;
+        array_map(function($product) use (&$count_out_stock_products) {
+            if ((int)$product['stock_producto'] === 0)
+                $count_out_stock_products++;
+        }, $products);
+
+
+        $count_few_stock_products = 0;
+        array_map(function($product) use (&$count_few_stock_products) {
+            if ((int)$product['stock_producto'] <= 50)
+                $count_few_stock_products++;
+        }, $products);
+
+
+        $count_close_expiration_products = 0;
+        $curr_date = new DateTime();
+        $curr_day = (int) $curr_date -> format('d');
+        $curr_month = (int) $curr_date -> format('m');
+
+        foreach ($products as $product) {
+            if (!empty($product['fecha_vencimiento'])) {
+                $expired_date = DateTime::createFromFormat('Y-m-d', $product['fecha_vencimiento']);
+                if ($expired_date) {
+                    $expired_day = (int) $expired_date -> format('d');
+                    $expired_month = (int) $expired_date -> format('m');
+
+                    if ($expired_day <= $curr_day && $expired_month === $curr_month + 1)
+                        $count_close_expiration_products++;
+                }
+            }
+        }
+    }
 ?>
 
 <!DOCTYPE html>
@@ -140,19 +178,19 @@
                     <div class="details">
                         <div class="summary">
                             <p>Total de productos</p>
-                            <span>122</span>
+                            <span><?= $count_products ?: 0 ?></span>
                         </div>
                         <div class="summary">
                             <p>Productos sin stock</p>
-                            <span>15</span>
+                            <span><?= $count_out_stock_products ?: 0 ?></span>
                         </div>
                         <div class="summary">
                             <p>Productos con bajo inventario</p>
-                            <span>38</span>
+                            <span><?= $count_few_stock_products ?: 0 ?></span>
                         </div>
                         <div class="summary">
                             <p>Productos próximos a vencer</p>
-                            <span>7</span>
+                            <span><?= $count_close_expiration_products ?: 0 ?></span>
                         </div>
                     </div>
                 </div>
@@ -170,80 +208,30 @@
 
                     </form>
 
-                    <form action="" class="crud-searcher">
-                        <input type="text" name="" id="" placeholder="Buscar producto.....">
-                        <button type="submit">
+                    <!-- BUSCADOR -->
+                    <div class="crud-searcher">
+                        <input type="text" id="searcher" placeholder="Buscar productos..." autocomplete="off" onkeyup="busqueda($('#searcher').val());">
+
+                        <span id="erase-search">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="m456-320 104-104 104 104 56-56-104-104 104-104-56-56-104 104-104-104-56 56 104 104-104 104 56 56Zm-96 160q-19 0-36-8.5T296-192L80-480l216-288q11-15 28-23.5t36-8.5h440q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H360ZM180-480l180 240h440v-480H360L180-480Zm400 0Z"/></svg>
+                        </span>
+
+                        <button type="button">
                             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
                         </button>
-                    </form>
+                    </div>
                 </div>
             </div>
 
             <!-- LISTA DE REGISTROS -->
-            <div class="crud-grid">
+            <div class="crud-grid" id="products-container">
 
-                <?php if (empty($productos)): ?>
-                    <div class="registers-empty">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M40.1 467.1l-11.2 9c-3.2 2.5-7.1 3.9-11.1 3.9C8 480 0 472 0 462.2L0 192C0 86 86 0 192 0S384 86 384 192l0 270.2c0 9.8-8 17.8-17.8 17.8c-4 0-7.9-1.4-11.1-3.9l-11.2-9c-13.4-10.7-32.8-9-44.1 3.9L269.3 506c-3.3 3.8-8.2 6-13.3 6s-9.9-2.2-13.3-6l-26.6-30.5c-12.7-14.6-35.4-14.6-48.2 0L141.3 506c-3.3 3.8-8.2 6-13.3 6s-9.9-2.2-13.3-6L84.2 471c-11.3-12.9-30.7-14.6-44.1-3.9zM160 192a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zm96 32a32 32 0 1 0 0-64 32 32 0 1 0 0 64z"/></svg>
-                        <p>AÚN NO HAY PRODUCTOS REGISTRADOS.</p>
-                    </div>
-                <?php else: ?>
-                    <?php foreach($productos as $producto): ?>
-                        <!-- MARCO DEL REGISTRO -->
-                        <div class="register-frame">
-                            <!-- DETALLES -->
-                            <a href="" class="register-details-link">
-                                <div class="register-details">
-                                    <div class="header-register">
-                                        <p><?= $producto['nombre_producto'] ?? '' ?></p>
-                                        <span><?= $producto['marca_producto'] ?? '' ?></span>
-                                        <span><?= $producto['categoria_producto'] ?? '' ?></span>
-                                    </div>
-
-                                    <div class="body-register">
-                                        <!-- <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img"> -->
-                                        <img src="<?= HTTP_URL . 'imgs_productos/' . $producto['imagen_producto'] ?>" alt="product image">
-                                        <div class="quantities">
-                                            <p>
-                                                <?=
-                                                    match($producto['unidad_venta_producto']) {
-                                                        'pieza' => 'Costo de venta por unidad',
-                                                        'paquete' => 'Costo de venta por paquete',
-                                                        'caja' => 'Costo de venta por caja',
-                                                    };
-                                                ?>
-                                                <span>$<?= $producto['precio_costo_producto'] ?></span>
-                                            </p>
-                                            <p>
-                                                Precio sugerido
-                                                <span>$<?= $producto['precio_venta_producto'] ?></span>
-                                            </p>
-                                            <p>
-                                                Existencias
-                                                <span><?= $producto['stock_producto'] ?></span>
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </a>
-                            <!-- ACCIONES -->
-                            <div class="register-actions">
-                                <a href="">
-                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M160-120v-170l527-526q12-12 27-18t30-6q16 0 30.5 6t25.5 18l56 56q12 11 18 25.5t6 30.5q0 15-6 30t-18 27L330-120H160Zm80-80h56l393-392-28-29-29-28-392 393v56Zm560-503-57-57 57 57Zm-139 82-29-28 57 57-28-29ZM560-120q74 0 137-37t63-103q0-36-19-62t-51-45l-59 59q23 10 36 22t13 26q0 23-36.5 41.5T560-200q-17 0-28.5 11.5T520-160q0 17 11.5 28.5T560-120ZM183-426l60-60q-20-8-31.5-16.5T200-520q0-12 18-24t76-37q88-38 117-69t29-70q0-55-44-87.5T280-840q-45 0-80.5 16T145-785q-11 13-9 29t15 26q13 11 29 9t27-13q14-14 31-20t42-6q41 0 60.5 12t19.5 28q0 14-17.5 25.5T262-654q-80 35-111 63.5T120-520q0 32 17 54.5t46 39.5Z"/></svg>
-                                </a>
-                                <form action="" class="destroy-btn">
-                                    <button type="submit">
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M280-240q-100 0-170-70T40-480q0-100 70-170t170-70h400q100 0 170 70t70 170q0 100-70 170t-170 70H280Zm0-80h400q66 0 113-47t47-113q0-66-47-113t-113-47H280q-66 0-113 47t-47 113q0 66 47 113t113 47Zm0-40q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35Zm200-120Z"/></svg>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
+                <!-- R E G I S T R O S   D E S D E    J Q U E R Y -->
 
             </div>
         </div>
     </main>
 
+    <script src="<?= MATRIX_HTTP_URL ?>resources/inventory.js"></script>
 </body>
 </html>

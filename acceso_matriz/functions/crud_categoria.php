@@ -2,7 +2,6 @@
 if ($_SERVER['REQUEST_METHOD'] !== 'POST')
     redirect();
 
-session_start();
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../database.php';
 foreach (glob(__DIR__ . "/helpers/*.php") as $helper)

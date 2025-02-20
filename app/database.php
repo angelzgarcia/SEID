@@ -33,10 +33,9 @@
             $result = $conn -> prepare($query);
             $result -> bind_param($types, ...$params);
             $result -> execute();
-
             // IS SELECT QUERY
             if ($result -> affected_rows === -1 || $result -> field_count > 0) {
-                $rows = $result -> get_result() -> fetch_all(MYSQLI_ASSOC)[0];
+                $rows = $result -> get_result() -> fetch_all(MYSQLI_ASSOC);
                 $result -> close();
 
                 return !empty($rows)

@@ -1,8 +1,8 @@
 <?php
-if ($_SERVER['REQUEST_METHOD'] !== 'POST')
-    redirect();
 
-session_start();
+if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+redirect();
+
 require_once __DIR__ . '/../database.php';
 require_once __DIR__ . '/../config.php';
 foreach (glob(__DIR__ . "/helpers/*.php") as $helper)
@@ -11,7 +11,7 @@ foreach (glob(__DIR__ . "/helpers/*.php") as $helper)
 match ($_POST['accion']) {
     'guardar' => store(),
     'actualizar' => update(),
-    'modificar' => destroy(),
+    'modificar' => changeStatus(),
     default => redirect()
 };
 
@@ -19,6 +19,11 @@ function redirect()
 {
     header("Location: {$_SERVER['HTTP_REFERER']}");
     exit;
+}
+
+function index()
+{
+    return require_once MATRIX_DOC_ROOT . 'views/inventario/index.php';
 }
 
 function store()
@@ -32,31 +37,23 @@ function store()
     unset($_POST['vencimiento']);
     unset($_POST['accion']);
 
-    isset($_POST['categoria']) ? $_POST['categoria'] = decryptValue($_POST['categoria'], SECRETKEY) : '';
-    isset($_POST['marca']) ? $_POST['marca'] = decryptValue($_POST['marca'], SECRETKEY) : '';
+    $_POST['categoria'] ? $_POST['categoria'] = decryptValue($_POST['categoria'], SECRETKEY) : '';
+    $_POST['marca'] ? $_POST['marca'] = decryptValue($_POST['marca'], SECRETKEY) : '';
 
     foreach($_POST as $key => $request) {
         $data[$key] = clearEntry($request) ?: null;
         $olds[$key] = $request ?: '';
 
-        if ($data['aplica_mayoreo'] === 'si' || !array_key_exists($key, $unfillable))
+        if (($key === 'aplica_mayoreo' && $data['aplica_mayoreo'] === 'si') || !array_key_exists($key, $unfillable))
             if (!isset($data[$key]))
                 $errors[$key] = "El campo " . str_replace(['-','_'], ' ', $key) . " es obligatorio";
     }
 
     $_SESSION['olds'] = $olds;
 
-    $file = $_FILES['imagen']['tmp_name'];
-    if ($file) {
-        $is_an_image = getimagesize($file);
+    $file = $_FILES['imagen'];
 
-        if (!$is_an_image) {
-            $_SESSION['swal'] = swal('info', '¡El fichero no es una imagen!', '', 4000);
-            redirect();
-        }
-    }
-
-    !$file ? $errors['imagen'] = "La imagen es obligatoria" : '';
+    !$file['tmp_name'] ? $errors['imagen'] = "La imagen es obligatoria" : '';
 
     if (count($errors) === ((count($_POST) + 1) - count($unfillable))) {
         $_SESSION['swal'] = swal('warning', '¡Completa los campos obligatorios!');
@@ -68,15 +65,34 @@ function store()
         redirect();
     }
 
-    // G U A R D A R   I M A G E N
-    $file_name = basename($_FILES['imagen']['name']);
-    storeImage($file, $file_name);
-
     // C R E A R   S L U G
     $slug = createSlug($data['nombre']);
 
+    // G U A R D A R   I M A G E N
+    $http_path = HTTP_URL . 'imgs_productos/';
+    $date = date('mY');
+    $file_name = createSlug(basename($file['name']), true);
+    $img_path = "{$date}_{$slug}_{$file_name}";
+
+    storeImage($file, $img_path);
+
     $index_data = array_values($data);
-    array_push($index_data, $file_name, $slug);
+    array_push($index_data, "$http_path$img_path", $slug);
+
+    $types = '';
+    $type_map = [
+        'integer' => 'i',
+        'double'  => 'd',
+        'float'   => 'd',
+        'string'  => 's',
+        'NULL'    => 's',
+        'null'    => 's',
+    ];
+
+    foreach ($index_data as &$value) {
+        if ($value === null) $value = '';
+        $types .= $type_map[gettype($value)] ?? 's';
+    }
 
     $sql = '
         INSERT INTO productos (
@@ -99,28 +115,10 @@ function store()
         VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ';
     global $conn;
-
-    $types = "";
-    $type_map = [
-        'integer' => 'i',
-        'double'  => 'd',
-        'float'   => 'd',
-        'string'  => 's',
-        'NULL'    => 's',
-        'null'    => 's',
-    ];
-
-    foreach ($index_data as $key => &$value) {
-        if ($value === null) {
-            $value = '';
-        }
-        $types .= $type_map[gettype($value)] ?? 's';
-    }
-
     $query = $conn -> prepare($sql);
 
     if (!$query) {
-        destroyImage($file_name);
+        destroyImage($img_path);
         $_SESSION['swal'] = swal('error', 'Error al añadir el producto.');
         redirect();
     }
@@ -129,7 +127,7 @@ function store()
     $query -> bind_param($types, ...$params);
 
     if (!$query -> execute()) {
-        destroyImage($file_name);
+        destroyImage($img_path);
         $query -> close();
 
         $_SESSION['swal'] = swal('error', '¡Ocurrió un error!' . $query -> error);
@@ -138,25 +136,42 @@ function store()
 
     $_SESSION['swal'] = swal('success', '¡Producto añadido exitosamente!');
     $query -> close();
+
+    unset($_SESSION['olds']);
+    unset($_SESSION['errors']);
     redirect();
 }
 
-function storeImage($file, $file_name)
+function update()
 {
+
+}
+
+function changeStatus()
+{
+
+}
+
+
+function storeImage($file, $img_path)
+{
+    $file_name = basename($file['name']);
+
     if (strlen($file_name) > 70) {
         $_SESSION['swal'] = swal('warning', '¡El nombre de la imagen es demasiado largo!');
         redirect();
     }
 
-    $path = DOC_ROOT . 'imgs_productos/';
+    $is_an_image = getimagesize($file['tmp_name']);
+    if (!$is_an_image) {
+        $_SESSION['swal'] = swal('info', '¡El fichero no es una imagen!', '', 4000);
+        redirect();
+    }
+
     $file_type = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
-    $file_size = $_FILES['imagen']['size'];
+    $file_size = $file['size'];
     $max_size = 3;
 
-    // if (file_exists("$path$file_name")) {
-    //     $_SESSION['swal'] = swal('warning', '¡Ya existe una imagen con este nombre!', '', 4000);
-    //     redirect();
-    // }
 
     if ($file_size / (1024 * 1024) > $max_size) {
         $_SESSION['swal'] = swal('warning', "¡Max. {$max_size}MB por imagen!", '', 4000);
@@ -168,7 +183,14 @@ function storeImage($file, $file_name)
         redirect();
     }
 
-    if (!move_uploaded_file($file, "$path$file_name")) {
+    $doc_path = DOC_ROOT . 'imgs_productos/';
+
+    if (file_exists("$doc_path$file_name")) {
+        $_SESSION['swal'] = swal('warning', '¡Ya existe una imagen con este nombre!', '', 4000);
+        redirect();
+    }
+
+    if (!move_uploaded_file($file['tmp_name'], "$doc_path$img_path")) {
         $_SESSION['swal'] = swal('error', "Error al procesar la imagen");
         redirect();
     }
@@ -176,32 +198,24 @@ function storeImage($file, $file_name)
 
 function destroyImage($file_name)
 {
-    $path = DOC_ROOT . 'storage/imgs/uploads/';
+    $path = DOC_ROOT . 'imgs_productos/';
     if (file_exists("$path$file_name"))
         unlink("$path$file_name");
 }
 
-function createSlug($entrada)
+function createSlug($string, $is_an_image = false)
 {
-    $entrada = clearEntry($entrada);
-
     $acentos = ['á', 'é', 'í', 'ó', 'ú', 'ñ', 'ü'];
     $sinAcentos = ['a', 'e', 'i', 'o', 'u', 'n', 'u'];
-    $entrada = str_replace($acentos, $sinAcentos, $entrada);
 
-    $entrada = preg_replace('/[^a-z0-9\s]/', '', $entrada);
+    $string = str_replace($acentos, $sinAcentos, $string);
 
-    $entrada = preg_replace('/\s+/', '-', $entrada);
+    $string = !$is_an_image ?
+    preg_replace('/[^a-z0-9\s]/', '', $string) :
+    preg_replace('/[^a-z0-9.\-_\s]/', '', $string);
 
-    return $entrada;
+    $string = preg_replace('/\s+/', '-', $string);
+
+    return $string;
 }
 
-function update()
-{
-
-}
-
-function destroy()
-{
-
-}

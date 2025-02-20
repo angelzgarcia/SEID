@@ -10,10 +10,11 @@
 
     $categoria = simpleQuery($sql, [$id_categoria], 'i', true);
 
-    if (!$categoria) {
+    if (empty($categoria)) {
         header("Location: {$_SERVER['HTTP_REFERER']}");
         exit;
     }
+    $categoria = $categoria[0];
 ?>
 
 <!DOCTYPE html>

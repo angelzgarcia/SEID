@@ -72,21 +72,21 @@
                     <div class="details">
                         <div class="summary">
                             <p>N° de categorías</p>
-                            <span><?= $count_categorias ?></span>
+                            <span><?= $count_categorias ?? 0 ?></span>
                         </div>
                     </div>
 
                     <div class="details">
                         <div class="summary">
                             <p>Categorías activas</p>
-                            <span><?= $count_categorias_activas ?></span>
+                            <span><?= $count_categorias_activas ?? 0 ?></span>
                         </div>
                     </div>
 
                     <div class="details">
                         <div class="summary">
                             <p>Categorías inactivas</p>
-                            <span><?= $count_categorias_inactivas?></span>
+                            <span><?= $count_categorias_inactivas ?? 0 ?></span>
                         </div>
                     </div>
                 </div>

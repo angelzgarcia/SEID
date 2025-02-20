@@ -56,7 +56,12 @@
                         <?php else: ?>
 
                             <?php foreach ($categorias as $categoria): ?>
-                                <option value="<?= encryptValue($categoria['id_categoria'], SECRETKEY) ?>"><?= ucfirst($categoria['nombre_categoria']) ?></option>
+                                <option
+                                    value="<?= encryptValue($categoria['id_categoria'], SECRETKEY) ?>"
+                                    <?= isset($_SESSION['olds']['categoria']) && $_SESSION['olds']['categoria'] === $categoria['nombre_categoria'] ? 'selected' : '' ?>
+                                >
+                                    <?= ucfirst($categoria['nombre_categoria']) ?>
+                                </option>
                             <?php endforeach; ?>
 
                         <?php endif; ?>
@@ -80,7 +85,12 @@
                         <?php else: ?>
 
                             <?php foreach ($marcas as $marca): ?>
-                                <option value="<?= encryptValue($marca['id_marca'], SECRETKEY) ?>"><?= ucfirst($marca['nombre_marca']) ?></option>
+                                <option
+                                    value="<?= encryptValue($marca['id_marca'], SECRETKEY) ?>"
+                                    <?= isset($_SESSION['olds']['marca']) && $_SESSION['olds']['marca'] === $marca['nombre_marca'] ? 'selected' : '' ?>
+                                >
+                                    <?= ucfirst($marca['nombre_marca']) ?>
+                                </option>
                             <?php endforeach; ?>
 
                         <?php endif; ?>
@@ -123,9 +133,9 @@
                     <input type="radio" name="unidad_compra" checked value="" class="hidden">
                     <select name="unidad_compra" id="unidad_compra">
                         <option selected disabled>Seleccione la unidad de compra</option>
-                        <option <?= $_SESSION['olds']['unidad_compra'] === 'pieza' ? 'selected' : '' ?> value="pieza">Pieza</option>
-                        <option <?= $_SESSION['olds']['unidad_compra'] === 'paquete' ? 'selected' : '' ?> value="paquete">Paquete</option>
-                        <option <?= $_SESSION['olds']['unidad_compra'] === 'caja' ? 'selected' : '' ?> value="caja">Caja</option>
+                        <option <?= isset($_SESSION['olds']['unidad_compra']) && $_SESSION['olds']['unidad_compra'] === 'pieza' ? 'selected' : '' ?> value="pieza">Pieza</option>
+                        <option <?= isset($_SESSION['olds']['unidad_compra']) && $_SESSION['olds']['unidad_compra'] === 'paquete' ? 'selected' : '' ?> value="paquete">Paquete</option>
+                        <option <?= isset($_SESSION['olds']['unidad_compra']) && $_SESSION['olds']['unidad_compra'] === 'caja' ? 'selected' : '' ?> value="caja">Caja</option>
                         <!-- <option value="saco">Saco</option>
                         <option value="bulto">Bulto</option>
                         <option value="rollo">Rollo</option>
@@ -154,9 +164,9 @@
                     <input type="radio" name="unidad_venta" checked value="" class="hidden">
                     <select name="unidad_venta" id="unidad_venta">
                         <option selected disabled>Seleccione la unidad de venta</option>
-                        <option <?= $_SESSION['olds']['unidad_venta'] === 'pieza' ? 'selected' : '' ?> value="pieza">Pieza</option>
-                        <option <?= $_SESSION['olds']['unidad_venta'] === 'paquete' ? 'selected' : '' ?> value="paquete">Paquete</option>
-                        <option <?= $_SESSION['olds']['unidad_venta'] === 'caja' ? 'selected' : '' ?> value="caja">Caja</option>
+                        <option <?= isset($_SESSION['olds']['unidad_venta']) && $_SESSION['olds']['unidad_venta'] === 'pieza' ? 'selected' : '' ?> value="pieza">Pieza</option>
+                        <option <?= isset($_SESSION['olds']['unidad_venta']) && $_SESSION['olds']['unidad_venta'] === 'paquete' ? 'selected' : '' ?> value="paquete">Paquete</option>
+                        <option <?= isset($_SESSION['olds']['unidad_venta']) && $_SESSION['olds']['unidad_venta'] === 'caja' ? 'selected' : '' ?> value="caja">Caja</option>
                         <!-- <option value="saco">Saco</option>
                         <option value="bulto">Bulto</option>
                         <option value="rollo">Rollo</option>
@@ -243,11 +253,11 @@
 
                     <div class="flex justify-start gap-8 items-center">
                         <div class="flex gap-2 items-center">
-                            <input type="radio" name="aplica_mayoreo" value="si" <?= $_SESSION['olds']['aplica_mayoreo'] === 'si' ? 'checked' : '' ?>>
+                            <input type="radio" name="aplica_mayoreo" value="si" <?= isset($_SESSION['olds']['aplica_mayoreo']) && $_SESSION['olds']['aplica_mayoreo']  === 'si' ? 'checked' : '' ?>>
                             <span>Sí</span>
                         </div>
                         <div class="flex gap-2 items-center">
-                            <input type="radio" name="aplica_mayoreo" value="no" <?= $_SESSION['olds']['aplica_mayoreo'] === 'no' ? 'checked' : '' ?>>
+                            <input type="radio" name="aplica_mayoreo" value="no" <?= !isset($_SESSION['olds']['aplica_mayoreo']) || $_SESSION['olds']['aplica_mayoreo'] === 'no' ? 'checked' : '' ?>>
                             <span>No</span>
                         </div>
                     </div>
@@ -386,13 +396,13 @@
             const conversionResult = document.getElementById("conversion_result");
             const stockLabel = document.getElementById("stockLabel");
 
-            // const unidadesConversión = ["bulto", "rollo", "saco", "paquete", "caja"];
             const unidadesConversión = ["paquete", "caja"];
 
             unidadCompra.addEventListener("change", function() {
                 let selectedCompra = unidadCompra.value;
+                let selectedVenta = unidadVenta.value;
 
-                if (unidadesConversión.includes(selectedCompra)) {
+                if (unidadesConversión.includes(selectedCompra) && selectedCompra !== selectedVenta) {
                     conversionExtra.style.display = "block";
                 } else {
                     conversionExtra.style.display = "none";
@@ -403,6 +413,11 @@
 
                 stockLabel.textContent = `Cantidad de ${selectedCompra}s en stock`;
             });
+
+            unidadVenta.addEventListener("change", function() {
+                unidadCompra.dispatchEvent(new Event("change")); // Dispara el evento de unidadCompra para actualizar la lógica
+            });
+
 
             unidadVenta.addEventListener("change", calcularFactorConversion);
             cantidadConversion.addEventListener("input", calcularFactorConversion);

@@ -485,6 +485,6 @@
 
     <!-- GRAFICAS -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="<?= MATRIX_HTTP_URL ?>resources/scripts.js"></script>
+    <script src="<?= MATRIX_HTTP_URL ?>resources/charts.js"></script>
 </body>
 </html>

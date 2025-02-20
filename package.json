@@ -2,7 +2,14 @@
   "dependencies": {
     "@tailwindcss/cli": "^4.0.1",
     "chart.js": "^4.4.7",
-    "sweetalert2": "^11.15.10",
-    "tailwindcss": "^4.0.1"
+    "sweetalert2": "^11.15.10"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^4.0.7"
+  },
+  "scripts": {
+    "dev": "concurrently \"npx tailwindcss -i ./acceso_matriz/resources/css/css.css -o ./acceso_matriz/resources/css/output.css --watch\" \"npx tailwindcss -i ./acceso_vendedor/resources/css/css.css -o ./acceso_vendedor/resources/css/output.css --watch\" \"npx tailwindcss -i ./acceso_director/resources/css/css.css -o ./acceso_director/resources/css/output.css --watch\""
   }
 }
