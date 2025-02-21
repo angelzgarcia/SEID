@@ -20,7 +20,7 @@
     {
         global $conn;
 
-        // IS SIMPLE SELECT
+        //  I S   S I M P L E    S E L E C T
         if (empty($params)) {
             try {
                 $result = $conn -> query($query) -> fetch_all(MYSQLI_ASSOC);
@@ -28,12 +28,12 @@
             } catch (\Throwable $th) { return false; }
         }
 
-        // IS PARAMS QUERY
+        //  I S   P A R A M S    Q U E R Y
         try {
             $result = $conn -> prepare($query);
             $result -> bind_param($types, ...$params);
             $result -> execute();
-            // IS SELECT QUERY
+            //  I S   S E L E C T   Q U E R Y
             if ($result -> affected_rows === -1 || $result -> field_count > 0) {
                 $rows = $result -> get_result() -> fetch_all(MYSQLI_ASSOC);
                 $result -> close();
@@ -43,7 +43,7 @@
                     : false;
             }
 
-            // IS / UPDATE / INSERT / DELETE / QUERY
+            //   I S   /   U P D A T E   /  I N S E R T   /  D E L E T E  /  Q U E R Y
             $result -> close();
             return true;
 

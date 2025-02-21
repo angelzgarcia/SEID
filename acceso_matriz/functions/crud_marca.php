@@ -122,7 +122,7 @@ function store()
 
     $_SESSION['swal'] = (!simpleQuery($sql, [$brand, $descripcion, $img_path, $slug], 'ssss')) ?
     swal("error", "¡Ocurrió un error. Contacta con soporte!") :
-    swal("success", "¡marca añadida exitosamente!");
+    swal("success", "¡Marca añadida exitosamente!");
 
     unset($_SESSION['olds']);
     unset($_SESSION['errors']);
@@ -134,8 +134,15 @@ function update()
     $olds = [];
     $errors = [];
 
-    $id = decryptValue($_GET['c'], SECRETKEY);
+    $id = clearEntry(decryptValue($_GET['m'], SECRETKEY));
     if (!$id) redirect();
+
+    $sql = 'SELECT * FROM marcas WHERE id_marca = ? LIMIT 1';
+    $marca_actual = simpleQuery($sql, [$id], 'i', true)[0] ?: [];
+    if (!$marca_actual) {
+        $_SESSION['swal'] = swal('error', '¡La marca no existe!');
+        redirect();
+    }
 
     $brand = clearEntry($_POST['nombre']) ?: null;
     $descripcion = clearEntry($_POST['descripcion']) ?: null;
@@ -283,7 +290,7 @@ function update()
 
     $_SESSION['swal'] = !simpleQuery($sql, $params, $types) ?
     swal("error", "¡Ocurrió un error al actualizar la marca!") :
-    swal("success", "¡mMrca actualizada exitosamente!");
+    swal("success", "¡Marca actualizada exitosamente!");
 
     unset($_SESSION['olds']);
     unset($_SESSION['errors']);
@@ -292,7 +299,7 @@ function update()
 
 function changeStatus()
 {
-    $id = (int)decryptValue($_GET['c'], SECRETKEY);
+    $id = (int)decryptValue($_GET['m'], SECRETKEY);
     if (!$id) redirect();
 
     global $conn;

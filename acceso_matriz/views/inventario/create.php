@@ -192,7 +192,7 @@
                         </p>
                     </legend>
 
-                    <strong><small id="stockLabel">Cantidad de las unidad de compra</small></strong>
+                    <strong><small id="stockLabel">Cantidad de las unidades de compra</small></strong>
                     <input type="number" id="stock" name="stock" value="<?= $_SESSION['olds']['stock'] ?? '' ?>"  placeholder="Ingrese el stock inicial" oninput="validarUnidades(this)">
                 </fieldset>
 
@@ -346,16 +346,22 @@
             const minQuantityWholesale = document.getElementById('min-quantity-wholesale');
             const wholesalePrice = document.getElementById('wholesale-price');
 
+            function toggleWholesaleFields() {
+                const selected = document.querySelector('input[name="aplica_mayoreo"]:checked');
+
+                if (selected && selected.value === 'si') {
+                    minQuantityWholesale.style.display = 'flex';
+                    wholesalePrice.style.display = 'flex';
+                } else {
+                    minQuantityWholesale.style.display = 'none';
+                    wholesalePrice.style.display = 'none';
+                }
+            }
+
+            toggleWholesaleFields();
+
             radios.forEach(radio => {
-                radio.addEventListener('change', () => {
-                    if (radio.value === 'si') {
-                        minQuantityWholesale.style.display = 'flex';
-                        wholesalePrice.style.display = 'flex';
-                    } else {
-                        minQuantityWholesale.style.display = 'none';
-                        wholesalePrice.style.display = 'none';
-                    }
-                });
+                radio.addEventListener('change', toggleWholesaleFields);
             });
         });
     </script>
@@ -415,7 +421,7 @@
             });
 
             unidadVenta.addEventListener("change", function() {
-                unidadCompra.dispatchEvent(new Event("change")); // Dispara el evento de unidadCompra para actualizar la lógica
+                unidadCompra.dispatchEvent(new Event("change"));
             });
 
 

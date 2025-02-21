@@ -4,7 +4,8 @@
 <?php $page_name = ACCESO . 'Editar categoria' ?>
 
 <?php
-    $id_categoria = decryptValue($_GET['c'], SECRETKEY);
+    $id = htmlspecialchars(trim($_GET['c']));
+    $id_categoria = decryptValue($id, SECRETKEY);
 
     $sql = 'SELECT * FROM categorias WHERE id_categoria = ?';
 
@@ -51,7 +52,7 @@
                 </div>
             </div>
 
-            <form class="form-create category-add" action="<?= MATRIX_FNS ?>crud_categoria.php?c=<?= encryptValue($categoria['id_categoria'], SECRETKEY) ?>" method="POST" autocomplete="off" enctype="multipart/form-data">
+            <form class="form-create category-add" action="<?= MATRIX_FNS ?>crud_categoria.php?c=<?= $id ?>" method="POST" autocomplete="off" enctype="multipart/form-data">
                 <!-- NOMBRE -->
                 <fieldset class="category-field-name">
                     <legend>

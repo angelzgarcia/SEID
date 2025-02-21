@@ -10,6 +10,7 @@
     scrollbar-width: thin;
     scrollbar-color: #263050 white;
     --primary-color: #1f73c6;
+    --blue-light: #007bff;
     --secondary-color: #132d61;
     --deep-blue-1: #101729;
     --deep-blue-2: #0f172a;
@@ -26,15 +27,20 @@
     --header-height: 60px;
     --sidebar-width: 215px;
 
+    li { list-style-type: none; }
+    textarea { field-sizing: content; }
+    button { border: none; outline: none; }
+    a { text-decoration: none; }
+    fieldset { border: none; }
+
+    & :is(p,body,div,span,a,button,select, *) { font-family: 'Bitter'; }
+
     & ::selection {
         background-color: #435385;
         color: white;
     }
-
-    & :is(p,body,div,span,a,button,select, *) { font-family: 'Bitter'; }
 }
 
-textarea { field-sizing: content; }
 
 
 
@@ -60,6 +66,7 @@ textarea { field-sizing: content; }
 
 
 
+
 /* L A Y O U T */
 body {
     display: grid;
@@ -74,6 +81,9 @@ body {
     /* background-color: var(--bg-color); */
     background-color: #eeeeee;
     transition: grid .3s ease;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 
@@ -187,7 +197,7 @@ body {
     left: 0;
     z-index: 999;
     top: var(--header-height);
-    height: 100vh;
+    height: 100%;
     width: var(--sidebar-width);
     overflow-y: auto;
     /* direction: rtl; */
@@ -556,6 +566,33 @@ select.crud-header-select {
         }
     }
 }
+.branch-shipping {
+    max-width: max-content;
+    & button {
+        background-color: rgb(255, 255, 255);
+        /* filter: invert(); */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: .3rem 1.3rem;
+        border-radius: .4rem;
+        cursor: pointer;
+        box-shadow: 0 .3rem .2rem 0 rgba(128, 128, 128, 0.658);
+        transition: transform .2s ease;
+        & svg {
+            fill: #111;
+            width: 28px;
+            height: 28px;
+        }
+        &:hover {
+            transform: scale(95%);
+            box-shadow: 0 .16rem .2rem 0 gray;
+        }
+        &:active {
+            background-color: #f8f6f2;
+        }
+    }
+}
 .shortcut-link-btn {
     display: flex;
     gap: 1rem;
@@ -589,6 +626,7 @@ select.crud-header-select {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
     /* grid-template-rows: repeat(auto-fill, minmax(150px, 1fr)); */
+    grid-auto-rows: max-content;
     gap: 1rem;
 }
 .registers-empty {
@@ -621,8 +659,12 @@ select.crud-header-select {
     transition: background-color .5s ease;
     &:hover {
         background-color: var(--hover-color-100);
+        & .menu-toggle > svg {
+            fill: #fff;
+        }
     }
 }
+.register-frame.active { background-color: var(--hover-color-100); }
 .register-details-link {
     width: 100%;
     padding: .5rem 1rem;
@@ -701,17 +743,39 @@ select.crud-header-select {
         & .created_at_date span { text-transform: capitalize; }
     }
 }
-.register-actions {
+.register-actions-menu-container {
+    position: relative;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.menu-toggle {
+    display: flex;
     justify-content: space-between;
-    background-color: #fff;
-    /* border-radius: 0 1rem 1rem 0; */
+    align-items: center;
+    cursor: pointer;
+    border-radius: 0 .7rem .7rem 0;
+    padding: .4rem;
+    /* background-color: var(--hover-color-100); */
+    & svg {
+        fill: #111;
+        width: 27px;
+        height: 27px;
+        transform: rotateY(180deg);
+    }
+}
+.register-actions {
+    position: absolute;
+    display: none;
+    left: 40px;
+    grid-template-columns: repeat(4, minmax(40px, 1fr));
+    justify-content: space-between;
+    background-color: #c0c8cf;
+    gap: .8rem;
     border-radius: 0 1.5rem 1.5rem 0;
-    padding: .5rem;
+    padding: .6rem;
     flex-wrap: wrap;
     & a, .status-btn > button, .aproved-btn > button {
-        font-family: Arial, Helvetica, sans-serif;
         display: flex;
         justify-content: space-between;
         gap: .4rem;
@@ -719,8 +783,10 @@ select.crud-header-select {
         border-radius: 0 .7rem .7rem 0;
         text-transform: capitalize;
         padding: .4rem;
+        transition: transform .4s ease;
         &:hover {
             filter: invert();
+            transform: translateY(-8.5px);
         }
         & svg {
             width: 27px;
@@ -734,6 +800,11 @@ select.crud-header-select {
         background-color: #111;
         & svg { fill: #fff; }
     }
+    & .return-stock-btn {
+        background-color: #111;
+        filter: invert();
+        & svg { fill: #fff; transform: rotateY(180deg); }
+    }
     & .active-btn > button {
         background-color: #b4822a;
     }
@@ -744,6 +815,16 @@ select.crud-header-select {
         background-color: #01ad0a;
     }
 }
+.register-actions-menu-container.active .menu-toggle svg { fill: #fff; }
+.register-actions-menu-container.active .register-actions { display: grid; }
+.register-actions-menu-container.inverted .register-actions {
+    left: auto;
+    right: 40px;
+    transform: rotateY(180deg);
+    & a svg, button svg { transform: rotateY(180deg); }
+    & .return-stock-btn svg { transform: none; }
+}
+
 
 /*  A G R E A G A R    P R O D U C T O  */
 .form-create-container {
@@ -906,7 +987,7 @@ select.crud-header-select {
             border-radius: 8px;
             cursor: pointer;
             transition: 0.3s;
-            &:hover { border-color: #007bff; }
+            &:hover { border-color: var(--blue-light); }
             & input { display: none; }
             & img {
                 max-width: 100px;
@@ -919,7 +1000,7 @@ select.crud-header-select {
         & .current-image-container { cursor: auto; & img { display: block; } }
         & .upload-label {
             font-size: 16px;
-            color: #007bff;
+            color: var(--blue-light);
             cursor: pointer;
         }
     }
@@ -992,7 +1073,6 @@ select.crud-header-select {
         align-items: center;
         min-width: max-content;
         font-family: Arial, Helvetica, sans-serif;
-        gap: 1rem;
         & a, button {
             border-radius: .5rem;
             padding: .5rem;
@@ -1196,7 +1276,7 @@ select.crud-header-select {
     padding: 0 2rem;
     & a {
         display: flex;
-        background-color: #007bff;
+        background-color: var(--blue-light);
         width: max-content;
         box-shadow: 0 .2rem .2rem 0 rgba(128, 128, 128, 0.705);
         padding: .5rem 1.5rem;
@@ -1278,7 +1358,7 @@ select.crud-header-select {
         background-color: #fff;
     }
 }
-.register-actions { justify-content: center; gap: 1rem; }
+.register-actions { justify-content: center; }
 
 
 

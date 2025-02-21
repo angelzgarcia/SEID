@@ -1,8 +1,11 @@
 <?php require_once __DIR__ . '/../../config.php' ?>
-<?php require_once __DIR__ . '/../../database.php' ?>
-<?php require_once __DIR__ . '/../../functions/helpers/encrypt.php' ?>
+<?php require_once MATRIX_DOC_ROOT . '/database.php' ?>
+<?php require_once MATRIX_DOC_FNS . 'helpers/encrypt.php' ?>
+<?php require_once MATRIX_DOC_FNS . 'helpers/clear.php' ?>
 <?php $page_name = ACCESO . 'Inventario' ?>
+
 <?php
+    //  P R O D U C T O S   C O N   V E N C I M I E N T O
     $sql = '
         SELECT p.stock_producto, p.id_producto, v.*
         FROM productos AS p
@@ -46,6 +49,25 @@
             }
         }
     }
+
+    //  S U C U R S A L E S
+    $sucursales = [];
+    $sucursal = clearEntry($_POST['sucursal_select'] ?? '') ?: null;
+    if ($sucursal) {
+        // var_dump($sucursal);
+        // exit;
+        $sql = '
+            SELECT p_s.*, p.*, s.id_sucusal, s.nombre_sucursal
+            FROM productos_sucursales AS p_s
+            LEFT JOIN productos AS p
+            LEFT JOIN sucursales AS s
+            WHERE p_s.id_producto_fk_producto_sucursal = p.id_producto
+            AND p_S.id_sucursal_fk_producto_sucursal = s.id_sucursal
+        ';
+    } else {
+        $sql = 'SELECT id_sucursal, nombre_sucursal FROM sucursales ORDER BY nombre_sucursal ASC';
+        $sucursales = simpleQuery($sql) ?: [];
+    }
 ?>
 
 <!DOCTYPE html>
@@ -61,69 +83,31 @@
 
         <!-- FILTRAR INVENTARIOS POR SUCURSAL -->
         <div class="searcher-links">
-            <form action="" class="subsidiaries-filter">
+            <form action="" class="subsidiaries-filter" autocomplete="off">
                 <input type="text" list="sucursales" name="sucursal_datalist" id="sucursal_datalist" placeholder="Buscar sucursal...">
                 <datalist id="sucursales">
-                    <option value="Sucursal 1">Sucursal 1</option>
-                    <option value="Sucursal 2">Sucursal 2</option>
-                    <option value="Sucursal 3">Sucursal 3</option>
-                    <option value="Sucursal 3">Sucursal 3</option>
-                    <option value="Sucursal 3">Sucursal 3</option>
-                    <option value="Sucursal 3">Sucursal 3</option>
-                    <option value="Sucursal 3">Sucursal 3</option>
-                    <option value="Sucursal 3">Sucursal 3</option>
-                    <option value="Sucursal 3">Sucursal 3</option>
-                    <option value="Sucursal 3">Sucursal 3</option>
-                    <option value="Sucursal 3">Sucursal 3</option>
-                    <option value="Sucursal 3">Sucursal 3</option>
-                    <option value="Sucursal 3">Sucursal 3</option>
-                    <option value="Sucursal 3">Sucursal 3</option>
-                    <option value="Sucursal 3">Sucursal 3</option>
-                    <option value="Sucursal 3">Sucursal 3</option>
-                    <option value="Sucursal 3">Sucursal 3</option>
-                    <option value="Sucursal 3">Sucursal 3</option>
-                    <option value="Sucursal 3">Sucursal 3</option>
-                    <option value="Sucursal 3">Sucursal 3</option>
-                    <option value="Sucursal 3">Sucursal 3</option>
-                    <option value="Sucursal 3">Sucursal 3</option>
+                    <?php if (empty($sucursales)): ?>
+                        <option selected disabled>No hay sucursales registradas</option>
+                    <?php else: ?>
+                        <?php foreach ($sucursales as $suc): ?>
+                            <option value="<?= htmlspecialchars(trim($suc['nombre_sucursal'])) ?>">
+                                <?= ucwords($suc['nombre_sucursal']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </datalist>
 
                 <select name="sucursal_select" class="crud-header-select sucursal-select">
-                    <option disabled selected>Todas las sucursales</option>
-                    <option value="">Sucursal 1 Sucursal 1Sucursal 1 Sucursal 1</option>
-                    <option value="">Sucursal 2</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
-                    <option value="">Sucursal 3</option>
+                    <?php if (empty($sucursales)): ?>
+                        <option selected disabled>No hay sucursales registradas</option>
+                    <?php else: ?>
+                        <option value="<?= htmlspecialchars(trim('todas')) ?>" class="font-extrabold">Todas las sucursales</option>
+                        <?php foreach ($sucursales as $suc): ?>
+                            <option value="<?= htmlspecialchars(trim($suc['nombre_sucursal'])) ?>">
+                                <?= ucwords($suc['nombre_sucursal']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
                 </select>
             </form>
 
@@ -156,6 +140,7 @@
                         </div>
                         <p>Consulte y gestiones su invetario</p>
                     </div>
+
                     <div class="crud-order-by">
                         <select name="" class="crud-header-select">
                             <option selected disabled>Ordenar por</option>
@@ -167,10 +152,19 @@
                             <option value="">Z - A</option>
                         </select>
                     </div>
-                    <a href="<?= MATRIX_HTTP_VIEWS ?>inventario/create" class="crud-add-btn">
-                        Añadir producto
-                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M440-120v-320H120v-80h320v-320h80v320h320v80H520v320h-80Z"/></svg>
-                    </a>
+
+                    <div class="shipping-add-btns flex gap-3">
+                        <div class="branch-shipping">
+                            <button type="button" title="Enviar pedido a sucursal">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M240-160q-50 0-85-35t-35-85H40v-440q0-33 23.5-56.5T120-800h560v160h120l120 160v200h-80q0 50-35 85t-85 35q-50 0-85-35t-35-85H360q0 50-35 85t-85 35Zm0-80q17 0 28.5-11.5T280-280q0-17-11.5-28.5T240-320q-17 0-28.5 11.5T200-280q0 17 11.5 28.5T240-240ZM120-360h32q17-18 39-29t49-11q27 0 49 11t39 29h272v-360H120v360Zm600 120q17 0 28.5-11.5T760-280q0-17-11.5-28.5T720-320q-17 0-28.5 11.5T680-280q0 17 11.5 28.5T720-240Zm-40-200h170l-90-120h-80v120ZM360-540Z"/></svg>
+                            </button>
+                        </div>
+
+                        <a href="<?= MATRIX_HTTP_VIEWS ?>inventario/create" class="crud-add-btn">
+                            Añadir producto
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M440-120v-320H120v-80h320v-320h80v320h320v80H520v320h-80Z"/></svg>
+                        </a>
+                    </div>
                 </div>
 
                 <!-- HEADER INTERMEDIO -->
@@ -223,6 +217,7 @@
                 </div>
             </div>
 
+
             <!-- LISTA DE REGISTROS -->
             <div class="crud-grid" id="products-container">
 
@@ -233,5 +228,28 @@
     </main>
 
     <script src="<?= MATRIX_HTTP_URL ?>resources/inventory.js"></script>
+
+    <script>
+        $(document).on('click', '.menu-toggle', function() {
+            const $container = $(this).closest('.register-actions-menu-container');
+            const $frame = $container.closest('.register-frame');
+            $container.toggleClass('active');
+            $frame.toggleClass('active');
+
+            $('.register-actions-menu-container').not($container).removeClass('active');
+            $('.register-frame').not($frame).removeClass('active');
+
+            const windowWidth = $(window).width();
+            // Obtener la posición del contenedor
+            const containerPos = $container.offset().left + $container.outerWidth();
+
+            // Si el contenedor está cerca del borde derecho, invertir la dirección
+            if (containerPos > windowWidth - 100) { // 100 es el margen que puedes ajustar
+                $container.addClass('inverted');
+            } else {
+                $container.removeClass('inverted');
+            }
+        });
+    </script>
 </body>
 </html>

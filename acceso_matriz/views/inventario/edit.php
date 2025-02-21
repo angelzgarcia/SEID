@@ -1,6 +1,6 @@
 <?php require_once __DIR__ . '/../../config.php' ?>
 <?php require_once __DIR__ . '/../../database.php' ?>
-<?php require_once __DIR__ . '/../../functions/helpers/encrypt.php' ?>
+<?php require_once MATRIX_DOC_ROOT . '/functions/helpers/encrypt.php' ?>
 <?php $page_name = ACCESO . 'Editar producto' ?>
 
 <?php
@@ -10,7 +10,8 @@
     $sql = 'SELECT id_marca, nombre_marca FROM marcas WHERE status_marca = 0 ORDER BY nombre_marca ASC';
     $marcas = simpleQuery($sql) ?: [];
 
-    $id_producto = (int)decryptValue($_GET['p'], SECRETKEY);
+    $id = htmlspecialchars(trim($_GET['p']));
+    $id_producto = (int)decryptValue($id, SECRETKEY);
 
     $sql = '
         SELECT p.*, c.id_categoria, c.nombre_categoria, m.id_marca, m.nombre_marca
@@ -33,12 +34,12 @@
         SELECT *
         FROM lotes_vencimientos
         WHERE id_producto_fk_lote_vencimiento = ?
-        ORDER BY fecha_vencimiento ASC
+        ORDER BY fecha_vencimiento DESC
+        LIMIT 1
     ';
 
-    $lotes = simpleQuery($sql, [$id_producto], 'i', true) ?: [];
-
-    if ($lotes) $producto['lotes'] = $lotes;
+    $lote = simpleQuery($sql, [$id_producto], 'i', true) ?: [];
+    if ($lote) $producto['lote'] = $lote[0];
 ?>
 
 <!DOCTYPE html>
@@ -69,7 +70,7 @@
                 </div>
             </div>
 
-            <form class="form-create" id="form-editar" action="<?= MATRIX_FNS ?>crud_producto" method="POST" autocomplete="off" enctype="multipart/form-data">
+            <form class="form-create" id="form-editar" action="<?= MATRIX_FNS ?>crud_producto?p=<?=$id?>" method="POST" autocomplete="off" enctype="multipart/form-data">
                 <!-- CATEGORIA -->
                 <fieldset class="field-select">
                     <legend>
@@ -135,13 +136,13 @@
                     <legend>
                         Codigo de barras *
                         <p class='message-error'>
-                            <?= $_SESSION['errors']['codigo_barras'] ?? '' ?>
+                            <?= $_SESSION['errors']['codigo_barras_producto'] ?? '' ?>
                         </p>
                     </legend>
 
                     <input
-                        type="text" name="codigo_barras" placeholder="Ingrese el codigo de barras"
-                        value="<?= $_SESSION['olds']['codigo_barras'] ?? $producto['codigo_barras_producto'] ?>"
+                        type="text" name="codigo_barras_producto" placeholder="Ingrese el codigo de barras"
+                        value="<?= $_SESSION['olds']['codigo_barras_producto'] ?? $producto['codigo_barras_producto'] ?>"
                         oninput="validarCodigoBarras(this)"
                     >
                 </fieldset>
@@ -151,13 +152,13 @@
                     <legend>
                         Nombre *
                         <p class='message-error'>
-                            <?= $_SESSION['errors']['nombre'] ?? '' ?>
+                            <?= $_SESSION['errors']['nombre_producto'] ?? '' ?>
                         </p>
                     </legend>
 
                     <input
-                        type="text" name="nombre" placeholder="Ingrese el nombre del producto"
-                        value="<?= $_SESSION['olds']['nombre'] ?? $producto['nombre_producto'] ?>"
+                        type="text" name="nombre_producto" placeholder="Ingrese el nombre del producto"
+                        value="<?= $_SESSION['olds']['nombre_producto'] ?? $producto['nombre_producto'] ?>"
                     >
                 </fieldset>
 
@@ -166,17 +167,17 @@
                     <legend>
                         Unidad de compra *
                         <p class='message-error'>
-                            <?= $_SESSION['errors']['unidad_compra'] ?? '' ?>
+                            <?= $_SESSION['errors']['unidad_compra_producto'] ?? '' ?>
                         </p>
                     </legend>
 
-                    <input type="radio" name="unidad_compra" checked value="" class="hidden">
-                    <select name="unidad_compra" id="unidad_compra">
+                    <input type="radio" name="unidad_compra_producto" checked value="" class="hidden">
+                    <select name="unidad_compra_producto" id="unidad_compra">
                         <option selected disabled>Seleccione la unidad de compra</option>
                         <option
                             value="pieza"
                             <?= $producto['unidad_compra_producto'] === 'pieza' ? 'selected' : '' ?>
-                            <?= isset($_SESSION['olds']['unidad_compra']) && $_SESSION['olds']['unidad_compra'] === 'pieza' ? 'selected' : '' ?>
+                            <?= isset($_SESSION['olds']['unidad_compra_producto']) && $_SESSION['olds']['unidad_compra_producto'] === 'pieza' ? 'selected' : '' ?>
                         >
                             Pieza
                         </option>
@@ -184,7 +185,7 @@
                         <option
                             value="paquete"
                             <?= $producto['unidad_compra_producto'] === 'paquete' ? 'selected' : '' ?>
-                            <?= isset($_SESSION['olds']['unidad_compra']) && $_SESSION['olds']['unidad_compra'] === 'paquete' ? 'selected' : '' ?>
+                            <?= isset($_SESSION['olds']['unidad_compra_producto']) && $_SESSION['olds']['unidad_compra_producto'] === 'paquete' ? 'selected' : '' ?>
                         >
                             Paquete
                         </option>
@@ -192,7 +193,7 @@
                         <option
                             value="caja"
                             <?= $producto['unidad_compra_producto'] === 'caja' ? 'selected' : '' ?>
-                            <?= isset($_SESSION['olds']['unidad_compra']) && $_SESSION['olds']['unidad_compra'] === 'caja' ? 'selected' : '' ?>
+                            <?= isset($_SESSION['olds']['unidad_compra_producto']) && $_SESSION['olds']['unidad_compra_producto'] === 'caja' ? 'selected' : '' ?>
                         >
                             Caja
                         </option>
@@ -204,17 +205,17 @@
                     <legend>
                         Unidad de venta *
                         <p class='message-error'>
-                            <?= $_SESSION['errors']['unidad_venta'] ?? '' ?>
+                            <?= $_SESSION['errors']['unidad_venta_producto'] ?? '' ?>
                         </p>
                     </legend>
 
-                    <input type="radio" name="unidad_venta" checked value="" class="hidden">
-                    <select name="unidad_venta" id="unidad_venta">
+                    <input type="radio" name="unidad_venta_producto" checked value="" class="hidden">
+                    <select name="unidad_venta_producto" id="unidad_venta">
                         <option selected disabled>Seleccione la unidad de venta</option>
                         <option
                             value="pieza"
                             <?= $producto['unidad_venta_producto'] === 'pieza' ? 'selected' : '' ?>
-                            <?= isset($_SESSION['olds']['unidad_venta']) && $_SESSION['olds']['unidad_venta'] === 'pieza' ? 'selected' : '' ?>
+                            <?= isset($_SESSION['olds']['unidad_venta_producto']) && $_SESSION['olds']['unidad_venta_producto'] === 'pieza' ? 'selected' : '' ?>
                         >
                             Pieza
                         </option>
@@ -222,7 +223,7 @@
                         <option
                             value="paquete"
                             <?= $producto['unidad_venta_producto'] === 'paquete' ? 'selected' : '' ?>
-                            <?= isset($_SESSION['olds']['unidad_venta']) && $_SESSION['olds']['unidad_venta'] === 'paquete' ? 'selected' : '' ?>
+                            <?= isset($_SESSION['olds']['unidad_venta_producto']) && $_SESSION['olds']['unidad_venta_producto'] === 'paquete' ? 'selected' : '' ?>
                         >
                             Paquete
                         </option>
@@ -230,7 +231,7 @@
                         <option
                             value="caja"
                             <?= $producto['unidad_venta_producto'] === 'caja' ? 'selected' : '' ?>
-                            <?= isset($_SESSION['olds']['unidad_venta']) && $_SESSION['olds']['unidad_venta'] === 'caja' ? 'selected' : '' ?>
+                            <?= isset($_SESSION['olds']['unidad_venta_producto']) && $_SESSION['olds']['unidad_venta_producto'] === 'caja' ? 'selected' : '' ?>
                         >
                             Caja
                         </option>
@@ -242,7 +243,7 @@
                     <legend>
                         Stock
                         <p class='message-error'>
-                            <?= $_SESSION['errors']['stock'] ?? '' ?>
+                            <?= $_SESSION['errors']['stock_producto'] ?? '' ?>
                         </p>
                         <span class="flex gap-2">
                             Existencias acutales:
@@ -254,10 +255,10 @@
                         </span>
                     </legend>
 
-                    <strong><small id="stockLabel">Cantidad de las unidad de compra</small></strong>
+                    <strong><small id="stockLabel">Cantidad de las unidades de compra</small></strong>
                     <input
-                        type="number" id="stock" name="stock" placeholder="Añada las nuevas unidades de compra" oninput="validarUnidades(this)"
-                        value="<?= $_SESSION['olds']['stock'] ?? '' ?>"
+                        type="number" id="stock" name="stock_producto" placeholder="Añada las nuevas unidades de compra" oninput="validarUnidades(this)"
+                        value="<?= $_SESSION['olds']['stock_producto'] ?? '' ?>"
                     >
                 </fieldset>
 
@@ -284,7 +285,10 @@
                             oninput="validarUnidades(this)"
                             value="<?= $_SESSION['olds']['factor_conversion'] ?? (int)$producto['factor_conversion'] ?>"
                         >
-                        <input type="hidden" name="factor_conversion" value="<?= $_SESSION['olds']['factor_conversion'] ?? '' ?>" id="factor_conversion">
+                        <input
+                            type="hidden" name="factor_conversion" id="factor_conversion"
+                            value="<?= $_SESSION['olds']['factor_conversion'] ?? (int)$producto['factor_conversion'] ?>"
+                        >
                     </div>
                 </fieldset>
 
@@ -293,13 +297,13 @@
                     <legend>
                         Precio de Costo *💲
                         <p class='message-error'>
-                            <?= $_SESSION['errors']['precio_costo'] ?? '' ?>
+                            <?= $_SESSION['errors']['precio_costo_producto'] ?? '' ?>
                         </p>
                     </legend>
 
                     <input
-                        type="text" id="precio_costo" name="precio_costo" placeholder="Ingrese el precio de costo" oninput="validarPrecios(this)"
-                        value="<?= $_SESSION['olds']['precio_costo'] ?? $producto['precio_costo_producto'] ?>"
+                        type="text" id="precio_costo" name="precio_costo_producto" placeholder="Ingrese el precio de costo" oninput="validarPrecios(this)"
+                        value="<?= $_SESSION['olds']['precio_costo_producto'] ?? $producto['precio_costo_producto'] ?>"
                     >
                 </fieldset>
 
@@ -308,14 +312,14 @@
                     <legend>
                         Precio de Venta *💲
                         <p class='message-error'>
-                            <?= $_SESSION['errors']['precio_venta'] ?? '' ?>
+                            <?= $_SESSION['errors']['precio_venta_producto'] ?? '' ?>
                         </p>
                     </legend>
 
                     <input
-                        type="text" id="precio_venta" name="precio_venta" placeholder="Ingrese el precio de venta"
+                        type="text" id="precio_venta" name="precio_venta_producto" placeholder="Ingrese el precio de venta"
                         oninput="validarPrecios(this)"
-                        value="<?= $_SESSION['olds']['precio_venta'] ?? $producto['precio_venta_producto'] ?>"
+                        value="<?= $_SESSION['olds']['precio_venta_producto'] ?? $producto['precio_venta_producto'] ?>"
                     >
                 </fieldset>
 
@@ -329,20 +333,27 @@
                     </legend>
 
                     <div class="flex justify-start gap-8 items-center">
+                        <?php $aplica_mayoreo_registro = $producto['aplica_mayoreo'] ?? null; ?>
+                        <?php $aplica_mayoreo_sesion = isset($_SESSION['olds']['aplica_mayoreo']) ? $_SESSION['olds']['aplica_mayoreo'] : null; ?>
+
                         <div class="flex gap-2 items-center">
                             <input
-                                type="radio" name="aplica_mayoreo" value="si"
-                                <?= isset($_SESSION['olds']['aplica_mayoreo']) && $_SESSION['olds']['aplica_mayoreo']  === 'si' ? 'checked' : '' ?>
-                                <?= (int)$producto['aplica_mayoreo']  === 1 ? 'checked' : '' ?>
+                                type="radio" name="aplica_mayoreo" value="1"
+                                <?php
+                                    if (isset($aplica_mayoreo_sesion) && $aplica_mayoreo_sesion === 'si') echo 'checked';
+                                    elseif ((int)$aplica_mayoreo_registro === 1 && $aplica_mayoreo_sesion !== 'no') echo 'checked';
+                                ?>
                             >
                             <span>Sí</span>
                         </div>
 
                         <div class="flex gap-2 items-center">
                             <input
-                                type="radio" name="aplica_mayoreo" value="no"
-                                <?= isset($_SESSION['olds']['aplica_mayoreo']) && $_SESSION['olds']['aplica_mayoreo'] === 'no' ? 'checked' : '' ?>
-                                <?= (int)$producto['aplica_mayoreo']  === 0 ? 'checked' : '' ?>
+                                type="radio" name="aplica_mayoreo" value="0"
+                                <?php
+                                    if (isset($aplica_mayoreo_sesion) && $aplica_mayoreo_sesion === 'no') echo 'checked';
+                                    elseif ((int)$aplica_mayoreo_registro === 0 && $aplica_mayoreo_sesion !== 'si') echo 'checked';
+                                ?>
                             >
                             <span>No</span>
                         </div>
@@ -354,14 +365,14 @@
                     <legend>
                         Cantidad mínima aplicable al por mayor *
                         <p class='message-error'>
-                            <?= $_SESSION['errors']['cantidad_minima_mayoreo'] ?? '' ?>
+                            <?= $_SESSION['errors']['cantidad_minima_mayoreo_producto'] ?? '' ?>
                         </p>
                     </legend>
 
                     <input
-                        type="text" id="cantidad_minima_mayoreo" name="cantidad_minima_mayoreo" placeholder="Ingrese la cantidad mínima aplicable a mayoreo"
+                        type="text" id="cantidad_minima_mayoreo_producto" name="cantidad_minima_mayoreo_producto" placeholder="Ingrese la cantidad mínima aplicable a mayoreo"
                         oninput="validarPrecios(this)"
-                        value="<?= $_SESSION['olds']['cantidad_minima_mayoreo'] ?? $producto['cantidad_minima_mayoreo_producto'] ?>"
+                        value="<?= $_SESSION['olds']['cantidad_minima_mayoreo_producto'] ?? $producto['cantidad_minima_mayoreo_producto'] ?>"
                     >
                 </fieldset>
 
@@ -370,25 +381,35 @@
                     <legend>
                         Precio al por mayor *💲
                         <p class='message-error'>
-                            <?= $_SESSION['errors']['precio_mayoreo'] ?? '' ?>
+                            <?= $_SESSION['errors']['precio_mayoreo_producto'] ?? '' ?>
                         </p>
                     </legend>
 
                     <input
-                        type="text" id="precio_mayoreo" name="precio_mayoreo" placeholder="Ingrese el precio de mayoreo"
+                        type="text" id="precio_mayoreo" name="precio_mayoreo_producto" placeholder="Ingrese el precio de mayoreo"
                         oninput="validarPrecios(this)"
-                        value="<?= $_SESSION['olds']['precio_mayoreo'] ?? $producto['precio_mayoreo_producto'] ?>"
+                        value="<?= $_SESSION['olds']['precio_mayoreo_producto'] ?? $producto['precio_mayoreo_producto'] ?>"
                     >
                 </fieldset>
 
                 <!-- VENCIMIENTO -->
                 <fieldset>
                     <legend>
-                        Vencimiento del nuevo lote <span><small><strong><em>(si aplica)</em></strong></small></span>
+                        Vencimiento del nuevo lote <small><em><strong>(si aplica)</strong></em></small>
+                        <?php if (isset($producto['lote'])): ?>
+                            <span class="flex gap-2 items-baseline">
+                                Vencimiento del último lote:
+                                <small><em><strong>
+                                    <?= $producto['lote']['fecha_vencimiento'] ?? '' ?>
+                                </strong></em></small>
+                            </span>
+                        <?php endif; ?>
+
                         <p class='message-error'>
                             <?= $_SESSION['errors']['vencimiento'] ?? '' ?>
                         </p>
                     </legend>
+
 
                     <input
                         type="date" name="vencimiento" class="uppercase"
@@ -420,7 +441,7 @@
                 </fieldset>
 
 
-                <input type="hidden" name="accion" value="guardar">
+                <input type="hidden" name="accion" value="actualizar">
 
                 <!-- ENVIAR FORMULARIO -->
                 <!-- RESTABLECER VALORES INICIALES -->
@@ -453,7 +474,7 @@
     <!-- RESTABLECER VALORES INICIALES -->
     <script>
         document.getElementById('reset-btn').addEventListener('click', () => {
-            document.getElementById('form-editar').reset();
+            window.location.reload();
         });
     </script>
 
@@ -467,7 +488,7 @@
             function toggleWholesaleFields() {
                 const selected = document.querySelector('input[name="aplica_mayoreo"]:checked');
 
-                if (selected && selected.value === 'si') {
+                if (selected && selected.value === '1') {
                     minQuantityWholesale.style.display = 'flex';
                     wholesalePrice.style.display = 'flex';
                 } else {
@@ -539,7 +560,7 @@
             });
 
             unidadVenta.addEventListener("change", function() {
-                unidadCompra.dispatchEvent(new Event("change")); // Dispara el evento de unidadCompra para actualizar la lógica
+                unidadCompra.dispatchEvent(new Event("change"));
             });
 
 
@@ -559,22 +580,13 @@
 
                 let factor = 1;
 
-                if (selectedCompra === "bulto" && selectedVenta === "kg") {
-                    factor = cantidad;
-                } else if (selectedCompra === "bulto" && selectedVenta === "gramo") {
-                    factor = cantidad * 1000;
-                } else if (selectedCompra === "rollo" && selectedVenta === "metro") {
-                    factor = cantidad;
-                } else if (selectedCompra === "rollo" && selectedVenta === "centimetro") {
-                    factor = cantidad * 100;
-                } else if (selectedCompra === "saco" && selectedVenta === "kg") {
-                    factor = cantidad;
-                } else if (selectedCompra === "saco" && selectedVenta === "gramo") {
-                    factor = cantidad * 1000;
-                } else if (selectedCompra === "paquete" && selectedVenta === "pieza") {
+
+                if (selectedCompra === "paquete" && selectedVenta === "pieza") {
                     factor = cantidad;
                 } else if (selectedCompra === "caja" && selectedVenta === "pieza") {
                     factor = cantidad;
+                } else if (selectedCompra === "pieza" && selectedVenta === "pieza") {
+                    factor = 1;
                 } else if (selectedCompra === "pieza" && selectedVenta === "pieza") {
                     factor = 1;
                 }

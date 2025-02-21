@@ -10,5 +10,6 @@
     define('MATRIX_DOC_VIEWS', MATRIX_DOC_ROOT . 'views/');
     define('MATRIX_HTTP_VIEWS', MATRIX_HTTP_URL . 'views/');
 
+    define('MATRIX_DOC_FNS', MATRIX_DOC_ROOT . 'functions/');
     define('MATRIX_FNS', MATRIX_HTTP_URL . 'functions/');
 

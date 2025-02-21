@@ -33,7 +33,7 @@ function store()
     $olds = [];
     $unfillable = ['precio_mayoreo' => '', 'cantidad_minima_mayoreo' => '', 'vencimiento' => ''];
 
-    $vencimiento = !isset($_POST['vencimiento']) ? clearEntry($_POST['vencimiento']) : null;
+    $vencimiento = isset($_POST['vencimiento']) ? clearEntry($_POST['vencimiento']) : null;
     unset($_POST['vencimiento']);
     unset($_POST['accion']);
 
@@ -44,7 +44,7 @@ function store()
         $data[$key] = clearEntry($request) ?: null;
         $olds[$key] = $request ?: '';
 
-        if (($key === 'aplica_mayoreo' && $data['aplica_mayoreo'] === 'si') || !array_key_exists($key, $unfillable))
+        if (!array_key_exists($key, $unfillable))
             if (!isset($data[$key]))
                 $errors[$key] = "El campo " . str_replace(['-','_'], ' ', $key) . " es obligatorio";
     }
@@ -70,14 +70,20 @@ function store()
 
     // G U A R D A R   I M A G E N
     $http_path = HTTP_URL . 'imgs_productos/';
+    $doc_path = DOC_ROOT . 'imgs_productos/';
+
     $date = date('mY');
     $file_name = createSlug(basename($file['name']), true);
-    $img_path = "{$date}_{$slug}_{$file_name}";
+    $img_name = "{$date}_{$slug}_{$file_name}";
+    storeImage($file, $img_name, $doc_path);
 
-    storeImage($file, $img_path);
+    // C O N V E R T I R   I M A G E N   A  .webp
+    $webp_img_name = createWebpImage($img_name, $doc_path);
+    if ($webp_img_name) unlink("$doc_path$img_name");
+
 
     $index_data = array_values($data);
-    array_push($index_data, "$http_path$img_path", $slug);
+    array_push($index_data, "$http_path$webp_img_name", $slug);
 
     $types = '';
     $type_map = [
@@ -118,7 +124,7 @@ function store()
     $query = $conn -> prepare($sql);
 
     if (!$query) {
-        destroyImage($img_path);
+        destroyImage($webp_img_name);
         $_SESSION['swal'] = swal('error', 'Error al añadir el producto.');
         redirect();
     }
@@ -127,7 +133,7 @@ function store()
     $query -> bind_param($types, ...$params);
 
     if (!$query -> execute()) {
-        destroyImage($img_path);
+        destroyImage($webp_img_name);
         $query -> close();
 
         $_SESSION['swal'] = swal('error', '¡Ocurrió un error!' . $query -> error);
@@ -144,7 +150,98 @@ function store()
 
 function update()
 {
+    unset($_POST['accion']);
+    $data = [];
+    $errors = [];
+    $olds = [];
+    $unfillable = ['stock_producto' => '', 'imagen' => ''];
 
+    $id = (int)clearEntry(decryptValue($_GET['p'] ?? '', SECRETKEY)) ?: null;
+    if (!$id) redirect();
+
+    $sql = '
+        SELECT *
+        FROM productos
+        WHERE id_producto = ?
+        LIMIT 1
+    ';
+    $producto_actual = simpleQuery($sql, [$id], 'i', true)[0] ?: false;
+    if (!$producto_actual) {
+        $_SESSION['swal'] = swal('error', '¡El producto no existe!');
+        redirect();
+    }
+
+    $sql = '
+        SELECT id_lote_vencimiento
+        FROM lotes_vencimientos
+        WHERE id_producto_fk_lote_vencimiento = ?
+        LIMIT 1
+    ';
+
+    if (empty(simpleQuery($sql, [$id], 'i', true)) || !isset($_POST['stock_producto']) ) $unfillable['vencimiento'] = '';
+    if ((int)$_POST['aplica_mayoreo'] === 0) {
+        $unfillable['precio_mayoreo_producto'] = '';
+        $unfillable['cantidad_minima_mayoreo_producto'] = '';
+    }
+
+    $cambios = false;
+
+    foreach($_POST as $key => $request) {
+        $data[$key] = is_numeric($request) ?
+            (strpos($request, '.') !== false ? (float)$request :
+            (int)$request) : (clearEntry($request) ?: null);
+
+        $request ? $olds[$key] = $request : '';
+
+        if (!isset($data[$key]) && !array_key_exists($key, $unfillable))
+            $errors[$key] = "El campo " . str_replace(['-','_', 'producto'], ' ', $key) . " es obligatorio";
+
+        if (isset($producto_actual[$key]) && $producto_actual[$key] != $data[$key] && !array_key_exists($key, $unfillable))
+            $cambios = true;
+    }
+
+    $_SESSION['olds'] = $olds;
+
+    if (!$cambios && !$_FILES['imagen']['name']) {
+        $_SESSION['swal'] = swal('success', '¡No se detectaron cambios!');
+        redirect();
+    }
+
+    if (!array_key_exists('vencimiento', $unfillable) && !isset($data['vencimiento'])) {
+        $_SESSION['swal'] = swal('info', '¡Este producto requiere fecha de vencimiento!', '', 4000);
+        redirect();
+    }
+
+    if (count($errors) > 0) {
+        $_SESSION['errors'] = $errors;
+        redirect();
+    }
+
+    $sql = '
+        SELECT nombre_producto
+        FROM productos
+        WHERE id_producto != ?
+        AND (nombre_producto = ? OR codigo_barras_producto = ?)
+    ';
+
+    if (simpleQuery($sql, [$id, $data['nombre_producto'], (int)$data['codigo_barras_producto']], 'isi')) {
+        $_SESSION['swal'] = swal('warning', '¡Ya existe el producto ingresado!');
+        redirect();
+    }
+
+    if (count($errors) === (count($_POST) + 1) - count($unfillable)) {
+        $_SESSION['swal'] = swal('error', '¡No puedes dejar vaciós los campos!', '', 4000);
+        redirect();
+    }
+
+    $file_assoc = $_FILES['imagen'];
+    $file = $file_assoc['tmp_name'] ?: null;
+    $file_name = $file_assoc['name'] ?: null;
+
+
+    unset($_SESSION['olds']);
+    unset($_SESSION['errors']);
+    redirect();
 }
 
 function changeStatus()
@@ -152,8 +249,18 @@ function changeStatus()
 
 }
 
+function createWebpImage($filename, $doc_path)
+{
+    $imagen = imagecreatefromjpeg("$doc_path$filename");
+    $new_filename = str_replace(['.jpg', 'jpeg'], '.webp', $filename);
 
-function storeImage($file, $img_path)
+    imagewebp($imagen, "$doc_path$new_filename", 70);
+    imagedestroy($imagen);
+
+    return $new_filename;
+}
+
+function storeImage($file, $img_name, $doc_path)
 {
     $file_name = basename($file['name']);
 
@@ -178,19 +285,17 @@ function storeImage($file, $img_path)
         redirect();
     }
 
-    if ($file_type !== 'jpg' && $file_type !== 'png' && $file_type !== 'jpeg') {
-        $_SESSION['swal'] = swal('warning', "¡Solo imagenes JPG, PNG O JPEG!", '', 4000);
+    if ($file_type !== 'jpg' && $file_type !== 'jpeg') {
+        $_SESSION['swal'] = swal('warning', "¡Solo imagenes JPG, O JPEG!", '', 4000);
         redirect();
     }
-
-    $doc_path = DOC_ROOT . 'imgs_productos/';
 
     if (file_exists("$doc_path$file_name")) {
         $_SESSION['swal'] = swal('warning', '¡Ya existe una imagen con este nombre!', '', 4000);
         redirect();
     }
 
-    if (!move_uploaded_file($file['tmp_name'], "$doc_path$img_path")) {
+    if (!move_uploaded_file($file['tmp_name'], "$doc_path$img_name")) {
         $_SESSION['swal'] = swal('error', "Error al procesar la imagen");
         redirect();
     }

@@ -134,8 +134,20 @@ function update()
     $olds = [];
     $errors = [];
 
-    $id = decryptValue($_GET['c'], SECRETKEY);
+    $id = (int)decryptValue($_GET['c'] ?? '', SECRETKEY);
     if (!$id) redirect();
+
+    $sql = 'SELECT * FROM categorias WHERE id_categoria = ?';
+    $categoria = simpleQuery($sql, [$id], 'i', true)[0] ?: null;
+    $cambios = false;
+
+    if ($categoria['nombre_categoria'] !== strtolower($_POST['nombre']) || $categoria['descripcion_categoria'] !== strtolower($_POST['descripcion']))
+        $cambios = true;
+
+    if (!$cambios && !$_FILES['imagen']['name']) {
+        $_SESSION['swal'] = swal('success', '¡No se detectaron cambios!');
+        redirect();
+    }
 
     $category = clearEntry($_POST['nombre']) ?: null;
     $descripcion = clearEntry($_POST['descripcion']) ?: null;
@@ -188,7 +200,7 @@ function update()
     }
 
     $sql = 'SELECT nombre_categoria FROM categorias WHERE id_categoria = ?';
-    $nombre_actual = simpleQuery($sql, [$id], 'i', true)['nombre_categoria'];
+    $nombre_actual = simpleQuery($sql, [$id], 'i', true)[0]['nombre_categoria'];
 
     if (empty($nombre_actual)) {
         $_SESSION['swal'] = swal("error", "¡Ocurrió un error al buscar la categoría!");

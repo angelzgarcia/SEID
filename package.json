@@ -10,6 +10,7 @@
     "tailwindcss": "^4.0.7"
   },
   "scripts": {
+    "watch": "npm run dev",
     "dev": "concurrently \"npx tailwindcss -i ./acceso_matriz/resources/css/css.css -o ./acceso_matriz/resources/css/output.css --watch\" \"npx tailwindcss -i ./acceso_vendedor/resources/css/css.css -o ./acceso_vendedor/resources/css/output.css --watch\" \"npx tailwindcss -i ./acceso_director/resources/css/css.css -o ./acceso_director/resources/css/output.css --watch\""
   }
 }
