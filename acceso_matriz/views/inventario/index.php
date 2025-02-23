@@ -51,23 +51,8 @@
     }
 
     //  S U C U R S A L E S
-    $sucursales = [];
-    $sucursal = clearEntry($_POST['sucursal_select'] ?? '') ?: null;
-    if ($sucursal) {
-        // var_dump($sucursal);
-        // exit;
-        $sql = '
-            SELECT p_s.*, p.*, s.id_sucusal, s.nombre_sucursal
-            FROM productos_sucursales AS p_s
-            LEFT JOIN productos AS p
-            LEFT JOIN sucursales AS s
-            WHERE p_s.id_producto_fk_producto_sucursal = p.id_producto
-            AND p_S.id_sucursal_fk_producto_sucursal = s.id_sucursal
-        ';
-    } else {
-        $sql = 'SELECT id_sucursal, nombre_sucursal FROM sucursales ORDER BY nombre_sucursal ASC';
-        $sucursales = simpleQuery($sql) ?: [];
-    }
+    $sql = 'SELECT id_sucursal, nombre_sucursal FROM sucursales ORDER BY nombre_sucursal ASC';
+    $sucursales = simpleQuery($sql) ?: [];
 ?>
 
 <!DOCTYPE html>
@@ -83,14 +68,15 @@
 
         <!-- FILTRAR INVENTARIOS POR SUCURSAL -->
         <div class="searcher-links">
-            <form action="" class="subsidiaries-filter" autocomplete="off">
-                <input type="text" list="sucursales" name="sucursal_datalist" id="sucursal_datalist" placeholder="Buscar sucursal...">
+            <div class="subsidiaries-filter" autocomplete="off">
+                <input
+                    type="text" list="sucursales" name="sucursal_datalist" id="sucursal_datalist" placeholder="Buscar sucursal..."
+                    onkeyup="busqueda();"
+                >
                 <datalist id="sucursales">
-                    <?php if (empty($sucursales)): ?>
-                        <option selected disabled>No hay sucursales registradas</option>
-                    <?php else: ?>
+                    <?php if (!empty($sucursales)): ?>
                         <?php foreach ($sucursales as $suc): ?>
-                            <option value="<?= htmlspecialchars(trim($suc['nombre_sucursal'])) ?>">
+                            <option value="<?= ucwords(clearEntry($suc['nombre_sucursal'])) ?>">
                                 <?= ucwords($suc['nombre_sucursal']) ?>
                             </option>
                         <?php endforeach; ?>
@@ -99,17 +85,21 @@
 
                 <select name="sucursal_select" class="crud-header-select sucursal-select">
                     <?php if (empty($sucursales)): ?>
-                        <option selected disabled>No hay sucursales registradas</option>
+                        <option selected disabled>
+                            No hay sucursales registradas
+                        </option>
                     <?php else: ?>
-                        <option value="<?= htmlspecialchars(trim('todas')) ?>" class="font-extrabold">Todas las sucursales</option>
+                        <option selected disabled class="font-extrabold">
+                            Todas las sucursales
+                        </option>
                         <?php foreach ($sucursales as $suc): ?>
-                            <option value="<?= htmlspecialchars(trim($suc['nombre_sucursal'])) ?>">
+                            <option value="<?= clearEntry($suc['nombre_sucursal']) ?>">
                                 <?= ucwords($suc['nombre_sucursal']) ?>
                             </option>
                         <?php endforeach; ?>
                     <?php endif; ?>
                 </select>
-            </form>
+            </div>
 
             <div class="categories-brands">
                 <a href=" <?= MATRIX_HTTP_VIEWS.'inventario/categorias/index'?>">
@@ -123,7 +113,7 @@
             </div>
         </div>
 
-        <!-- CRUD -->
+        <!-- CRUD CONTAINER -->
         <div class="crud-container">
             <!-- CRUD HEADER -->
             <div class="crud-header">
@@ -142,20 +132,37 @@
                     </div>
 
                     <div class="crud-order-by">
-                        <select name="" class="crud-header-select">
-                            <option selected disabled>Ordenar por</option>
-                            <option value="">Ver todos</option>
-                            <option value="">Menor stock</option>
-                            <option value="">Mayor stock</option>
-                            <option value="">Próximo a vencer</option>
-                            <option value="">A - Z</option>
-                            <option value="">Z - A</option>
+                        <select name="order-by-products" class="crud-header-select" id="order-by-products">
+                            <option selected disabled> Ordenar por </option>
+                            <option value="ultimos">
+                                Últimos añadidos
+                            </option>
+                            <option value="menor_stock">
+                                Menor stock
+                            </option>
+                            <option value="mayor_stock">
+                                Mayor stock
+                            </option>
+                            <option value="vencimiento">
+                                Próximo a vencer
+                            </option>
+                            <option value="az">
+                                A - Z
+                            </option>
+                            <option value="za">
+                                Z - A
+                            </option>
                         </select>
                     </div>
 
                     <div class="shipping-add-btns flex gap-3">
-                        <div class="branch-shipping">
-                            <button type="button" title="Enviar pedido a sucursal">
+                        <div
+                            class="branch-shipping open-order-modal"
+                            data-target=".order-modal"
+                        >
+                            <div class="count-list-products-circle" id="count-list-products-circle"><span></span></div>
+
+                            <button type="button" title="Ver pedido">
                                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M240-160q-50 0-85-35t-35-85H40v-440q0-33 23.5-56.5T120-800h560v160h120l120 160v200h-80q0 50-35 85t-85 35q-50 0-85-35t-35-85H360q0 50-35 85t-85 35Zm0-80q17 0 28.5-11.5T280-280q0-17-11.5-28.5T240-320q-17 0-28.5 11.5T200-280q0 17 11.5 28.5T240-240ZM120-360h32q17-18 39-29t49-11q27 0 49 11t39 29h272v-360H120v360Zm600 120q17 0 28.5-11.5T760-280q0-17-11.5-28.5T720-320q-17 0-28.5 11.5T680-280q0 17 11.5 28.5T720-240Zm-40-200h170l-90-120h-80v120ZM360-540Z"/></svg>
                             </button>
                         </div>
@@ -172,19 +179,19 @@
                     <div class="details">
                         <div class="summary">
                             <p>Total de productos</p>
-                            <span><?= $count_products ?: 0 ?></span>
+                            <span><?= $count_products ?? 0 ?></span>
                         </div>
                         <div class="summary">
                             <p>Productos sin stock</p>
-                            <span><?= $count_out_stock_products ?: 0 ?></span>
+                            <span><?= $count_out_stock_products ?? 0 ?></span>
                         </div>
                         <div class="summary">
                             <p>Productos con bajo inventario</p>
-                            <span><?= $count_few_stock_products ?: 0 ?></span>
+                            <span><?= $count_few_stock_products ?? 0 ?></span>
                         </div>
                         <div class="summary">
                             <p>Productos próximos a vencer</p>
-                            <span><?= $count_close_expiration_products ?: 0 ?></span>
+                            <span><?= $count_close_expiration_products ?? 0 ?></span>
                         </div>
                     </div>
                 </div>
@@ -204,7 +211,10 @@
 
                     <!-- BUSCADOR -->
                     <div class="crud-searcher">
-                        <input type="text" id="searcher" placeholder="Buscar productos..." autocomplete="off" onkeyup="busqueda($('#searcher').val());">
+                        <input
+                            type="text" id="searcher" placeholder="Buscar productos..." autocomplete="off"
+                            onkeyup="busqueda();"
+                        >
 
                         <span id="erase-search">
                             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="m456-320 104-104 104 104 56-56-104-104 104-104-56-56-104 104-104-104-56 56 104 104-104 104 56 56Zm-96 160q-19 0-36-8.5T296-192L80-480l216-288q11-15 28-23.5t36-8.5h440q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H360ZM180-480l180 240h440v-480H360L180-480Zm400 0Z"/></svg>
@@ -225,31 +235,15 @@
 
             </div>
         </div>
+
     </main>
+
+
+    <?php require_once MATRIX_DOC_VIEWS . 'inventario/show_order_modal.php' ?>
+
+    <?php require_once MATRIX_DOC_VIEWS . 'inventario/show_modal.php' ?>
 
     <script src="<?= MATRIX_HTTP_URL ?>resources/inventory.js"></script>
 
-    <script>
-        $(document).on('click', '.menu-toggle', function() {
-            const $container = $(this).closest('.register-actions-menu-container');
-            const $frame = $container.closest('.register-frame');
-            $container.toggleClass('active');
-            $frame.toggleClass('active');
-
-            $('.register-actions-menu-container').not($container).removeClass('active');
-            $('.register-frame').not($frame).removeClass('active');
-
-            const windowWidth = $(window).width();
-            // Obtener la posición del contenedor
-            const containerPos = $container.offset().left + $container.outerWidth();
-
-            // Si el contenedor está cerca del borde derecho, invertir la dirección
-            if (containerPos > windowWidth - 100) { // 100 es el margen que puedes ajustar
-                $container.addClass('inverted');
-            } else {
-                $container.removeClass('inverted');
-            }
-        });
-    </script>
 </body>
 </html>

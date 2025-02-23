@@ -58,7 +58,7 @@
                             <?php foreach ($categorias as $categoria): ?>
                                 <option
                                     value="<?= encryptValue($categoria['id_categoria'], SECRETKEY) ?>"
-                                    <?= isset($_SESSION['olds']['categoria']) && $_SESSION['olds']['categoria'] === $categoria['nombre_categoria'] ? 'selected' : '' ?>
+                                    <?= isset($_SESSION['olds']['categoria']) && (int)$_SESSION['olds']['categoria'] === (int)$categoria['id_categoria'] ? 'selected' : '' ?>
                                 >
                                     <?= ucfirst($categoria['nombre_categoria']) ?>
                                 </option>
@@ -87,7 +87,7 @@
                             <?php foreach ($marcas as $marca): ?>
                                 <option
                                     value="<?= encryptValue($marca['id_marca'], SECRETKEY) ?>"
-                                    <?= isset($_SESSION['olds']['marca']) && $_SESSION['olds']['marca'] === $marca['nombre_marca'] ? 'selected' : '' ?>
+                                    <?= isset($_SESSION['olds']['marca']) && (int)$_SESSION['olds']['marca'] === (int)$marca['id_marca'] ? 'selected' : '' ?>
                                 >
                                     <?= ucfirst($marca['nombre_marca']) ?>
                                 </option>

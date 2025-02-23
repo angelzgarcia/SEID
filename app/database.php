@@ -49,3 +49,21 @@
 
         } catch (\Throwable $th) { return false; }
     }
+
+    function startTransaction()
+    {
+        global $conn;
+        $conn -> begin_transaction();
+    }
+
+    function commitTransaction()
+    {
+        global $conn;
+        $conn -> commit();
+    }
+
+    function rollbackTransaction()
+    {
+        global $conn;
+        $conn -> rollback();
+    }

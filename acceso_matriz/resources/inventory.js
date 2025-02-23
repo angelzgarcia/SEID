@@ -1,36 +1,50 @@
+let productos = JSON.parse(localStorage.getItem('selectedProducts')) || [];
 
 document.addEventListener('DOMContentLoaded', () => {
-    // <!-- C A R G A R   P R O D U C T O S -->
-    busqueda('');
+    //  <-- SE CARGAN LOS PORDUCTOS -->
+    busqueda();
 
-    // <!-- L I M P I A R   B U S Q U E D A -->
+
+    //  <-- SE LIMPIA EL BUSCADOR -->
     const erase = document.getElementById('erase-search');
-    const search = document.getElementById('searcher');
-
-    if (erase && search) {
+    if (erase)
         erase.addEventListener('click', () => {
-            search.value = '';
-            buscar(search.value);
+            document.getElementById('searcher').value = '';
+            busqueda();
         });
+
+
+    // <-- SE ORDENAN LOS PRODUCTOS -->
+    document.getElementById('order-by-products').addEventListener('change', busqueda);
+
+
+    // <-- DISPLAY CANTIDAD DE PRODUCTOS ENVIADOS POR MATRIZ -->
+    const circle = document.getElementById('count-list-products-circle');
+    const span = document.querySelector('#count-list-products-circle span');
+    if (productos.length > 0) {
+        circle.style.display = 'flex'
+        span.innerHTML = productos.length;
+    } else {
+        circle.style.display = 'none'
     }
 });
 
-
-// <!-- B U S C A D O R -->
-
+// <- SE PONE UN RETRASO A LAS PETICIONES ->
 let time = null;
-
-function busqueda(busqueda)
-{
+function busqueda() {
     clearTimeout(time);
     time = setTimeout(() => {
-        buscar(busqueda);
-    }, 500);
+        buscar();
+    }, 600);
 }
 
-function buscar(busqueda)
-{
-    var params = { "busqueda": busqueda };
+function buscar() {
+    const busqueda = document.getElementById('searcher').value;
+    const sucursal = document.getElementById('sucursal_datalist').value;
+    const orderBy = document.getElementById('order-by-products').value;
+
+    const params = { "busqueda": busqueda, "sucursal": sucursal, "order_by": orderBy };
+
     $.ajax({
         data: params,
         type: 'POST',
@@ -50,3 +64,202 @@ function buscar(busqueda)
     });
 }
 
+
+//  <!--  M O S T R A R   A C C I O N E S   D E   C A D A   R E G I S T R O  -->
+$(document).on('click', '.menu-toggle', function() {
+    const $container = $(this).closest('.register-actions-menu-container');
+    const $frame = $container.closest('.register-frame');
+    $container.toggleClass('active');
+    $frame.toggleClass('active');
+
+    $('.register-actions-menu-container').not($container).removeClass('active');
+    $('.register-frame').not($frame).removeClass('active');
+
+    const windowWidth = $(window).width();
+    const containerPos = $container.offset().left + $container.outerWidth();
+
+    if (containerPos > windowWidth - 100) {
+        $container.addClass('inverted');
+    } else {
+        $container.removeClass('inverted');
+    }
+});
+
+
+function validarUnidades(input) {
+    input.value = input.value.replace(/^0+|[^0-9]/g, '');
+    validarBoton();
+}
+
+
+//  <!-- MODAL PARA AÑADIR PRODUCTOS A UN PEDIDO -->
+let selectedProducts = JSON.parse(localStorage.getItem('selectedProducts')) || [];
+$(document).on('click', '.add-stock-btn', function() {
+    let id = $(this).data('product-id') || '';
+    let name = $(this).data('product-name') || '';
+    let stock = parseInt($(this).data('product-stock'),10) || 0;
+
+    Swal.fire({
+        title: "Añadir al pedido 📦",
+        focusConfirm: false,
+        allowOutsideClick: false,
+        showCancelButton: true,
+        confirmButtonText: `
+            <span class="swal-custom-text">Añadir</span>
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M640-640h120-120Zm-440 0h338-18 14-334Zm16-80h528l-34-40H250l-34 40Zm184 270 80-40 80 40v-190H400v190Zm182 330H200q-33 0-56.5-23.5T120-200v-499q0-14 4.5-27t13.5-24l50-61q11-14 27.5-21.5T250-840h460q18 0 34.5 7.5T772-811l50 61q9 11 13.5 24t4.5 27v196q-19-7-39-11t-41-4v-122H640v153q-35 20-61 49.5T538-371l-58-29-160 80v-320H200v440h334q8 23 20 43t28 37Zm138 0v-120H600v-80h120v-120h80v120h120v80H800v120h-80Z"/></svg>
+        `,
+        cancelButtonText: `
+            <span class="swal-custom-text">Cancelar</span>
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="m336-280 144-144 144 144 56-56-144-144 144-144-56-56-144 144-144-144-56 56 144 144-144 144 56 56ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>
+        `,
+        buttonsStyling: true,
+        customClass: {
+            confirmButton: "swal-custom-btn swal-pay-btn",
+            cancelButton: "swal-custom-btn swal-cancel-btn"
+        },
+        html: `
+            <div class="swal-custom-form scf-stock">
+                <fieldset>
+                    <legend>Cantidad a enviar:</legend>
+                    <input id="swal-stock" class="swal2-input" onInput="validarUnidades(this)" placeholder="Añada la cantidad al pedido en curso">
+
+                    <div>
+                        <h2
+                            id="insufficient-stock"
+                            style="color: red; font-size:medium; margin-block-start:1rem; display: none;"
+                        >
+                            ¡Existencias insuficientes!
+                        </h2>
+                    </div>
+                </fieldset>
+            </div>
+        `,
+        didOpen: () => {
+            const inputStock = document.getElementById('swal-stock');
+            const insufficientStockErrorMessage = document.getElementById('insufficient-stock');
+            const confirmButton = Swal.getConfirmButton();
+
+            function validarBoton() {
+                let newStock = parseInt(inputStock.value, 10) || 0;
+
+                confirmButton.disabled = (newStock < 1 || isNaN(newStock) || newStock > stock) ? true : false;
+
+                insufficientStockErrorMessage.style.display = (newStock > stock) ? 'block' : 'none';
+            }
+
+            validarBoton();
+            inputStock.addEventListener('input', validarBoton);
+        },
+        preConfirm: () => {
+            return {
+                name: name,
+                id: id,
+                quantity: parseInt(document.getElementById('swal-stock').value,10),
+            };
+        }
+    }).then((result) => {
+        const Toast = Swal.mixin({
+            toast: true,
+            position: "top-end",
+            showConfirmButton: false,
+            timer: 3000,
+            iconColor: 'white',
+            timerProgressBar: true,
+            customClass: {
+                popup: 'colored-toast',
+            },
+            didOpen: (toast) => {
+                toast.onmouseenter = Swal.stopTimer;
+                toast.onmouseleave = Swal.resumeTimer;
+            }
+        });
+
+        if (result.isConfirmed) {
+            selectedProducts.push(result.value);
+            localStorage.setItem('selectedProducts', JSON.stringify(selectedProducts));
+            const circle = document.querySelector('#count-list-products-circle span');
+            circle.innerHTML = selectedProducts.length;
+
+            Toast.fire({
+                icon: "success",
+                title: "¡Producto añadido!"
+            });
+        } else {
+            Toast.fire({
+                icon: "info",
+                title: "Operación cancelada"
+            });
+        }
+    });
+});
+
+
+// <--  C E R R A R   M O D A L -->
+$(document).on('click', '.close-modal', function() {
+    let modal = $(this).closest('.modal-background');
+    let modalContainer = modal.find('.modal-container');
+
+    modal.addClass('hide').removeClass('show');
+    modalContainer.addClass('hide').removeClass('show');
+
+    setTimeout(() => {
+        modal.removeClass('show');
+        modalContainer.removeClass('show');
+    }, 300);
+});
+
+// <--  M O D A L   O R D E N   E N   C U R S O  -->
+$(document).on('click', '.open-order-modal ', function() {
+    let modalClass = $(this).data('target');
+    let modal = $(modalClass);
+    let modalContainer = modal.find('.modal-container');
+
+    modal.addClass('show').removeClass('hide');
+    modalContainer.addClass('show').removeClass('hide');
+});
+
+// <--  M O D A L   V E R   D E T A L L E S   D E   U N   R E G I S T R O  -->
+$(document).on('click', '.open-register-details-modal ', function() {
+    let modalClass = $(this).data('target');
+    let modal = $(modalClass);
+    let modalContainer = modal.find('.modal-container');
+
+    modal.addClass('show').removeClass('hide');
+    modalContainer.addClass('show').removeClass('hide');
+
+    let productId = $(this).data('id');
+
+    $.ajax({
+        url: '../../functions/crud_producto.php',
+        method: 'GET',
+        data: {p: productId},
+        success: function(data) {
+
+            $('.product-name').text(data.nombre_producto);
+
+        },
+        error: (xhr, status, error) => {
+            console.error("Error al cargar el producto:", error);
+
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                iconColor: 'white',
+                timerProgressBar: true,
+                customClass: {
+                    popup: 'colored-toast',
+                },
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+            Toast.fire({
+                icon: "error",
+                title: "¡No se encontró el producto!"
+            });
+        }
+    });
+});

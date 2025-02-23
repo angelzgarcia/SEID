@@ -1,36 +1,76 @@
 <?php
+require_once __DIR__ . '/../config.php';
+require_once MATRIX_DOC_FNS . 'helpers/encrypt.php';
+require_once MATRIX_DOC_FNS . 'helpers/clear.php';
+require_once MATRIX_DOC_ROOT . 'database.php';
+
 if ($_SERVER['REQUEST_METHOD'] !== 'POST')
     redirect();
 
 function redirect()
 {
-    header("Location: {$_SERVER['HTTP_REFERER']}");
+    $redirect_ulr = $_SERVER['HTTP_REFERER'] ?? MATRIX_HTTP_VIEWS . 'dashboard';
+    header("Location: $redirect_ulr");
     exit;
 }
 
-require_once __DIR__ . '/../config.php';
-require_once __DIR__ . '/helpers/encrypt.php';
-require_once __DIR__ . '/../database.php';
+$busqueda = clearEntry($_POST['busqueda'] ?? '') ?: null;
+$sucursal = clearEntry($_POST['sucursal'] ?? '') ?: null;
+$orden = clearEntry($_POST['order_by'] ?? '') ?: null;
 
-$busqueda = htmlspecialchars(trim($_POST['busqueda'])) ?: '';
+$productos = [];
 
-$sql = "
-    SELECT p.*, c.nombre_categoria, c.id_categoria, m.nombre_marca, m.id_marca
-    FROM productos AS p
-    INNER JOIN categorias AS c
-    INNER JOIN marcas AS m
-    ON p.id_categoria_fk_producto = c.id_categoria
-    AND p.id_marca_fk_producto = m.id_marca
-    WHERE (p.nombre_producto LIKE ?)
-    OR (p.codigo_barras_producto LIKE ?)
-    OR (c.nombre_categoria LIKE ?)
-    OR (m.nombre_marca LIKE ?)
-    ORDER BY id_producto DESC
-    LIMIT 14
+$sql = "SELECT p.*, c.nombre_categoria, c.id_categoria, m.nombre_marca, m.id_marca FROM productos AS p";
+
+$join = "
+    INNER JOIN categorias AS c ON p.id_categoria_fk_producto = c.id_categoria
+    INNER JOIN marcas AS m ON p.id_marca_fk_producto = m.id_marca
 ";
 
-$param = "%$busqueda%";
-$productos = simpleQuery($sql, [&$param, &$param, &$param, &$param], 'ssss', true);
+$conditions = [];
+$params = [];
+$types = '';
+
+if ($sucursal) {
+    $join .= "
+        INNER JOIN productos_sucursales AS p_s ON p.id_producto = p_s.id_producto_fk_producto_sucursal
+        INNER JOIN sucursales AS s ON p_s.id_sucursal_fk_producto_sucursal = s.id_sucursal
+    ";
+    $conditions[] = "s.nombre_sucursal LIKE ?";
+    $params[] = "%$sucursal%";
+    $types .= 's';
+}
+
+if ($orden === 'vencimiento') {
+    $join .= " INNER JOIN lotes_vencimientos AS l_v ON p.id_producto = l_v.id_producto_fk_lote_vencimiento";
+}
+
+if ($busqueda) {
+    $conditions[] = "(p.nombre_producto LIKE ? OR p.codigo_barras_producto LIKE ? OR c.nombre_categoria LIKE ? OR m.nombre_marca LIKE ?)";
+    array_push($params, "%$busqueda%", "%$busqueda%", "%$busqueda%", "%$busqueda%");
+    $types .= 'ssss';
+}
+
+$sql .= $join;
+
+if (!empty($conditions)) { $sql .= " WHERE " . implode(" AND ", $conditions); }
+
+$orden = match ($orden) {
+    'ultimos' => 'p.id_producto DESC',
+    'menor_stock' => 'p.stock_producto ASC',
+    'mayor_stock' => 'p.stock_producto DESC',
+    'vencimiento' => 'fecha_vencimiento ASC',
+    'az' => 'p.nombre_producto ASC',
+    'za' => 'p.nombre_producto DESC',
+    default => 'p.id_producto DESC'
+};
+
+$sql .= " ORDER BY $orden LIMIT 14";
+
+$productos = simpleQuery($sql, $params, $types, true) ?: [];
+
+
+
 
 if ($busqueda && empty($productos)): ?>
 
@@ -47,12 +87,15 @@ if ($busqueda && empty($productos)): ?>
     </div>
 
 <?php else:
-
     foreach ($productos as $producto): ?>
         <!--  MARCO DEL REGISTRO -->
         <div class="register-frame">
             <!-- DETALLES -->
-            <a href="" class="register-details-link">
+            <div
+                class="register-details-link open-register-details-modal"
+                data-target=".register-details-modal"
+                data-id="<?= encryptValue($producto['id_producto'], SECRETKEY) ?>"
+            >
                 <div class="register-details">
                     <div class="header-register">
                         <p><?= ucfirst($producto['nombre_producto']) ?: '' ?></p>
@@ -61,7 +104,7 @@ if ($busqueda && empty($productos)): ?>
                     </div>
 
                     <div class="body-register">
-                        <img src="<?= $producto['imagen_producto'] ?: '' ?>" alt="product image" loading="lazy">
+                        <img src="<?= $producto['imagen_producto'] ?: 'https://cdn-icons-png.flaticon.com/512/1440/1440523.png' ?>" alt="product image" loading="lazy">
 
                         <div class="quantities">
                             <p>
@@ -100,7 +143,7 @@ if ($busqueda && empty($productos)): ?>
                         </div>
                     </div>
                 </div>
-            </a>
+            </div>
 
             <?php $p = encryptValue($producto['id_producto'], SECRETKEY) ?>
             <?php $status = (int)$producto['status_producto'] ?>
@@ -116,13 +159,18 @@ if ($busqueda && empty($productos)): ?>
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M160-120v-170l527-526q12-12 27-18t30-6q16 0 30.5 6t25.5 18l56 56q12 11 18 25.5t6 30.5q0 15-6 30t-18 27L330-120H160Zm80-80h56l393-392-28-29-29-28-392 393v56Zm560-503-57-57 57 57Zm-139 82-29-28 57 57-28-29ZM560-120q74 0 137-37t63-103q0-36-19-62t-51-45l-59 59q23 10 36 22t13 26q0 23-36.5 41.5T560-200q-17 0-28.5 11.5T520-160q0 17 11.5 28.5T560-120ZM183-426l60-60q-20-8-31.5-16.5T200-520q0-12 18-24t76-37q88-38 117-69t29-70q0-55-44-87.5T280-840q-45 0-80.5 16T145-785q-11 13-9 29t15 26q13 11 29 9t27-13q14-14 31-20t42-6q41 0 60.5 12t19.5 28q0 14-17.5 25.5T262-654q-80 35-111 63.5T120-520q0 32 17 54.5t46 39.5Z"/></svg>
                     </a>
 
-                    <a href="./edit_stock?p=<?=$p?>" class="add-stock-btn" title="Reabastecer stock">
+                    <button
+                        class="add-stock-btn" title="Reabastecer stock"
+                        data-product-id="<?=encryptValue($producto['id_producto'], SECRETKEY)?>"
+                        data-product-name="<?=$producto['nombre_producto']?>"
+                        data-product-stock="<?=$producto['stock_producto']?>"
+                    >
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M40-160v-80h200v-80H80v-80h160v-80H122v-80h118v-118l-78-168 72-34 94 200h464l-78-166 72-34 94 200v520H40Zm440-280h160q17 0 28.5-11.5T680-480q0-17-11.5-28.5T640-520H480q-17 0-28.5 11.5T440-480q0 17 11.5 28.5T480-440ZM320-240h480v-360H320v360Zm0 0v-360 360Z"/></svg>
-                    </a>
+                    </button>
 
-                    <a href="./edit_stock?p=<?=$p?>" class="return-stock-btn" title="Retornar stock a almacén">
+                    <button class="return-stock-btn" title="Retornar stock a almacén">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M40-160v-80h200v-80H80v-80h160v-80H122v-80h118v-118l-78-168 72-34 94 200h464l-78-166 72-34 94 200v520H40Zm440-280h160q17 0 28.5-11.5T680-480q0-17-11.5-28.5T640-520H480q-17 0-28.5 11.5T440-480q0 17 11.5 28.5T480-440ZM320-240h480v-360H320v360Zm0 0v-360 360Z"/></svg>
-                    </a>
+                    </button>
 
                     <form action="<?= MATRIX_HTTP_URL ?>functions/crud_producto?p=<?=$p?>" class="status-btn <?= $status === 0 ? 'inactive-btn' : 'active-btn' ?>" data-id="<?=$p?>" method="POST" title="Cambiar status">
                         <input type="hidden" name="accion" value="modificar">
@@ -141,4 +189,3 @@ if ($busqueda && empty($productos)): ?>
     <?php endforeach;
 
 endif;?>
-

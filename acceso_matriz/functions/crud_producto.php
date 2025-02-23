@@ -1,12 +1,13 @@
 <?php
-
-if ($_SERVER['REQUEST_METHOD'] !== 'POST')
-redirect();
-
 require_once __DIR__ . '/../database.php';
 require_once __DIR__ . '/../config.php';
 foreach (glob(__DIR__ . "/helpers/*.php") as $helper)
     require_once $helper;
+
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['p'])) show(); else return;
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+    redirect();
 
 match ($_POST['accion']) {
     'guardar' => store(),
@@ -17,13 +18,9 @@ match ($_POST['accion']) {
 
 function redirect()
 {
-    header("Location: {$_SERVER['HTTP_REFERER']}");
+    $redirect_ulr = $_SERVER['HTTP_REFERER'] ?? MATRIX_HTTP_VIEWS . 'dashboard';
+    header("Location: $redirect_ulr");
     exit;
-}
-
-function index()
-{
-    return require_once MATRIX_DOC_ROOT . 'views/inventario/index.php';
 }
 
 function store()
@@ -62,6 +59,13 @@ function store()
 
     if (count($errors) > 0) {
         $_SESSION['errors'] = $errors;
+        redirect();
+    }
+
+    $sql = 'SELECT id_producto FROM productos WHERE nombre_producto = ? OR codigo_barras_producto = ?';
+    $producto = simpleQuery($sql, [&$_POST['nombre'], (int)$_POST['codigo_barras']], 'si');
+    if ($producto) {
+        $_SESSION['swal'] = swal('info', '¡Está duplicando este producto!', '', 4000);
         redirect();
     }
 
@@ -120,32 +124,62 @@ function store()
         )
         VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ';
-    global $conn;
-    $query = $conn -> prepare($sql);
 
-    if (!$query) {
+    $params = array_map(fn(&$value) => $value, $index_data);
+
+    if (isset($vencimiento)) {
+        startTransaction();
+
+        if (!simpleQuery($sql, $params, $types)) {
+            rollbackTransaction();
+            destroyImage($webp_img_name);
+
+            $_SESSION['swal'] = swal('error', 'Error al añadir el producto.');
+            redirect();
+        }
+
+        global $conn;
+        $id_producto = $conn -> insert_id;
+
+        $sql = 'INSERT INTO lotes_vencimientos (id_producto_fk_lote_vencimiento, fecha_vencimiento) VALUES (?, ?) ';
+
+        if (!simpleQuery($sql, [$id_producto, $vencimiento], 'is')) {
+            rollbackTransaction();
+            destroyImage($webp_img_name);
+
+            $_SESSION['swal'] = swal('error', '¡Hubo problemas al registrar la fecha de vencimiento!.');
+            redirect();
+        }
+
+        commitTransaction();
+
+    } elseif (!simpleQuery($sql, $params, $types)) {
         destroyImage($webp_img_name);
         $_SESSION['swal'] = swal('error', 'Error al añadir el producto.');
         redirect();
     }
 
-    $params = array_map(fn(&$value) => $value, $index_data);
-    $query -> bind_param($types, ...$params);
-
-    if (!$query -> execute()) {
-        destroyImage($webp_img_name);
-        $query -> close();
-
-        $_SESSION['swal'] = swal('error', '¡Ocurrió un error!' . $query -> error);
-        redirect();
-    }
-
     $_SESSION['swal'] = swal('success', '¡Producto añadido exitosamente!');
-    $query -> close();
 
     unset($_SESSION['olds']);
     unset($_SESSION['errors']);
     redirect();
+}
+
+function show()
+{
+    $id = decryptValue($_GET['p'] ?? '', SECRETKEY) ?: null;
+
+    $sql = 'SELECT * FROM productos WHERE id_producto = ?';
+    $product = simpleQuery($sql, [(int)$id], 'i', true) ?: null;
+    if (!$product) {
+        echo json_encode(["error" => "Producto no encontrado"]);
+        exit;
+    }
+
+    header('Content-Type: application/json');
+    echo json_encode($product[0]);
+    exit;
 }
 
 function update()

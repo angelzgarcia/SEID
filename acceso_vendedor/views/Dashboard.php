@@ -400,8 +400,8 @@
                         }
                     }).then((result) => {
                         if (result.isConfirmed) {
-                            if (result.value)
-                                Swal.fire(JSON.stringify(result.value));
+                            if (result.value) Swal.fire(JSON.stringify(result.value));
+
                         } else {
                             const Toast = Swal.mixin({
                                 toast: true,
