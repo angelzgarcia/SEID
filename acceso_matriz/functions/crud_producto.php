@@ -4,7 +4,7 @@ require_once __DIR__ . '/../config.php';
 foreach (glob(__DIR__ . "/helpers/*.php") as $helper)
     require_once $helper;
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['p'])) show(); else return;
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['p'])) show();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST')
     redirect();
@@ -84,7 +84,6 @@ function store()
     // C O N V E R T I R   I M A G E N   A  .webp
     $webp_img_name = createWebpImage($img_name, $doc_path);
     if ($webp_img_name) unlink("$doc_path$img_name");
-
 
     $index_data = array_values($data);
     array_push($index_data, "$http_path$webp_img_name", $slug);
@@ -168,17 +167,54 @@ function store()
 
 function show()
 {
-    $id = decryptValue($_GET['p'] ?? '', SECRETKEY) ?: null;
+    $id = clearEntry(decryptValue($_GET['p'] ?? '', SECRETKEY)) ?: null;
 
-    $sql = 'SELECT * FROM productos WHERE id_producto = ?';
+    $sql = '
+        SELECT
+            p.*, c.nombre_categoria,
+            m.nombre_marca,
+            GROUP_CONCAT(CONCAT(v.fecha_vencimiento, "|", v.created_at) SEPARATOR ",") AS lotes
+        FROM productos AS p
+        INNER JOIN categorias AS c ON p.id_categoria_fk_producto = c.id_categoria
+        INNER JOIN marcas AS m ON p.id_marca_fk_producto = m.id_marca
+        LEFT JOIN lotes_vencimientos AS v ON v.id_producto_fk_lote_vencimiento = p.id_producto
+        WHERE id_producto = ?
+        GROUP BY p.id_producto
+        ORDER BY v.fecha_vencimiento ASC
+    ';
     $product = simpleQuery($sql, [(int)$id], 'i', true) ?: null;
     if (!$product) {
         echo json_encode(["error" => "Producto no encontrado"]);
         exit;
     }
 
+    $product = $product[0];
+    if ($product['lotes']) {
+        $lotesArray = array_map(function ($lote) {
+            return explode('|', $lote);
+        }, explode(',', $product['lotes']));
+
+        usort($lotesArray, function ($a, $b) {
+            return strtotime($a[0]) - strtotime($b[0]);
+        });
+
+        $product['lotes'] = $lotesArray;
+    } else {
+        $product['lotes'] = [];
+    }
+
+    
+    $http_path = HTTP_URL . 'imgs_productos/';
+    $doc_path = DOC_ROOT . 'imgs_productos';
+    $files_paths_history_root = glob("{$doc_path}/*_{$product['slug_producto']}_*") ?? 0;
+
+    if (count($files_paths_history_root) > 1) {
+        $files_names = array_map(fn($f) => $http_path . basename($f), $files_paths_history_root);
+        $product['images'] = $files_names;
+    }
+
     header('Content-Type: application/json');
-    echo json_encode($product[0]);
+    echo json_encode($product);
     exit;
 }
 
@@ -212,7 +248,9 @@ function update()
         LIMIT 1
     ';
 
-    if (empty(simpleQuery($sql, [$id], 'i', true)) || !isset($_POST['stock_producto']) ) $unfillable['vencimiento'] = '';
+    if (empty(simpleQuery($sql, [$id], 'i', true)) || !$_POST['stock_producto'] ) $unfillable['vencimiento'] = '';
+    if (!empty($_POST['stock_producto'])) unset($unfillable['stock_producto']);
+
     if ((int)$_POST['aplica_mayoreo'] === 0) {
         $unfillable['precio_mayoreo_producto'] = '';
         $unfillable['cantidad_minima_mayoreo_producto'] = '';
@@ -241,13 +279,13 @@ function update()
         redirect();
     }
 
-    if (!array_key_exists('vencimiento', $unfillable) && !isset($data['vencimiento'])) {
-        $_SESSION['swal'] = swal('info', '¡Este producto requiere fecha de vencimiento!', '', 4000);
+    if (count($errors) > 0) {
+        $_SESSION['errors'] = $errors;
         redirect();
     }
 
-    if (count($errors) > 0) {
-        $_SESSION['errors'] = $errors;
+    if (!array_key_exists('vencimiento', $unfillable) && !isset($data['vencimiento'])) {
+        $_SESSION['swal'] = swal('info', '¡Este producto requiere fecha de vencimiento!', '', 4000);
         redirect();
     }
 
@@ -268,10 +306,48 @@ function update()
         redirect();
     }
 
+    $http_path = HTTP_URL . 'imgs_productos/';
+    $doc_path = DOC_ROOT . 'imgs_productos/';
     $file_assoc = $_FILES['imagen'];
     $file = $file_assoc['tmp_name'] ?: null;
-    $file_name = $file_assoc['name'] ?: null;
 
+    if (!$cambios && $file) {
+        $slug = $producto_actual['slug_producto'];
+        $file_name = $file_assoc['name'];
+
+        $date = date('mY');
+        $file_name = createSlug(basename($file_name), true);
+        $img_name = "{$date}_{$slug}_{$file_name}";
+        storeImage($file_assoc, $img_name, $doc_path);
+
+        // C O N V E R T I R   I M A G E N   A  .webp
+        $webp_img_name = createWebpImage($img_name, $doc_path);
+        if ($webp_img_name) unlink("$doc_path$img_name");
+
+        $sql = '
+            UPDATE productos SET imagen_producto = ?, updated_at = NOW()
+            WHERE id_producto = ?
+        ';
+        if (!simpleQuery($sql, ["$http_path$webp_img_name", $id], 'si')) {
+            $_SESSION['swal'] = swal('error', '¡No se pudo actualizar el fichero!', '', 3500);
+            destroyImage($webp_img_name);
+            redirect();
+        }
+
+        $_SESSION['swal'] = swal('success', '¡Imagen actualizada!');
+        redirect();
+    }
+
+    if ($cambios && !$file) {
+
+    }
+
+    if ($cambios && $file) {
+
+    }
+
+    var_dump($file_assoc, $file);
+    exit;
 
     unset($_SESSION['olds']);
     unset($_SESSION['errors']);

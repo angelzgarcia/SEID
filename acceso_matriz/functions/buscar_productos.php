@@ -20,19 +20,24 @@ $orden = clearEntry($_POST['order_by'] ?? '') ?: null;
 
 $productos = [];
 
-$sql = "SELECT p.*, c.nombre_categoria, c.id_categoria, m.nombre_marca, m.id_marca FROM productos AS p";
-
-$join = "
-    INNER JOIN categorias AS c ON p.id_categoria_fk_producto = c.id_categoria
-    INNER JOIN marcas AS m ON p.id_marca_fk_producto = m.id_marca
-";
-
 $conditions = [];
 $params = [];
 $types = '';
 
+$sql = "SELECT p.*, c.nombre_categoria, c.id_categoria, m.nombre_marca, m.id_marca";
+
 if ($sucursal) {
-    $join .= "
+    $sql .= ", p_s.cantidad_producto, p_s.precio_venta";
+}
+
+$sql .= "
+    FROM productos AS p
+    INNER JOIN categorias AS c ON p.id_categoria_fk_producto = c.id_categoria
+    INNER JOIN marcas AS m ON p.id_marca_fk_producto = m.id_marca
+";
+
+if ($sucursal) {
+    $sql .= "
         INNER JOIN productos_sucursales AS p_s ON p.id_producto = p_s.id_producto_fk_producto_sucursal
         INNER JOIN sucursales AS s ON p_s.id_sucursal_fk_producto_sucursal = s.id_sucursal
     ";
@@ -42,7 +47,7 @@ if ($sucursal) {
 }
 
 if ($orden === 'vencimiento') {
-    $join .= " INNER JOIN lotes_vencimientos AS l_v ON p.id_producto = l_v.id_producto_fk_lote_vencimiento";
+    $sql .= " INNER JOIN lotes_vencimientos AS l_v ON p.id_producto = l_v.id_producto_fk_lote_vencimiento";
 }
 
 if ($busqueda) {
@@ -51,14 +56,12 @@ if ($busqueda) {
     $types .= 'ssss';
 }
 
-$sql .= $join;
-
 if (!empty($conditions)) { $sql .= " WHERE " . implode(" AND ", $conditions); }
 
 $orden = match ($orden) {
     'ultimos' => 'p.id_producto DESC',
-    'menor_stock' => 'p.stock_producto ASC',
-    'mayor_stock' => 'p.stock_producto DESC',
+    'menor_stock' => $sucursal ? 'p_s.stock_sucursal ASC' : 'p.stock_producto ASC',
+    'mayor_stock' => $sucursal ? 'p_s.stock_sucursal DESC' : 'p.stock_producto DESC',
     'vencimiento' => 'fecha_vencimiento ASC',
     'az' => 'p.nombre_producto ASC',
     'za' => 'p.nombre_producto DESC',
@@ -68,8 +71,6 @@ $orden = match ($orden) {
 $sql .= " ORDER BY $orden LIMIT 14";
 
 $productos = simpleQuery($sql, $params, $types, true) ?: [];
-
-
 
 
 if ($busqueda && empty($productos)): ?>
@@ -119,12 +120,12 @@ if ($busqueda && empty($productos)): ?>
                             </p>
                             <p>
                                 Precio de venta:
-                                <span>$<?= $producto['precio_venta_producto'] ?></span>
+                                <span>$<?= $producto['precio_venta'] ?? $producto['precio_venta_producto'] ?></span>
                             </p>
                             <p>
                                 Exsitencias:
                                 <span>
-                                    <?php $stock = $producto['stock_producto'] ?>
+                                    <?php $stock = $producto['cantidad_producto'] ?? $producto['stock_producto'] ?>
                                     <span>
                                         <?= $stock ?>
                                         <?= $stock === 1 ? "{$producto['unidad_compra_producto']}" : "{$producto['unidad_compra_producto']}s" ?>
@@ -155,23 +156,28 @@ if ($busqueda && empty($productos)): ?>
                 </button>
 
                 <div class="register-actions">
+                    <!-- EDITAR PRODUCTO -->
                     <a href="./edit?p=<?=$p?>" title="Editar producto">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M160-120v-170l527-526q12-12 27-18t30-6q16 0 30.5 6t25.5 18l56 56q12 11 18 25.5t6 30.5q0 15-6 30t-18 27L330-120H160Zm80-80h56l393-392-28-29-29-28-392 393v56Zm560-503-57-57 57 57Zm-139 82-29-28 57 57-28-29ZM560-120q74 0 137-37t63-103q0-36-19-62t-51-45l-59 59q23 10 36 22t13 26q0 23-36.5 41.5T560-200q-17 0-28.5 11.5T520-160q0 17 11.5 28.5T560-120ZM183-426l60-60q-20-8-31.5-16.5T200-520q0-12 18-24t76-37q88-38 117-69t29-70q0-55-44-87.5T280-840q-45 0-80.5 16T145-785q-11 13-9 29t15 26q13 11 29 9t27-13q14-14 31-20t42-6q41 0 60.5 12t19.5 28q0 14-17.5 25.5T262-654q-80 35-111 63.5T120-520q0 32 17 54.5t46 39.5Z"/></svg>
                     </a>
 
+                    <!-- AÑADIR PRODUCTO AL PEDIDO -->
                     <button
                         class="add-stock-btn" title="Reabastecer stock"
                         data-product-id="<?=encryptValue($producto['id_producto'], SECRETKEY)?>"
                         data-product-name="<?=$producto['nombre_producto']?>"
                         data-product-stock="<?=$producto['stock_producto']?>"
+                        data-product-buy-type="<?=$producto['unidad_compra_producto']?>"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M40-160v-80h200v-80H80v-80h160v-80H122v-80h118v-118l-78-168 72-34 94 200h464l-78-166 72-34 94 200v520H40Zm440-280h160q17 0 28.5-11.5T680-480q0-17-11.5-28.5T640-520H480q-17 0-28.5 11.5T440-480q0 17 11.5 28.5T480-440ZM320-240h480v-360H320v360Zm0 0v-360 360Z"/></svg>
                     </button>
 
+                    <!-- RETORNAR PRODUCTO A ALMACEN -->
                     <button class="return-stock-btn" title="Retornar stock a almacén">
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M40-160v-80h200v-80H80v-80h160v-80H122v-80h118v-118l-78-168 72-34 94 200h464l-78-166 72-34 94 200v520H40Zm440-280h160q17 0 28.5-11.5T680-480q0-17-11.5-28.5T640-520H480q-17 0-28.5 11.5T440-480q0 17 11.5 28.5T480-440ZM320-240h480v-360H320v360Zm0 0v-360 360Z"/></svg>
                     </button>
 
+                    <!-- CAMBIAS STATUS -->
                     <form action="<?= MATRIX_HTTP_URL ?>functions/crud_producto?p=<?=$p?>" class="status-btn <?= $status === 0 ? 'inactive-btn' : 'active-btn' ?>" data-id="<?=$p?>" method="POST" title="Cambiar status">
                         <input type="hidden" name="accion" value="modificar">
 

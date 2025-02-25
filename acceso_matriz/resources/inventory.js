@@ -1,5 +1,5 @@
-let productos = JSON.parse(localStorage.getItem('selectedProducts')) || [];
 
+let productos = JSON.parse(localStorage.getItem('productos')) || [];
 document.addEventListener('DOMContentLoaded', () => {
     //  <-- SE CARGAN LOS PORDUCTOS -->
     busqueda();
@@ -21,15 +21,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // <-- DISPLAY CANTIDAD DE PRODUCTOS ENVIADOS POR MATRIZ -->
     const circle = document.getElementById('count-list-products-circle');
     const span = document.querySelector('#count-list-products-circle span');
+
     if (productos.length > 0) {
-        circle.style.display = 'flex'
+        circle.style.display = 'flex';
         span.innerHTML = productos.length;
     } else {
-        circle.style.display = 'none'
+        circle.style.display = 'none';
     }
 });
 
-// <- SE PONE UN RETRASO A LAS PETICIONES ->
+
+
+
+// <--!      R E T R A S O   E N   L A S   P E T I C I O N E S   D E   B U S Q U E D A     !-->
 let time = null;
 function busqueda() {
     clearTimeout(time);
@@ -38,6 +42,10 @@ function busqueda() {
     }, 600);
 }
 
+
+
+
+// <--!      F I L T R O S   D E    B U S Q U E D A     !-->
 function buscar() {
     const busqueda = document.getElementById('searcher').value;
     const sucursal = document.getElementById('sucursal_datalist').value;
@@ -65,7 +73,9 @@ function buscar() {
 }
 
 
-//  <!--  M O S T R A R   A C C I O N E S   D E   C A D A   R E G I S T R O  -->
+
+
+// <--!     M O S T R A R   A C C I O N E S   D E   C A D A   R E G I S T R O       !-->
 $(document).on('click', '.menu-toggle', function() {
     const $container = $(this).closest('.register-actions-menu-container');
     const $frame = $container.closest('.register-frame');
@@ -86,18 +96,39 @@ $(document).on('click', '.menu-toggle', function() {
 });
 
 
+
+
+// <--!      V A L I D A R    U N I D A D E S    D E L   S T O C K      !-->
 function validarUnidades(input) {
     input.value = input.value.replace(/^0+|[^0-9]/g, '');
-    validarBoton();
 }
 
 
-//  <!-- MODAL PARA AÑADIR PRODUCTOS A UN PEDIDO -->
-let selectedProducts = JSON.parse(localStorage.getItem('selectedProducts')) || [];
+
+
+// <--!      V E N T A N A S    M O D A L E S       !-->
+
+// <--      CERRAR MODAL        -->
+$(document).on('click', '.close-modal', function() {
+    let modal = $(this).closest('.modal-background');
+    let modalContainer = modal.find('.modal-container');
+
+    modal.addClass('hide').removeClass('show');
+    modalContainer.addClass('hide').removeClass('show');
+
+    setTimeout(() => {
+        modal.removeClass('show');
+        modalContainer.removeClass('show');
+    }, 300);
+});
+
+
+//  <--     MODAL PARA AÑADIR PRODUCTOS A UN PEDIDO     -->
 $(document).on('click', '.add-stock-btn', function() {
     let id = $(this).data('product-id') || '';
     let name = $(this).data('product-name') || '';
     let stock = parseInt($(this).data('product-stock'),10) || 0;
+    let buy = $(this).data('product-buy-type') || '';
 
     Swal.fire({
         title: "Añadir al pedido 📦",
@@ -155,6 +186,7 @@ $(document).on('click', '.add-stock-btn', function() {
                 name: name,
                 id: id,
                 quantity: parseInt(document.getElementById('swal-stock').value,10),
+                buy: buy,
             };
         }
     }).then((result) => {
@@ -175,10 +207,18 @@ $(document).on('click', '.add-stock-btn', function() {
         });
 
         if (result.isConfirmed) {
-            selectedProducts.push(result.value);
-            localStorage.setItem('selectedProducts', JSON.stringify(selectedProducts));
-            const circle = document.querySelector('#count-list-products-circle span');
-            circle.innerHTML = selectedProducts.length;
+            productos.push(result.value);
+            localStorage.setItem('productos', JSON.stringify(productos));
+
+            const circle = document.getElementById('count-list-products-circle');
+            const span = document.querySelector('#count-list-products-circle span');
+
+            if (productos.length > 0) {
+                circle.style.display = 'flex';
+                span.innerHTML = productos.length;
+            } else {
+                circle.style.display = 'none';
+            }
 
             Toast.fire({
                 icon: "success",
@@ -194,31 +234,122 @@ $(document).on('click', '.add-stock-btn', function() {
 });
 
 
-// <--  C E R R A R   M O D A L -->
-$(document).on('click', '.close-modal', function() {
-    let modal = $(this).closest('.modal-background');
-    let modalContainer = modal.find('.modal-container');
-
-    modal.addClass('hide').removeClass('show');
-    modalContainer.addClass('hide').removeClass('show');
-
-    setTimeout(() => {
-        modal.removeClass('show');
-        modalContainer.removeClass('show');
-    }, 300);
-});
-
-// <--  M O D A L   O R D E N   E N   C U R S O  -->
+// <--      MODAL ORDEN EN CURSO        -->
 $(document).on('click', '.open-order-modal ', function() {
+    if (productos.length < 1) {
+        Swal.fire({
+            title: "No se han añadido productos al pedido....",
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+        });
+        return;
+    }
+
     let modalClass = $(this).data('target');
     let modal = $(modalClass);
     let modalContainer = modal.find('.modal-container');
 
     modal.addClass('show').removeClass('hide');
     modalContainer.addClass('show').removeClass('hide');
+
+    //  MOSTRAR LISTA DE PRODUCTOS
+    showProductList();
+
+    //  AÑADIR PRODUCTO EN LA LISTA
+    $(document).on('click', '.increase-product', function() {
+        let productCard = $(this).closest('.shipping-product-card');
+        let productId = productCard.data('id');
+
+        productos.forEach(producto => { if (producto.id == productId) producto.quantity++; });
+
+        localStorage.setItem('productos', JSON.stringify(productos));
+        showProductList();
+    });
+
+    //  DESCONTAR PRODUCTO EN LA LISTA
+    $(document).on('click', '.decrease-product', function() {
+        let productCard = $(this).closest('.shipping-product-card');
+        let productId = productCard.data('id');
+
+        productos.forEach(producto => { if (producto.id == productId && producto.quantity > 1) producto.quantity--; });
+
+        localStorage.setItem('productos', JSON.stringify(productos));
+        showProductList();
+    });
+
+    //  ELIMINAR PRODUCTO DE LA LISTA
+    $(document).on('click', '.remove-product', function() {
+        let productCard = $(this).closest('.shipping-product-card');
+        let productId = productCard.data('id');
+
+        productos = productos.filter(producto => producto.id != productId);
+
+        localStorage.setItem('productos', JSON.stringify(productos));
+
+        const circle = document.getElementById('count-list-products-circle');
+        const span = document.querySelector('#count-list-products-circle span');
+
+        showProductList();
+
+        if (productos.length < 1) {
+            circle.style.display = 'none';
+            modal.addClass('hide').removeClass('show');
+            modalContainer.addClass('hide').removeClass('show');
+        } else {
+            span.innerHTML = productos.length;
+        }
+
+    });
+
+    //  MOSTRAR LA LISTA DE PRODUCTOS AÑADIDOS
+    function showProductList() {
+        let groupedProducts = productos.reduce((acc, producto) => {
+            let key = producto.name;
+
+            if (!acc[key]) acc[key] = { ...producto };
+
+            else acc[key].quantity += producto.quantity;
+
+            return acc;
+        }, {});
+
+        document.getElementById('grid-list').innerHTML = Object.values(groupedProducts).map(producto => `
+            <div class="shipping-product-card" data-id="${producto.id}">
+                <div class="product-details">
+                    <p>${producto.name}</p>
+                    <span class="product-quantity">
+                        ${producto.quantity} ${producto.buy === 1 ? producto.buy : producto.buy + 's'}
+                    </span>
+                    <input type="hidden" value="${producto.id}">
+                </div>
+
+                <div class="actions-btns">
+                    <button type="button" class="decrease-product" title="Descontar producto">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                            <path d="M200-440v-80h560v80H200Z"/>
+                        </svg>
+                    </button>
+
+                    <button type="button" class="increase-product" title="Añadir producto">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                            <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/>
+                        </svg>
+                    </button>
+
+                    <button type="button" class="remove-product" title="Quitar producto">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                            <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        `).reverse().join('');
+    }
 });
 
-// <--  M O D A L   V E R   D E T A L L E S   D E   U N   R E G I S T R O  -->
+
+// <--      MODAL DETALLES DE UN REGISTRO       -->
 $(document).on('click', '.open-register-details-modal ', function() {
     let modalClass = $(this).data('target');
     let modal = $(modalClass);
@@ -235,7 +366,56 @@ $(document).on('click', '.open-register-details-modal ', function() {
         data: {p: productId},
         success: function(data) {
 
-            $('.product-name').text(data.nombre_producto);
+            $.each(data, function(key, value) {
+                let element = $('.' + key);
+
+                if (key === 'imagen_producto') {
+                    $('.register-fact-image img').attr('src', value);
+                } else if (key === 'lotes') {
+                    if (value.length === 0) {
+                        $('.lotes').html('<p>No hay fechas de vencimientos para este producto</p>');
+                    } else {
+                        let lotesHtml = '<ul>';
+
+                        value.forEach(lote => {
+                            let fecha = lote[0];
+                            let creado = lote[1];
+
+                            lotesHtml += `<li>Vence: ${fecha} | Añadido: ${creado}</li>`;
+                        });
+
+                        lotesHtml += '</ul>';
+                        $('.lotes').html(lotesHtml);
+                    }
+                } else if (key === 'cantidad_minima_mayoreo_producto') {
+                    let texto = value === 0 ? 'No aplica' : value;
+                    element.text(texto);
+                } else if (key === 'aplica_mayoreo') {
+                    let texto = value === 1 ? 'No aplica' : 'Aplica';
+                    element.text(texto);
+                } else if (key === 'precio_mayoreo_producto') {
+                    let texto = parseInt(value,10) === 0 ? 'No aplica' : value;
+                    element.text(texto);
+                } else if (key === 'status_producto') {
+                    let texto = value === 1 ? 'Inactivo' : 'Activo';
+                    element.text(texto);
+                } else if (element.length) {
+                    element.text(value);
+                }
+
+                if (data.images && Array.isArray(data.images) && data.images.length > 0) {
+                    $('.register-fact.images-history').show();
+                    let imagesHtml = '';
+
+                    data.images.forEach(img => {
+                        imagesHtml += `<img src="${img}" alt="Imagen de historial" style="max-width: 100px; margin: 5px;">`;
+                    });
+
+                    $('.images-history-grid').html(imagesHtml);
+                } else {
+                    $('.register-fact.images-history').hide();
+                }
+            });
 
         },
         error: (xhr, status, error) => {

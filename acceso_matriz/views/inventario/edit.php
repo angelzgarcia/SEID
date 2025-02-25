@@ -158,7 +158,7 @@
 
                     <input
                         type="text" name="nombre_producto" placeholder="Ingrese el nombre del producto"
-                        value="<?= $_SESSION['olds']['nombre_producto'] ?? $producto['nombre_producto'] ?>"
+                        value="<?= $_SESSION['olds']['nombre_producto'] ?? ucwords($producto['nombre_producto']) ?>"
                     >
                 </fieldset>
 
@@ -241,7 +241,7 @@
                 <!-- STOCK -->
                 <fieldset>
                     <legend>
-                        Stock
+                        Añadir stock
                         <p class='message-error'>
                             <?= $_SESSION['errors']['stock_producto'] ?? '' ?>
                         </p>
@@ -257,7 +257,8 @@
 
                     <strong><small id="stockLabel">Cantidad de las unidades de compra</small></strong>
                     <input
-                        type="number" id="stock" name="stock_producto" placeholder="Añada las nuevas unidades de compra" oninput="validarUnidades(this)"
+                        type="number" id="stock" name="stock_producto" placeholder="Añada las nuevas unidades de compra"
+                        oninput="validarUnidades(this)"
                         value="<?= $_SESSION['olds']['stock_producto'] ?? '' ?>"
                     >
                 </fieldset>
@@ -338,10 +339,10 @@
 
                         <div class="flex gap-2 items-center">
                             <input
-                                type="radio" name="aplica_mayoreo" value="1"
+                                type="radio" name="aplica_mayoreo" value="0"
                                 <?php
                                     if (isset($aplica_mayoreo_sesion) && $aplica_mayoreo_sesion === 'si') echo 'checked';
-                                    elseif ((int)$aplica_mayoreo_registro === 1 && $aplica_mayoreo_sesion !== 'no') echo 'checked';
+                                    elseif ((int)$aplica_mayoreo_registro === 0 && $aplica_mayoreo_sesion !== 'no') echo 'checked';
                                 ?>
                             >
                             <span>Sí</span>
@@ -349,10 +350,10 @@
 
                         <div class="flex gap-2 items-center">
                             <input
-                                type="radio" name="aplica_mayoreo" value="0"
+                                type="radio" name="aplica_mayoreo" value="1"
                                 <?php
                                     if (isset($aplica_mayoreo_sesion) && $aplica_mayoreo_sesion === 'no') echo 'checked';
-                                    elseif ((int)$aplica_mayoreo_registro === 0 && $aplica_mayoreo_sesion !== 'si') echo 'checked';
+                                    elseif ((int)$aplica_mayoreo_registro === 1 && $aplica_mayoreo_sesion !== 'si') echo 'checked';
                                 ?>
                             >
                             <span>No</span>
@@ -452,7 +453,7 @@
                     </button>
 
                     <button type="submit" class="form-btn">
-                        guardar
+                        Actualizar
                         <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M713-600 600-713l56-57 57 57 141-142 57 57-198 198ZM200-120v-640q0-33 23.5-56.5T280-840h240v80H280v518l200-86 200 86v-278h80v400L480-240 200-120Zm80-640h240-240Z"></path></svg>
                     </button>
                 </fieldset>
@@ -488,7 +489,7 @@
             function toggleWholesaleFields() {
                 const selected = document.querySelector('input[name="aplica_mayoreo"]:checked');
 
-                if (selected && selected.value === '1') {
+                if (selected && selected.value === '0') {
                     minQuantityWholesale.style.display = 'flex';
                     wholesalePrice.style.display = 'flex';
                 } else {
