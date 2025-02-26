@@ -6,8 +6,6 @@ function clearEntry($entry)
 
     if (is_numeric($entry)) return strpos($entry, '.') !== false ? (float)$entry : (int)$entry;
 
-
-
     $entry = trim($entry);
     $entry = stripslashes($entry);
     $entry = htmlspecialchars($entry);

@@ -203,13 +203,16 @@ function show()
         $product['lotes'] = [];
     }
 
-    
+
     $http_path = HTTP_URL . 'imgs_productos/';
     $doc_path = DOC_ROOT . 'imgs_productos';
-    $files_paths_history_root = glob("{$doc_path}/*_{$product['slug_producto']}_*") ?? 0;
+    $files_paths_history_root = glob("{$doc_path}/*_{$product['slug_producto']}_*", GLOB_NOSORT) ?? 0;
 
     if (count($files_paths_history_root) > 1) {
-        $files_names = array_map(fn($f) => $http_path . basename($f), $files_paths_history_root);
+        usort($files_paths_history_root, fn($a, $b) => filemtime($b) - filemtime($a));
+
+        $files_names = array_map(fn($f) => $http_path . basename($f), array_slice($files_paths_history_root, 0, 3));
+
         $product['images'] = $files_names;
     }
 

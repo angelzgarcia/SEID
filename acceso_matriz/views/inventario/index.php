@@ -89,7 +89,7 @@
                             No hay sucursales registradas
                         </option>
                     <?php else: ?>
-                        <option selected disabled class="font-extrabold">
+                        <option value="" class="font-extrabold">
                             Todas las sucursales
                         </option>
                         <?php foreach ($sucursales as $suc): ?>

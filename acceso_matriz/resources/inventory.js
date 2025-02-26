@@ -1,5 +1,7 @@
 
 let productos = JSON.parse(localStorage.getItem('productos')) || [];
+let orderPriceValue = parseFloat(localStorage.getItem('orderPriceValue')) || 0.00;
+
 document.addEventListener('DOMContentLoaded', () => {
     //  <-- SE CARGAN LOS PORDUCTOS -->
     busqueda();
@@ -18,16 +20,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('order-by-products').addEventListener('change', busqueda);
 
 
-    // <-- DISPLAY CANTIDAD DE PRODUCTOS ENVIADOS POR MATRIZ -->
-    const circle = document.getElementById('count-list-products-circle');
-    const span = document.querySelector('#count-list-products-circle span');
-
-    if (productos.length > 0) {
-        circle.style.display = 'flex';
-        span.innerHTML = productos.length;
-    } else {
-        circle.style.display = 'none';
-    }
+    // <-- DISPLAY DE LA CANTIDAD DE PRODUCTOS ENVIADOS POR MATRIZ -->
+    updateProductsOrderCount();
 });
 
 
@@ -129,6 +123,7 @@ $(document).on('click', '.add-stock-btn', function() {
     let name = $(this).data('product-name') || '';
     let stock = parseInt($(this).data('product-stock'),10) || 0;
     let buy = $(this).data('product-buy-type') || '';
+    let price = $(this).data('product-sale-price') || 0.00;
 
     Swal.fire({
         title: "Añadir al pedido 📦",
@@ -187,6 +182,7 @@ $(document).on('click', '.add-stock-btn', function() {
                 id: id,
                 quantity: parseInt(document.getElementById('swal-stock').value,10),
                 buy: buy,
+                price: parseFloat(price),
             };
         }
     }).then((result) => {
@@ -194,7 +190,7 @@ $(document).on('click', '.add-stock-btn', function() {
             toast: true,
             position: "top-end",
             showConfirmButton: false,
-            timer: 3000,
+            timer: 1200,
             iconColor: 'white',
             timerProgressBar: true,
             customClass: {
@@ -207,18 +203,15 @@ $(document).on('click', '.add-stock-btn', function() {
         });
 
         if (result.isConfirmed) {
-            productos.push(result.value);
+            let existingProduct = productos.find(p => p.name === result.value.name);
+
+            (existingProduct) ? existingProduct.quantity += result.value.quantity : productos.push(result.value);
+
+            orderPriceValue += result.value.quantity * result.value.price;
+            localStorage.setItem('orderPriceValue', orderPriceValue.toFixed(2));
             localStorage.setItem('productos', JSON.stringify(productos));
 
-            const circle = document.getElementById('count-list-products-circle');
-            const span = document.querySelector('#count-list-products-circle span');
-
-            if (productos.length > 0) {
-                circle.style.display = 'flex';
-                span.innerHTML = productos.length;
-            } else {
-                circle.style.display = 'none';
-            }
+            updateProductsOrderCount();
 
             Toast.fire({
                 icon: "success",
@@ -246,6 +239,8 @@ $(document).on('click', '.open-order-modal ', function() {
         return;
     }
 
+    const orderValue = document.getElementById('order-price-value');
+
     let modalClass = $(this).data('target');
     let modal = $(modalClass);
     let modalContainer = modal.find('.modal-container');
@@ -256,96 +251,292 @@ $(document).on('click', '.open-order-modal ', function() {
     //  MOSTRAR LISTA DE PRODUCTOS
     showProductList();
 
-    //  AÑADIR PRODUCTO EN LA LISTA
-    $(document).on('click', '.increase-product', function() {
+    //  AÑADIR CANTIDAD DE PRODUCTO EN LA LISTA
+    $(document).off('click', '.increase-product').on('click', '.increase-product', function() {
         let productCard = $(this).closest('.shipping-product-card');
-        let productId = productCard.data('id');
+        let name = productCard.data('name');
+        const totalProducts = document.querySelector('.total-products-order-count');
 
-        productos.forEach(producto => { if (producto.id == productId) producto.quantity++; });
+        productos.forEach(producto => {
+            if (producto.name == name) {
+                producto.quantity++;
+                orderPriceValue += producto.price;
+                orderValue.innerHTML = orderPriceValue;
+            }
+        });
 
+        localStorage.setItem('orderPriceValue', orderPriceValue.toFixed(2));
         localStorage.setItem('productos', JSON.stringify(productos));
+
+        totalProducts.innerHTML = productos.reduce((acc, p) => acc + p.quantity, 0);
+
         showProductList();
     });
 
     //  DESCONTAR PRODUCTO EN LA LISTA
-    $(document).on('click', '.decrease-product', function() {
+    $(document).off('click', '.decrease-product').on('click', '.decrease-product', function() {
         let productCard = $(this).closest('.shipping-product-card');
-        let productId = productCard.data('id');
+        let name = productCard.data('name');
+        const totalProducts = document.querySelector('.total-products-order-count');
 
-        productos.forEach(producto => { if (producto.id == productId && producto.quantity > 1) producto.quantity--; });
+        productos.forEach(producto => {
+            if (producto.name == name && producto.quantity > 1) {
+                producto.quantity--;
+                orderPriceValue -= producto.price;
+                orderValue.innerHTML = orderPriceValue;
+            }
+        });
 
+        localStorage.setItem('orderPriceValue', orderPriceValue.toFixed(2));
         localStorage.setItem('productos', JSON.stringify(productos));
+        totalProducts.innerHTML = productos.reduce((acc, p) => acc + p.quantity, 0);
+
         showProductList();
     });
 
     //  ELIMINAR PRODUCTO DE LA LISTA
     $(document).on('click', '.remove-product', function() {
         let productCard = $(this).closest('.shipping-product-card');
-        let productId = productCard.data('id');
+        let name = productCard.data('name');
 
-        productos = productos.filter(producto => producto.id != productId);
+        let productToRemove = productos.find(p => p.name === name);
+        if (!productToRemove) return;
+
+        let productTotalValue = parseFloat(productToRemove.price) * parseInt(productToRemove.quantity, 0);
+        orderPriceValue -= productTotalValue;
+
+        orderPriceValue = Math.max(orderPriceValue, 0);
+        orderValue.innerHTML = orderPriceValue.toFixed(2);
+
+        productos = productos.filter(producto => producto.name != name);
 
         localStorage.setItem('productos', JSON.stringify(productos));
-
-        const circle = document.getElementById('count-list-products-circle');
-        const span = document.querySelector('#count-list-products-circle span');
+        localStorage.setItem('orderPriceValue', orderPriceValue.toFixed(2));
 
         showProductList();
 
-        if (productos.length < 1) {
+        const circle = document.getElementById('count-list-products-circle');
+        const span = document.querySelector('#count-list-products-circle span');
+        const totalProducts = document.querySelector('.total-products-order-count');
+
+        if (productos.length > 0) {
+            let uniqueProducst = [...new Set(productos.map(p => p.name.toLowerCase().trim()))];
+
+            circle.style.display = 'flex';
+            span.innerHTML = uniqueProducst.length;
+
+            totalProducts.innerHTML = productos.reduce((acc, p) => acc + p.quantity, 0);
+
+        } else if (productos.length < 1) {
             circle.style.display = 'none';
+
             modal.addClass('hide').removeClass('show');
             modalContainer.addClass('hide').removeClass('show');
-        } else {
-            span.innerHTML = productos.length;
-        }
 
+            producos = [];
+            orderPriceValue = 0.00;
+            localStorage.removeItem('productos');
+            localStorage.removeItem('orderPriceValue');
+        }
+    });
+});
+
+//  MOSTRAR LA LISTA DE PRODUCTOS AÑADIDOS
+function showProductList() {
+    let groupedProducts = productos.reduce((acc, producto) => {
+        let key = producto.name;
+
+        if (!acc[key]) acc[key] = { ...producto };
+
+        else acc[key].quantity += producto.quantity;
+
+        return acc;
+    }, {});
+
+    document.getElementById('grid-list').innerHTML = Object.values(groupedProducts).map(producto => `
+        <div class="shipping-product-card" data-id="${producto.id}" data-name="${producto.name}">
+            <div class="product-details">
+                <p>${producto.name}</p>
+                <span class="product-quantity">
+                    ${producto.quantity} ${producto.quantity === 1 ? producto.buy : producto.buy + 's'}
+                </span>
+                <input type="hidden" value="${producto.id}">
+            </div>
+
+            <div class="actions-btns">
+                <button type="button" class="decrease-product" title="Descontar producto">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                        <path d="M200-440v-80h560v80H200Z"/>
+                    </svg>
+                </button>
+
+                <button type="button" class="increase-product" title="Añadir producto">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                        <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/>
+                    </svg>
+                </button>
+
+                <button type="button" class="remove-product" title="Quitar producto">
+                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                        <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    `).reverse().join('');
+}
+
+// ACTUALIZAR CONTADORRES DE PRODUCTOS
+function updateProductsOrderCount() {
+    const circle = document.getElementById('count-list-products-circle');
+    const span = document.querySelector('#count-list-products-circle span');
+    const totalProducts = document.querySelector('.total-products-order-count');
+    const orderValue = document.getElementById('order-price-value');
+
+    if (!totalProducts) return;
+
+    if (productos.length > 0) {
+        totalProducts.innerHTML = productos.reduce((acc, p) => acc + p.quantity, 0);
+
+        let uniqueProducst = [...new Set(productos.map(p => p.name.toLowerCase().trim()))];
+
+        circle.style.display = 'flex';
+        span.innerHTML = uniqueProducst.length;
+
+        orderValue.innerHTML = orderPriceValue;
+
+    } else {
+        circle.style.display = 'none';
+    }
+}
+
+// <--      ENVIAR Y PROCESAR PEDIDO MATRIZ => SUCURSAL        -->
+$(document).on('click', '#send-order-btn', function() {
+    let modal = $(this).closest('.modal-background');
+    let modalContainer = modal.find('.modal-container');
+    let branchSelected = $('#select-destination-branch').val();
+    let branchSelectedId = $('#select-destination-branch option:selected').data('branch-id');
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 2000,
+        iconColor: 'white',
+        timerProgressBar: true,
+        customClass: {
+            popup: 'colored-toast',
+        },
+        didOpen: (toast) => {
+            toast.onmouseenter = Swal.stopTimer;
+            toast.onmouseleave = Swal.resumeTimer;
+        }
     });
 
-    //  MOSTRAR LA LISTA DE PRODUCTOS AÑADIDOS
-    function showProductList() {
-        let groupedProducts = productos.reduce((acc, producto) => {
-            let key = producto.name;
-
-            if (!acc[key]) acc[key] = { ...producto };
-
-            else acc[key].quantity += producto.quantity;
-
-            return acc;
-        }, {});
-
-        document.getElementById('grid-list').innerHTML = Object.values(groupedProducts).map(producto => `
-            <div class="shipping-product-card" data-id="${producto.id}">
-                <div class="product-details">
-                    <p>${producto.name}</p>
-                    <span class="product-quantity">
-                        ${producto.quantity} ${producto.buy === 1 ? producto.buy : producto.buy + 's'}
-                    </span>
-                    <input type="hidden" value="${producto.id}">
-                </div>
-
-                <div class="actions-btns">
-                    <button type="button" class="decrease-product" title="Descontar producto">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
-                            <path d="M200-440v-80h560v80H200Z"/>
-                        </svg>
-                    </button>
-
-                    <button type="button" class="increase-product" title="Añadir producto">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
-                            <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z"/>
-                        </svg>
-                    </button>
-
-                    <button type="button" class="remove-product" title="Quitar producto">
-                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
-                            <path d="M280-120q-33 0-56.5-23.5T200-200v-520h-40v-80h200v-40h240v40h200v80h-40v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM360-280h80v-360h-80v360Zm160 0h80v-360h-80v360ZM280-720v520-520Z"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        `).reverse().join('');
+    if (!branchSelected || !branchSelectedId) {
+        Toast.fire({
+            icon: "warning",
+            title: "¡No se ha seleccionado una sucursal!"
+        });
+        return;
     }
+
+    Swal.fire({
+        showCancelButton: true,
+        confirmButtonText: "Confirmar orden",
+        cancelButtonText: "Cancelar",
+        reverseButtons: true,
+        cancelButtonColor: 'red',
+        buttonsStyling: true,
+        confirmButtonText: `
+            <span class="swal-custom-text">Confirmar orden</span>
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M280-160q-50 0-85-35t-35-85H60l18-80h113q17-19 40-29.5t49-10.5q26 0 49 10.5t40 29.5h167l84-360H262l17-80h441l-37 160h117l120 160-40 200h-80q0 50-35 85t-85 35q-50 0-85-35t-35-85H400q0 50-35 85t-85 35Zm357-280h193l4-21-74-99h-95l-28 120Zm-17-280-84 360 2-7 82-353ZM140-440v-120H40l140-200v120h100L140-440Zm140 200q17 0 28.5-11.5T320-280q0-17-11.5-28.5T280-320q-17 0-28.5 11.5T240-280q0 17 11.5 28.5T280-240Zm400 0q17 0 28.5-11.5T720-280q0-17-11.5-28.5T680-320q-17 0-28.5 11.5T640-280q0 17 11.5 28.5T680-240Z"/></svg>
+        `,
+        cancelButtonText: `
+            <span class="swal-custom-text">Cancelar</span>
+            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="m336-280 144-144 144 144 56-56-144-144 144-144-56-56-144 144-144-144-56 56 144 144-144 144 56 56ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg>
+        `,
+        html: `
+            <div class="swal-custom-form !p-1 min-w-full text-black">
+                <fieldset>
+                    <legend >Sucursal de destino:</legend>
+                </fieldset>
+                <h3 class="!text-5xl">
+                    ${branchSelected}
+                </h3>
+            </div>
+        `,
+    }).then((result) => {
+    if (result.isConfirmed) {
+        $.ajax({
+            url: '../../functions/crud_pedido.php',
+            method: 'POST',
+            data: { productos: productos, orderValue: orderPriceValue, sucursal: branchSelectedId, accion: 'guardar' },
+            success: function(response) {
+                try {
+                    var res = JSON.parse(response);
+
+                    if (res.status === 'success') {
+                        modal.addClass('hide').removeClass('show');
+                        modalContainer.addClass('hide').removeClass('show');
+
+                        productos = [];
+                        orderPriceValue = 0.00;
+                        localStorage.removeItem('productos');
+                        localStorage.removeItem('orderPriceValue');
+
+                        updateProductsOrderCount();
+                        showProductList();
+
+                        Toast.fire({
+                            icon: res.status,
+                            title: res.message
+                        }).then(() => { busqueda() });
+                    } else if (res.status === 'warning') {
+                        Toast.fire({
+                            position: 'center',
+                            html:
+                                "<div class='flex gap-3 flex-col justify-start items-center'>" +
+                                    "<h3 class='flex gap-1.5 text-black mb-6 text-center text-4xl'>" +
+                                        res.message +
+                                    "</h3>" +
+                                    "<strong class='text-black w-full flex items-start gap-2'>" +
+                                        "<span>📌</span>" +
+                                        res.p_name +
+                                    "</strong>" +
+                                    "<strong class='text-black w-full flex items-center gap-2'>" +
+                                        "<span>🛒</span>" +
+                                        res.p_add +
+                                    "</strong>" +
+                                    "<strong class='text-black w-full flex items-center gap-2'>" +
+                                        "<span>📦</span>" +
+                                        res.p_stock +
+                                    "</strong>" +
+                                "</div>",
+                            toast: false,
+                            timer: 5000,
+                        });
+                    } else {
+                        Toast.fire({
+                            icon: res.status,
+                            title: res.message,
+                        });
+                    }
+                } catch (e) {
+                    console.error("Error al procesar la respuesta", e);
+                    Swal.fire("Error", "No se pudo procesar la respuesta del servidor", "error");
+                }
+            },
+            error: function() {
+                Swal.fire("Error", "No se pudo enviar el pedido", "error");
+            }
+        });
+    } else {
+        Toast.fire({
+            icon: "info",
+            title: "Operación cancelada"
+        });
+    }
+    });
 });
 
 
