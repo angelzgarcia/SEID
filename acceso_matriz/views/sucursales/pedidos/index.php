@@ -1,9 +1,28 @@
 <?php require_once __DIR__ . '/../../../config.php' ?>
-<?php $page_name = ACCESO . 'Inventario' ?>
+<?php require_once MATRIX_DOC_ROOT . '/database.php' ?>
+<?php require_once MATRIX_DOC_FNS . 'helpers/encrypt.php' ?>
+<?php require_once MATRIX_DOC_FNS . 'helpers/clear.php' ?>
+<?php $page_name = ACCESO . ' Sucursales | Pedidos' ?>
+
+<?php
+    //  S U C U R S A L E S
+    $sql = 'SELECT id_sucursal, nombre_sucursal FROM sucursales ORDER BY nombre_sucursal ASC';
+    $sucursales = simpleQuery($sql) ?: [];
+
+?>
 
 <!DOCTYPE html>
 <html lang="en">
 <?php require_once MATRIX_DOC_VIEWS . "modules/head.php" ?>
+<style>
+    .swal2-popup.swal2-toast.swal2-icon-question.swal2-show {
+        display: flex !important;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+</style>
 <body>
 
     <?php require_once MATRIX_DOC_VIEWS . "/modules/header.php" ?>
@@ -12,1529 +31,206 @@
 
     <main class="main-content matriz-content inventory-content">
 
-        <!-- FILTRAR PEDIDOS POR SUCURSAL -->
-        <form action="" class="subsidiaries-filter flex w-full gap-5">
-            <input type="text" list="sucursales" name="sucursal_datalist" id="sucursal_datalist" placeholder="Buscar sucursal...">
-            <datalist id="sucursales">
-                <option value="Sucursal 1">Sucursal 1</option>
-                <option value="Sucursal 2">Sucursal 2</option>
-                <option value="Sucursal 3">Sucursal 3</option>
-                <option value="Sucursal 3">Sucursal 3</option>
-                <option value="Sucursal 3">Sucursal 3</option>
-                <option value="Sucursal 3">Sucursal 3</option>
-                <option value="Sucursal 3">Sucursal 3</option>
-                <option value="Sucursal 3">Sucursal 3</option>
-                <option value="Sucursal 3">Sucursal 3</option>
-                <option value="Sucursal 3">Sucursal 3</option>
-                <option value="Sucursal 3">Sucursal 3</option>
-                <option value="Sucursal 3">Sucursal 3</option>
-                <option value="Sucursal 3">Sucursal 3</option>
-                <option value="Sucursal 3">Sucursal 3</option>
-                <option value="Sucursal 3">Sucursal 3</option>
-                <option value="Sucursal 3">Sucursal 3</option>
-                <option value="Sucursal 3">Sucursal 3</option>
-                <option value="Sucursal 3">Sucursal 3</option>
-                <option value="Sucursal 3">Sucursal 3</option>
-                <option value="Sucursal 3">Sucursal 3</option>
-                <option value="Sucursal 3">Sucursal 3</option>
-                <option value="Sucursal 3">Sucursal 3</option>
-            </datalist>
+        <!-- FILTRAR INVENTARIOS POR SUCURSAL -->
+        <div class="searcher-links">
+            <div class="subsidiaries-filter" autocomplete="off">
+                <input
+                    type="text" list="sucursales" name="sucursal_datalist" id="sucursal_datalist" placeholder="Buscar sucursal..."
+                    onkeyup="busqueda();"
+                >
+                <datalist id="sucursales">
+                    <?php if (!empty($sucursales)):
 
-            <select name="sucursal_select" id="sucursal_select">
-                <option disabled selected>Todas las sucursales</option>
-                <option value="">Sucursal 1 Sucursal 1</option>
-                <option value="">Sucursal 2</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-                <option value="">Sucursal 3</option>
-            </select>
-        </form>
+                        foreach ($sucursales as $suc):
+                            $sucursal_name = ucwords($suc['nombre_sucursal']); ?>
+                            <option value="<?= $sucursal_name ?>"  data-id="<?= encryptValue($suc['id_sucursal'], SECRETKEY) ?>">
+                                <?= $sucursal_name ?>
+                            </option>
+                        <?php endforeach;
 
-        <!-- CRUD -->
+                    endif; ?>
+                </datalist>
+
+                <select name="sucursal_select" class="crud-header-select sucursal-select">
+                    <?php if (empty($sucursales)): ?>
+
+                        <option selected disabled>
+                            No hay sucursales registradas
+                        </option>
+
+                    <?php else: ?>
+
+                        <option value="" class="font-extrabold">
+                            Todas las sucursales
+                        </option>
+
+                        <?php foreach ($sucursales as $suc): ?>
+                            $sucursal_name = ucwords($suc['nombre_sucursal']); ?>
+                            <option value="<?= $sucursal_name ?>">
+                                <?= $sucursal_name ?>
+                            </option>
+                        <?php endforeach;
+
+                    endif; ?>
+                </select>
+            </div>
+        </div>
+
+        <!-- CRUD CONTAINER -->
         <div class="crud-container branches-orders-container">
             <!-- CRUD HEADER -->
             <div class="crud-header">
                 <!-- HEADER SUPERIOR -->
                 <div class="crud-top-header">
+                    <!-- ACCESOS DIRECTOS -->
                     <div class="crud-tittle">
-                        <h1>Pedidos</h1>
-                        <p>Consulte y gestiones pedidos de reabastecimiento de cada sucursal</p>
+                        <div class="title-shortcut-inventory">
+                            <h1>
+                                Pedidos
+                                <a class="shortcut-link-btn <?= strpos($_SERVER['PHP_SELF'], 'sucursales/pedidos/index') ? 'active' : '' ?>">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="m40-240 20-80h220l-20 80H40Zm80-160 20-80h260l-20 80H120Zm623 240 20-160 29-240 10-79-59 479ZM240-80q-33 0-56.5-23.5T160-160h583l59-479H692l-11 85q-2 17-15 26.5t-30 7.5q-17-2-26.5-14.5T602-564l9-75H452l-11 84q-2 17-15 27t-30 8q-17-2-27-15t-8-30l9-74H220q4-34 26-57.5t54-23.5h80q8-75 51.5-117.5T550-880q64 0 106.5 47.5T698-720h102q36 1 60 28t19 63l-60 480q-4 30-26.5 49.5T740-80H240Zm220-640h159q1-33-22.5-56.5T540-800q-35 0-55.5 21.5T460-720Z"/></svg>
+                                </a>
+                            </h1>
+
+                            <svg xmlns="http://www.w3.org/2000/svg" height="25px" viewBox="0 -960 960 960" width="25px" fill="#111111c2"><path d="M480-120q-75 0-140.5-28.5t-114-77q-48.5-48.5-77-114T120-480q0-75 28.5-140.5t77-114q48.5-48.5 114-77T480-840v80q-117 0-198.5 81.5T200-480q0 117 81.5 198.5T480-200v80Zm160-160-56-57 103-103H360v-80h327L584-624l56-56 200 200-200 200Z"/></svg>
+
+                            <a href="../index" title="Sucursales" class="shortcut-link-btn">
+                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M240-40q-50 0-85-35t-35-85q0-50 35-85t85-35q14 0 26 3t23 8l57-71q-28-31-39-70t-5-78l-81-27q-17 25-43 40t-58 15q-50 0-85-35T0-580q0-50 35-85t85-35q50 0 85 35t35 85v8l81 28q20-36 53.5-61t75.5-32v-87q-39-11-64.5-42.5T360-840q0-50 35-85t85-35q50 0 85 35t35 85q0 42-26 73.5T510-724v87q42 7 75.5 32t53.5 61l81-28v-8q0-50 35-85t85-35q50 0 85 35t35 85q0 50-35 85t-85 35q-32 0-58.5-15T739-515l-81 27q6 39-5 77.5T614-340l57 70q11-5 23-7.5t26-2.5q50 0 85 35t35 85q0 50-35 85t-85 35q-50 0-85-35t-35-85q0-20 6.5-38.5T624-232l-57-71q-41 23-87.5 23T392-303l-56 71q11 15 17.5 33.5T360-160q0 50-35 85t-85 35ZM120-540q17 0 28.5-11.5T160-580q0-17-11.5-28.5T120-620q-17 0-28.5 11.5T80-580q0 17 11.5 28.5T120-540Zm120 420q17 0 28.5-11.5T280-160q0-17-11.5-28.5T240-200q-17 0-28.5 11.5T200-160q0 17 11.5 28.5T240-120Zm240-680q17 0 28.5-11.5T520-840q0-17-11.5-28.5T480-880q-17 0-28.5 11.5T440-840q0 17 11.5 28.5T480-800Zm0 440q42 0 71-29t29-71q0-42-29-71t-71-29q-42 0-71 29t-29 71q0 42 29 71t71 29Zm240 240q17 0 28.5-11.5T760-160q0-17-11.5-28.5T720-200q-17 0-28.5 11.5T680-160q0 17 11.5 28.5T720-120Zm120-420q17 0 28.5-11.5T880-580q0-17-11.5-28.5T840-620q-17 0-28.5 11.5T800-580q0 17 11.5 28.5T840-540ZM480-840ZM120-580Zm360 120Zm360-120ZM240-160Zm480 0Z"/></svg>
+                            </a>
+                        </div>
+
+                        <p>
+                            Consulte y gestiones pedidos de reabastecimiento de cada sucursal
+                        </p>
                     </div>
 
+                    <!-- ORDENAMIENTO -->
                     <div class="crud-order-by">
-                        <select name="" id="">
-                            <option selected disabled>Ordenar por</option>
-                            <option value="">Todos</option>
-                            <option value="">Más recientes</option>
-                            <option value="">En espera</option>
-                            <option value="">Aprobados</option>
-                            <option value="">Rechazados</option>
+                        <select name="order-by-order" class="crud-header-select" id="order-by-order">
+                            <option selected disabled> Ordenar por </option>
+                            <option value="recientes">
+                                Más recientes
+                            </option>
+                            <option value="pendientes">
+                                Pendientes
+                            </option>
+                            <option value="aprobados">
+                                Aprobados
+                            </option>
+                            <option value="rechazados">
+                                Rechazados
+                            </option>
+                            <option value="modificados">
+                                Modificados
+                            </option>
+                            <option value="recibidos">
+                                Recibidos
+                            </option>
                         </select>
                     </div>
+
+                    <!-- BUSCAR PEDIDO POR FECHA -->
+                    <input type="text" id="datepicker" class="search-order-by-date" placeholder="Buscar pedidos por fecha" oninput="buscar()">
                 </div>
 
                 <!-- HEADER INTERMEDIO -->
                 <div class="crud-middle-header">
                     <div class="details">
                         <div class="summary">
-                            <p>N° pedidos</p>
-                            <span>519</span>
+                            <p>N° de pedidos</p>
+                            <span><?= $count_products ?? 0 ?></span>
                         </div>
                         <div class="summary">
-                            <p>En espera</p>
-                            <span>7</span>
+                            <p>Pendientes</p>
+                            <span><?= $count_out_stock_products ?? 0 ?></span>
+                        </div>
+                        <div class="summary">
+                            <obva>Aprobados</p>
+                            <span><?= $count_few_stock_products ?? 0 ?></span>
                         </div>
                         <div class="summary">
                             <p>Rechazados</p>
-                            <span>19</span>
+                            <span><?= $count_close_expiration_products ?? 0 ?></span>
                         </div>
                         <div class="summary">
-                            <p>Aprobados</p>
-                            <span><?=519-19-7?></span>
+                            <p>Recibidos</p>
+                            <span><?= $count_close_expiration_products ?? 0 ?></span>
                         </div>
                     </div>
                 </div>
 
                 <!-- HEADER INFERIOR -->
-                <div class="crud-bottom-header !justify-end">
-                    <form action="" class="crud-searcher">
-                        <input type="text" name="" id="" placeholder="Buscar sucursal.....">
-                        <button type="submit">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
-                        </button>
+                <div class="crud-bottom-header">
+                    <form action="" class="delete-all-form">
+                        <input type="checkbox" name="" id="">
+                        <p>Seleccionar todo</p>
+
+                        <select name="" class="crud-header-select">
+                            <option value="">Acciones</option>
+                            <option value="">Eliminar registros</option>
+                        </select>
+
                     </form>
+
+                    <!-- BUSCADOR -->
+                    <div class="crud-searcher">
+                        <input
+                            type="text" id="searcher" placeholder="Buscar pedido..." autocomplete="off"
+                            onkeyup="busqueda();">
+
+                        <span id="erase-search">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                                <path d="m456-320 104-104 104 104 56-56-104-104 104-104-56-56-104 104-104-104-56 56 104 104-104 104 56 56Zm-96 160q-19 0-36-8.5T296-192L80-480l216-288q11-15 28-23.5t36-8.5h440q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H360ZM180-480l180 240h440v-480H360L180-480Zm400 0Z" />
+                            </svg>
+                        </span>
+
+                        <button type="button">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
+                                <path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <!-- GUIA DE COLORES STATUS DE PEDIDOS -->
             <div class="status-colors">
-                <div class="status order-received">
-                    <div class="status-circle order-received-circle"><div></div></div>
-                    <p>En espera</p>
-                </div>
-
-                <div class="status order-rejected">
-                    <div class="status-circle order-rejected-circle"><div></div></div>
-                    <p>Rechazados</p>
+                <div class="status order-pending">
+                    <div class="status-circle order-pending-circle"><div></div></div>
+                    <p>Pendiente</p>
                 </div>
 
                 <div class="status order-aproved">
                     <div class="status-circle order-aproved-circle"><div></div></div>
-                    <p>Aprovados</p>
+                    <p>Aprobado</p>
+                </div>
+
+                <div class="status order-rejected">
+                    <div class="status-circle order-rejected-circle"><div></div></div>
+                    <p>Rechazado</p>
+                </div>
+
+                <div class="status order-modify">
+                    <div class="status-circle order-modify-circle"><div></div></div>
+                    <p>Modificado</p>
+                </div>
+
+                <div class="status order-received">
+                    <div class="status-circle order-received-circle"><div></div></div>
+                    <p>Recibido</p>
                 </div>
             </div>
 
             <!-- LISTA DE REGISTROS -->
-            <div class="crud-grid orders-crud">
+            <div class="crud-grid orders-crud" id="orders-container">
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame order-frame recived-order-frame">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link">
-                        <div class="register-details h-full">
-                            <div class="header-register">
-                                <p>Nombre de la sucursal</p>
-                                <span><?= $fecha ?></span>
-                            </div>
-
-                            <div class="text-start w-full">
-                                Detalles del pedido:
-                            </div>
-
-                            <div class="body-register">
-                                <div class="quantities">
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    <!-- ACCIONES -->
-                    <div class="register-actions">
-                        <form action="" class="aproved-btn">
-                            <button type="submit">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M268-240 42-466l57-56 170 170 56 56-57 56Zm226 0L268-466l56-57 170 170 368-368 56 57-424 424Zm0-226-57-56 198-198 57 56-198 198Z"/></svg>
-                            </button>
-                        </form>
-
-                        <a href="">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M160-120v-170l527-526q12-12 27-18t30-6q16 0 30.5 6t25.5 18l56 56q12 11 18 25.5t6 30.5q0 15-6 30t-18 27L330-120H160Zm80-80h56l393-392-28-29-29-28-392 393v56Zm560-503-57-57 57 57Zm-139 82-29-28 57 57-28-29ZM560-120q74 0 137-37t63-103q0-36-19-62t-51-45l-59 59q23 10 36 22t13 26q0 23-36.5 41.5T560-200q-17 0-28.5 11.5T520-160q0 17 11.5 28.5T560-120ZM183-426l60-60q-20-8-31.5-16.5T200-520q0-12 18-24t76-37q88-38 117-69t29-70q0-55-44-87.5T280-840q-45 0-80.5 16T145-785q-11 13-9 29t15 26q13 11 29 9t27-13q14-14 31-20t42-6q41 0 60.5 12t19.5 28q0 14-17.5 25.5T262-654q-80 35-111 63.5T120-520q0 32 17 54.5t46 39.5Z"/></svg>
-                        </a>
-
-                        <form action="" class="destroy-btn">
-                            <button type="submit">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M873-88 609-352 495-238 269-464l56-58 170 170 56-56-414-414 56-58 736 736-56 56ZM269-238 43-464l56-56 170 170 56 56-56 56Zm452-226-56-56 196-196 58 54-198 198ZM607-578l-56-56 86-86 56 56-86 86Z"/></svg>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame order-frame rejected-order-frame">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link">
-                        <div class="register-details h-full">
-                            <div class="header-register">
-                                <p>Nombre de la sucursal</p>
-                                <span><?= $fecha ?></span>
-                            </div>
-
-                            <div class="text-start w-full">
-                                Detalles del pedido:
-                            </div>
-
-                            <div class="body-register">
-                                <div class="quantities">
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    <!-- ACCIONES -->
-                    <div class="register-actions">
-                        <form action="" class="aproved-btn">
-                            <button type="submit">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M268-240 42-466l57-56 170 170 56 56-57 56Zm226 0L268-466l56-57 170 170 368-368 56 57-424 424Zm0-226-57-56 198-198 57 56-198 198Z"/></svg>
-                            </button>
-                        </form>
-
-                        <a href="">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M160-120v-170l527-526q12-12 27-18t30-6q16 0 30.5 6t25.5 18l56 56q12 11 18 25.5t6 30.5q0 15-6 30t-18 27L330-120H160Zm80-80h56l393-392-28-29-29-28-392 393v56Zm560-503-57-57 57 57Zm-139 82-29-28 57 57-28-29ZM560-120q74 0 137-37t63-103q0-36-19-62t-51-45l-59 59q23 10 36 22t13 26q0 23-36.5 41.5T560-200q-17 0-28.5 11.5T520-160q0 17 11.5 28.5T560-120ZM183-426l60-60q-20-8-31.5-16.5T200-520q0-12 18-24t76-37q88-38 117-69t29-70q0-55-44-87.5T280-840q-45 0-80.5 16T145-785q-11 13-9 29t15 26q13 11 29 9t27-13q14-14 31-20t42-6q41 0 60.5 12t19.5 28q0 14-17.5 25.5T262-654q-80 35-111 63.5T120-520q0 32 17 54.5t46 39.5Z"/></svg>
-                        </a>
-
-                        <form action="" class="destroy-btn">
-                            <button type="submit">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M873-88 609-352 495-238 269-464l56-58 170 170 56-56-414-414 56-58 736 736-56 56ZM269-238 43-464l56-56 170 170 56 56-56 56Zm452-226-56-56 196-196 58 54-198 198ZM607-578l-56-56 86-86 56 56-86 86Z"/></svg>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame order-frame recived-order-frame">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link">
-                        <div class="register-details h-full">
-                            <div class="header-register">
-                                <p>Nombre de la sucursal</p>
-                                <span><?= $fecha ?></span>
-                            </div>
-
-                            <div class="text-start w-full">
-                                Detalles del pedido:
-                            </div>
-
-                            <div class="body-register">
-                                <div class="quantities">
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    <!-- ACCIONES -->
-                    <div class="register-actions">
-                        <form action="" class="aproved-btn">
-                            <button type="submit">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M268-240 42-466l57-56 170 170 56 56-57 56Zm226 0L268-466l56-57 170 170 368-368 56 57-424 424Zm0-226-57-56 198-198 57 56-198 198Z"/></svg>
-                            </button>
-                        </form>
-
-                        <a href="">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M160-120v-170l527-526q12-12 27-18t30-6q16 0 30.5 6t25.5 18l56 56q12 11 18 25.5t6 30.5q0 15-6 30t-18 27L330-120H160Zm80-80h56l393-392-28-29-29-28-392 393v56Zm560-503-57-57 57 57Zm-139 82-29-28 57 57-28-29ZM560-120q74 0 137-37t63-103q0-36-19-62t-51-45l-59 59q23 10 36 22t13 26q0 23-36.5 41.5T560-200q-17 0-28.5 11.5T520-160q0 17 11.5 28.5T560-120ZM183-426l60-60q-20-8-31.5-16.5T200-520q0-12 18-24t76-37q88-38 117-69t29-70q0-55-44-87.5T280-840q-45 0-80.5 16T145-785q-11 13-9 29t15 26q13 11 29 9t27-13q14-14 31-20t42-6q41 0 60.5 12t19.5 28q0 14-17.5 25.5T262-654q-80 35-111 63.5T120-520q0 32 17 54.5t46 39.5Z"/></svg>
-                        </a>
-
-                        <form action="" class="destroy-btn">
-                            <button type="submit">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M873-88 609-352 495-238 269-464l56-58 170 170 56-56-414-414 56-58 736 736-56 56ZM269-238 43-464l56-56 170 170 56 56-56 56Zm452-226-56-56 196-196 58 54-198 198ZM607-578l-56-56 86-86 56 56-86 86Z"/></svg>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame order-frame aproved-order-frame">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link">
-                        <div class="register-details h-full">
-                            <div class="header-register">
-                                <p>Nombre de la sucursal</p>
-                                <span><?= $fecha ?></span>
-                            </div>
-
-                            <div class="text-start w-full">
-                                Detalles del pedido:
-                            </div>
-
-                            <div class="body-register">
-                                <div class="quantities">
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    <!-- ACCIONES -->
-                    <div class="register-actions">
-                        <form action="" class="aproved-btn">
-                            <button type="submit">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M268-240 42-466l57-56 170 170 56 56-57 56Zm226 0L268-466l56-57 170 170 368-368 56 57-424 424Zm0-226-57-56 198-198 57 56-198 198Z"/></svg>
-                            </button>
-                        </form>
-
-                        <a href="">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M160-120v-170l527-526q12-12 27-18t30-6q16 0 30.5 6t25.5 18l56 56q12 11 18 25.5t6 30.5q0 15-6 30t-18 27L330-120H160Zm80-80h56l393-392-28-29-29-28-392 393v56Zm560-503-57-57 57 57Zm-139 82-29-28 57 57-28-29ZM560-120q74 0 137-37t63-103q0-36-19-62t-51-45l-59 59q23 10 36 22t13 26q0 23-36.5 41.5T560-200q-17 0-28.5 11.5T520-160q0 17 11.5 28.5T560-120ZM183-426l60-60q-20-8-31.5-16.5T200-520q0-12 18-24t76-37q88-38 117-69t29-70q0-55-44-87.5T280-840q-45 0-80.5 16T145-785q-11 13-9 29t15 26q13 11 29 9t27-13q14-14 31-20t42-6q41 0 60.5 12t19.5 28q0 14-17.5 25.5T262-654q-80 35-111 63.5T120-520q0 32 17 54.5t46 39.5Z"/></svg>
-                        </a>
-
-                        <form action="" class="destroy-btn">
-                            <button type="submit">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M873-88 609-352 495-238 269-464l56-58 170 170 56-56-414-414 56-58 736 736-56 56ZM269-238 43-464l56-56 170 170 56 56-56 56Zm452-226-56-56 196-196 58 54-198 198ZM607-578l-56-56 86-86 56 56-86 86Z"/></svg>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame order-frame aproved-order-frame">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link">
-                        <div class="register-details h-full">
-                            <div class="header-register">
-                                <p>Nombre de la sucursal</p>
-                                <span><?= $fecha ?></span>
-                            </div>
-
-                            <div class="text-start w-full">
-                                Detalles del pedido:
-                            </div>
-
-                            <div class="body-register">
-                                <div class="quantities">
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    <!-- ACCIONES -->
-                    <div class="register-actions">
-                        <form action="" class="aproved-btn">
-                            <button type="submit">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M268-240 42-466l57-56 170 170 56 56-57 56Zm226 0L268-466l56-57 170 170 368-368 56 57-424 424Zm0-226-57-56 198-198 57 56-198 198Z"/></svg>
-                            </button>
-                        </form>
-
-                        <a href="">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M160-120v-170l527-526q12-12 27-18t30-6q16 0 30.5 6t25.5 18l56 56q12 11 18 25.5t6 30.5q0 15-6 30t-18 27L330-120H160Zm80-80h56l393-392-28-29-29-28-392 393v56Zm560-503-57-57 57 57Zm-139 82-29-28 57 57-28-29ZM560-120q74 0 137-37t63-103q0-36-19-62t-51-45l-59 59q23 10 36 22t13 26q0 23-36.5 41.5T560-200q-17 0-28.5 11.5T520-160q0 17 11.5 28.5T560-120ZM183-426l60-60q-20-8-31.5-16.5T200-520q0-12 18-24t76-37q88-38 117-69t29-70q0-55-44-87.5T280-840q-45 0-80.5 16T145-785q-11 13-9 29t15 26q13 11 29 9t27-13q14-14 31-20t42-6q41 0 60.5 12t19.5 28q0 14-17.5 25.5T262-654q-80 35-111 63.5T120-520q0 32 17 54.5t46 39.5Z"/></svg>
-                        </a>
-
-                        <form action="" class="destroy-btn">
-                            <button type="submit">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M873-88 609-352 495-238 269-464l56-58 170 170 56-56-414-414 56-58 736 736-56 56ZM269-238 43-464l56-56 170 170 56 56-56 56Zm452-226-56-56 196-196 58 54-198 198ZM607-578l-56-56 86-86 56 56-86 86Z"/></svg>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame order-frame rejected-order-frame">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link">
-                        <div class="register-details h-full">
-                            <div class="header-register">
-                                <p>Nombre de la sucursal</p>
-                                <span><?= $fecha ?></span>
-                            </div>
-
-                            <div class="text-start w-full">
-                                Detalles del pedido:
-                            </div>
-
-                            <div class="body-register">
-                                <div class="quantities">
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    <!-- ACCIONES -->
-                    <div class="register-actions">
-                        <form action="" class="aproved-btn">
-                            <button type="submit">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M268-240 42-466l57-56 170 170 56 56-57 56Zm226 0L268-466l56-57 170 170 368-368 56 57-424 424Zm0-226-57-56 198-198 57 56-198 198Z"/></svg>
-                            </button>
-                        </form>
-
-                        <a href="">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M160-120v-170l527-526q12-12 27-18t30-6q16 0 30.5 6t25.5 18l56 56q12 11 18 25.5t6 30.5q0 15-6 30t-18 27L330-120H160Zm80-80h56l393-392-28-29-29-28-392 393v56Zm560-503-57-57 57 57Zm-139 82-29-28 57 57-28-29ZM560-120q74 0 137-37t63-103q0-36-19-62t-51-45l-59 59q23 10 36 22t13 26q0 23-36.5 41.5T560-200q-17 0-28.5 11.5T520-160q0 17 11.5 28.5T560-120ZM183-426l60-60q-20-8-31.5-16.5T200-520q0-12 18-24t76-37q88-38 117-69t29-70q0-55-44-87.5T280-840q-45 0-80.5 16T145-785q-11 13-9 29t15 26q13 11 29 9t27-13q14-14 31-20t42-6q41 0 60.5 12t19.5 28q0 14-17.5 25.5T262-654q-80 35-111 63.5T120-520q0 32 17 54.5t46 39.5Z"/></svg>
-                        </a>
-
-                        <form action="" class="destroy-btn">
-                            <button type="submit">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M873-88 609-352 495-238 269-464l56-58 170 170 56-56-414-414 56-58 736 736-56 56ZM269-238 43-464l56-56 170 170 56 56-56 56Zm452-226-56-56 196-196 58 54-198 198ZM607-578l-56-56 86-86 56 56-86 86Z"/></svg>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame order-frame recived-order-frame">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link">
-                        <div class="register-details h-full">
-                            <div class="header-register">
-                                <p>Nombre de la sucursal</p>
-                                <span><?= $fecha ?></span>
-                            </div>
-
-                            <div class="text-start w-full">
-                                Detalles del pedido:
-                            </div>
-
-                            <div class="body-register">
-                                <div class="quantities">
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    <!-- ACCIONES -->
-                    <div class="register-actions">
-                        <form action="" class="aproved-btn">
-                            <button type="submit">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M268-240 42-466l57-56 170 170 56 56-57 56Zm226 0L268-466l56-57 170 170 368-368 56 57-424 424Zm0-226-57-56 198-198 57 56-198 198Z"/></svg>
-                            </button>
-                        </form>
-
-                        <a href="">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M160-120v-170l527-526q12-12 27-18t30-6q16 0 30.5 6t25.5 18l56 56q12 11 18 25.5t6 30.5q0 15-6 30t-18 27L330-120H160Zm80-80h56l393-392-28-29-29-28-392 393v56Zm560-503-57-57 57 57Zm-139 82-29-28 57 57-28-29ZM560-120q74 0 137-37t63-103q0-36-19-62t-51-45l-59 59q23 10 36 22t13 26q0 23-36.5 41.5T560-200q-17 0-28.5 11.5T520-160q0 17 11.5 28.5T560-120ZM183-426l60-60q-20-8-31.5-16.5T200-520q0-12 18-24t76-37q88-38 117-69t29-70q0-55-44-87.5T280-840q-45 0-80.5 16T145-785q-11 13-9 29t15 26q13 11 29 9t27-13q14-14 31-20t42-6q41 0 60.5 12t19.5 28q0 14-17.5 25.5T262-654q-80 35-111 63.5T120-520q0 32 17 54.5t46 39.5Z"/></svg>
-                        </a>
-
-                        <form action="" class="destroy-btn">
-                            <button type="submit">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M873-88 609-352 495-238 269-464l56-58 170 170 56-56-414-414 56-58 736 736-56 56ZM269-238 43-464l56-56 170 170 56 56-56 56Zm452-226-56-56 196-196 58 54-198 198ZM607-578l-56-56 86-86 56 56-86 86Z"/></svg>
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame order-frame aproved-order-frame">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link">
-                        <div class="register-details h-full">
-                            <div class="header-register">
-                                <p>Nombre de la sucursal</p>
-                                <span><?= $fecha ?></span>
-                            </div>
-
-                            <div class="text-start w-full">
-                                Detalles del pedido:
-                            </div>
-
-                            <div class="body-register">
-                                <div class="quantities">
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-
-                                    <div class="order-product">
-                                        <ol>
-                                            <li>
-                                                <p>
-                                                    Camiseta 100% algodón color negro talla M
-                                                </p>
-                                                <span>17 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en sucursal:
-                                                </p>
-                                                <span>10 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Stock en almacén:
-                                                </p>
-                                                <span>524 unidades</span>
-                                            </li>
-                                            <li>
-                                                <p>
-                                                    Precio en sucursal:
-                                                </p>
-                                                <span>$54</span>
-                                            </li>
-                                        </ol>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                    <!-- ACCIONES -->
-                    <div class="register-actions">
-                        <form action="" class="aproved-btn">
-                            <button type="submit">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M268-240 42-466l57-56 170 170 56 56-57 56Zm226 0L268-466l56-57 170 170 368-368 56 57-424 424Zm0-226-57-56 198-198 57 56-198 198Z"/></svg>
-                            </button>
-                        </form>
-
-                        <a href="">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M160-120v-170l527-526q12-12 27-18t30-6q16 0 30.5 6t25.5 18l56 56q12 11 18 25.5t6 30.5q0 15-6 30t-18 27L330-120H160Zm80-80h56l393-392-28-29-29-28-392 393v56Zm560-503-57-57 57 57Zm-139 82-29-28 57 57-28-29ZM560-120q74 0 137-37t63-103q0-36-19-62t-51-45l-59 59q23 10 36 22t13 26q0 23-36.5 41.5T560-200q-17 0-28.5 11.5T520-160q0 17 11.5 28.5T560-120ZM183-426l60-60q-20-8-31.5-16.5T200-520q0-12 18-24t76-37q88-38 117-69t29-70q0-55-44-87.5T280-840q-45 0-80.5 16T145-785q-11 13-9 29t15 26q13 11 29 9t27-13q14-14 31-20t42-6q41 0 60.5 12t19.5 28q0 14-17.5 25.5T262-654q-80 35-111 63.5T120-520q0 32 17 54.5t46 39.5Z"/></svg>
-                        </a>
-
-                        <form action="" class="destroy-btn">
-                            <button type="submit">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M873-88 609-352 495-238 269-464l56-58 170 170 56-56-414-414 56-58 736 736-56 56ZM269-238 43-464l56-56 170 170 56 56-56 56Zm452-226-56-56 196-196 58 54-198 198ZM607-578l-56-56 86-86 56 56-86 86Z"/></svg>
-                            </button>
-                        </form>
-                    </div>
-                </div>
+                <!--  SE ISNERTAN LOS PEDIDOS CON JQUERY  -->
 
             </div>
         </div>
+
     </main>
 
+    <script src="<?= MATRIX_HTTP_URL ?>resources/js/orders.js"></script>
 </body>
 </html>

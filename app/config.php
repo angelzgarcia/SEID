@@ -7,46 +7,23 @@
 
     define('DOC_ROOT', __DIR__ . '/../');
 
-    $formatter = new IntlDateFormatter(
-        'es_MX',
-        IntlDateFormatter::FULL,
-        IntlDateFormatter::FULL,
-        'America/Mexico_City',
-        IntlDateFormatter::GREGORIAN,
-        'EEEE, d \'de\' MMMM \'de\' YYYY HH:mm:ss'
-    );
-
-    $formatter_abreviado = new IntlDateFormatter(
-        'es_MX',
-        IntlDateFormatter::NONE,
-        IntlDateFormatter::SHORT,
-        'America/Mexico_City',
-        IntlDateFormatter::GREGORIAN,
-        'dd MMM HH:mm'
-    );
-
-    $formatterFecha = new IntlDateFormatter(
-        'es_MX',
-        IntlDateFormatter::FULL,
-        IntlDateFormatter::NONE, 
-        'America/Mexico_City',
-        IntlDateFormatter::GREGORIAN
-    );
-
-    $formatterHora = new IntlDateFormatter(
-        'es_MX',
-        IntlDateFormatter::NONE,
-        IntlDateFormatter::FULL, 
-        'America/Mexico_City',
-        IntlDateFormatter::GREGORIAN
-    );
+    $full_pattern = 'EEEE, d \'de\' MMMM \'de\' YYYY HH:mm:ss';
+    $short_pattern = 'dd MMM HH:mm';
 
     $timestamp = time();
-    
-    $fecha = $formatter -> format($timestamp);
-    $fecha_ab = $formatter_abreviado -> format($timestamp);
 
-    $date = $formatterFecha->format($timestamp);
-    $hora = $formatterHora->format($timestamp);
-    
-    
+    $createFormattedDate = fn()
+        => new IntlDateFormatter(
+            'es-ES',
+            IntlDateFormatter::FULL,
+            IntlDateFormatter::MEDIUM,
+            null,
+            IntlDateFormatter::GREGORIAN
+        );
+
+    $formatted_date = $createFormattedDate();
+
+    $full_current_date = $formatted_date -> format($timestamp);
+
+
+

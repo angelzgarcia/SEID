@@ -26,9 +26,7 @@ $types = '';
 
 $sql = "SELECT p.*, c.nombre_categoria, c.id_categoria, m.nombre_marca, m.id_marca";
 
-if ($sucursal) {
-    $sql .= ", p_s.cantidad_producto, p_s.precio_venta";
-}
+if ($sucursal) { $sql .= ", p_s.cantidad_producto, p_s.precio_venta"; }
 
 $sql .= "
     FROM productos AS p
@@ -46,9 +44,7 @@ if ($sucursal) {
     $types .= 's';
 }
 
-if ($orden === 'vencimiento') {
-    $sql .= " INNER JOIN lotes_vencimientos AS l_v ON p.id_producto = l_v.id_producto_fk_lote_vencimiento";
-}
+if ($orden === 'vencimiento') { $sql .= " INNER JOIN lotes_vencimientos AS l_v ON p.id_producto = l_v.id_producto_fk_lote_vencimiento"; }
 
 if ($busqueda) {
     $conditions[] = "(p.nombre_producto LIKE ? OR p.codigo_barras_producto LIKE ? OR c.nombre_categoria LIKE ? OR m.nombre_marca LIKE ?)";

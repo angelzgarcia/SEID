@@ -7,45 +7,37 @@
 <?php
     //  P R O D U C T O S   C O N   V E N C I M I E N T O
     $sql = '
-        SELECT p.stock_producto, p.id_producto, v.*
+        SELECT p.stock_producto, p.id_producto, GROUP_CONCAT(v.fecha_vencimiento ORDER BY v.fecha_vencimiento ASC) AS fechas_vencimiento
         FROM productos AS p
         LEFT JOIN lotes_vencimientos AS v
         ON p.id_producto = v.id_producto_fk_lote_vencimiento
+        GROUP BY p.id_producto
     ';
+
     $products = simpleQuery($sql) ?: [];
+    $count_products = count($products);
 
-    if (!empty($products)) {
-        $count_products = count($products);
+    $count_out_stock_products = 0;
+    $count_few_stock_products = 0;
+    $count_close_expiration_products = 0;
+    $curr_date = new DateTime();
+    $curr_day = (int) $curr_date -> format('d');
+    $curr_month = (int) $curr_date -> format('m');
 
-        $count_out_stock_products = 0;
-        array_map(function($product) use (&$count_out_stock_products) {
-            if ((int)$product['stock_producto'] === 0)
-                $count_out_stock_products++;
-        }, $products);
+    foreach ($products as $product) {
+        $stock = (int)$product['stock_producto'];
 
+        if ($stock === 0) $count_out_stock_products++;
+        if ($stock > 0 && $stock <= 50) $count_few_stock_products++;
 
-        $count_few_stock_products = 0;
-        array_map(function($product) use (&$count_few_stock_products) {
-            if ((int)$product['stock_producto'] <= 50)
-                $count_few_stock_products++;
-        }, $products);
+        $fechas_vencimiento = $product['fechas_vencimiento'] ? explode(',', $product['fechas_vencimiento']) : [];
+        foreach ($fechas_vencimiento as $fecha) {
+            $expired_date = DateTime::createFromFormat('Y-m-d', $fecha);
+            if ($expired_date) {
+                $expired_day = (int)$expired_date -> format('d');
+                $expired_month = (int)$expired_date -> format('m');
 
-
-        $count_close_expiration_products = 0;
-        $curr_date = new DateTime();
-        $curr_day = (int) $curr_date -> format('d');
-        $curr_month = (int) $curr_date -> format('m');
-
-        foreach ($products as $product) {
-            if (!empty($product['fecha_vencimiento'])) {
-                $expired_date = DateTime::createFromFormat('Y-m-d', $product['fecha_vencimiento']);
-                if ($expired_date) {
-                    $expired_day = (int) $expired_date -> format('d');
-                    $expired_month = (int) $expired_date -> format('m');
-
-                    if ($expired_day <= $curr_day && $expired_month === $curr_month + 1)
-                        $count_close_expiration_products++;
-                }
+                if ($expired_day <= $curr_day && $expired_month === $curr_month + 1) $count_close_expiration_products++;
             }
         }
     }
@@ -238,12 +230,10 @@
 
     </main>
 
-
     <?php require_once MATRIX_DOC_VIEWS . 'inventario/show_order_modal.php' ?>
 
     <?php require_once MATRIX_DOC_VIEWS . 'inventario/show_modal.php' ?>
 
-    <script src="<?= MATRIX_HTTP_URL ?>resources/inventory.js"></script>
-
+    <script src="<?= MATRIX_HTTP_URL ?>resources/js/inventory.js"></script>
 </body>
 </html>

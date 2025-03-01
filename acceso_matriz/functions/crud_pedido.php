@@ -4,12 +4,21 @@ require_once __DIR__ . '/../config.php';
 foreach (glob(__DIR__ . "/helpers/*.php") as $helper) require_once $helper;
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST')
-    return;
+    redirect_json();
 
 match ($_POST['accion']) {
+    'editar' => edit(),
     'guardar' => store(),
-    default => exit,
+    'aprobar' => aproved(),
+    'rechazar' => rejected(),
+    default => redirect_json(),
 };
+
+function redirect_json($message = '¡Ocurrió un error!', $status = 'error')
+{
+    echo json_encode(['status' => $status, 'message' => $message]);
+    exit;
+}
 
 function store()
 {
@@ -19,15 +28,11 @@ function store()
     $sucursal_id = decryptValue($_POST['sucursal'] ?? '', SECRETKEY) ?: null;
     $order_value = (float)($_POST['orderValue'] ?? 0);
 
-    if (!is_array($productos)) {
-        echo json_encode(['status' => 'error', 'message' => 'Error: la información no ha llegado como se esperaba']);
-        exit;
-    }
+    if (!is_array($productos))
+        redirect_json('La información no ha llegado como se esperaba');
 
-    if (empty($productos) || !$sucursal_id) {
-        echo json_encode(['status' => 'error', 'message' => 'Error: pedido vacío o sucursal no válida']);
-        exit;
-    }
+    if (empty($productos) || !$sucursal_id)
+        redirect_json('Pedido vacío o sucursal no válida');
 
     startTransaction();
     $sql = '
@@ -37,8 +42,7 @@ function store()
 
     if (!simpleQuery($sql, [(int)$sucursal_id, $order_value], 'id')) {
         rollbackTransaction();
-        echo json_encode(['status' => 'error', 'message' => 'Error: No se pudo insertar el pedido']);
-        exit;
+        redirect_json('No se pudo insertar el pedido');
     }
 
     global $conn;
@@ -46,8 +50,7 @@ function store()
 
     if (!$id_pedido_sucursal) {
         rollbackTransaction();
-        echo json_encode(['status' => 'error', 'message' => 'Error: Sucursal no válida']);
-        exit;
+        redirect_json('Sucursal no válida');
     }
 
     $sql = '
@@ -78,10 +81,8 @@ function store()
 
         $stock_disponible = (int)simpleQuery($sql_validate_stock, [(int)$product_id], 'i', true)[0]['stock_producto'];
 
-        if (!$stock_disponible) {
-            echo json_encode(['status' => 'error', 'message' => "No se pudo validar el stock de un producto"]);
-            exit;
-        }
+        if (!$stock_disponible)
+            redirect_json('No se pudo validar el stock de un producto');
 
         if ($stock_disponible < $product_quantity) {
             rollbackTransaction();
@@ -97,29 +98,24 @@ function store()
 
         if (!$product_id || $product_quantity <= 0 || $product_price <= 0) {
             rollbackTransaction();
-            echo json_encode(['status' => 'error', 'message' => "¡Datos no válidos en un producto!"]);
-            exit;
+            redirect_json('¡Datos no válidos en un producto!');
         }
 
         if (!simpleQuery($sql, [$id_pedido_sucursal, (int)$product_id, $product_quantity, $product_price], 'iiid')) {
             rollbackTransaction();
-            echo json_encode(['status' => 'error', 'message' => "¡No se pudo registrar un producto!: "]);
-            exit;
+            redirect_json('¡Ocurrió un error con un producto!');
         }
 
         $new_stock = $stock_disponible - $product_quantity;
         if (!simpleQuery($sql_update_stock, [$new_stock, $product_id], 'ii')) {
             rollbackTransaction();
-            echo json_encode(['status' => 'error', 'message' => "¡No se pudo actualizar el stock!: "]);
-            exit;
+            redirect_json('¡No se pudo actualizar el stock!');
         }
     }
 
     commitTransaction();
-    echo json_encode(['status' => 'success', 'message' => "¡Pedido procesado!"]);
-    exit;
+    redirect_json('¡Pedido procesado!', 'success');
 }
-
 
 
 function edit()
@@ -127,7 +123,37 @@ function edit()
 
 }
 
-function changeStatus()
+function aproved()
 {
+    unset($_POST['accion']);
 
+    $order_id = $_POST['order_id'] ? (int)clearEntry(decryptValue($_POST['order_id'], SECRETKEY)) : null;
+
+    if (!$order_id) redirect_json('¡No se pudo identificar el pedido!');
+
+    $sql = 'UPDATE pedidos_sucursales SET status_pedido_sucursal = ? WHERE id_pedido_sucursal = ?';
+    $status = 'aprobado';
+
+    if (!simpleQuery($sql, [&$status, &$order_id], 'si'))
+        redirect_json('¡No se pudo aprobar el pedido!');
+
+    redirect_json('¡Orden aprobada!', 'success');
 }
+
+function rejected()
+{
+    unset($_POST['accion']);
+
+    $order_id = $_POST['order_id'] ? (int)clearEntry(decryptValue($_POST['order_id'], SECRETKEY)) : null;
+
+    if (!$order_id) redirect_json('¡No se pudo identificar el pedido!');
+
+    $sql = 'UPDATE pedidos_sucursales SET status_pedido_sucursal = ? WHERE id_pedido_sucursal = ?';
+    $status = 'rechazado';
+
+    if (!simpleQuery($sql, [&$status, &$order_id], 'si'))
+        redirect_json('¡No se pudo rechazar el pedido!');
+
+    redirect_json('¡Orden rechazada!', 'success');
+}
+

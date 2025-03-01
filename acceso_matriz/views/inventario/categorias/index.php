@@ -32,8 +32,10 @@
         <div class="crud-container">
             <!-- CRUD HEADER -->
             <div class="crud-header">
+
                 <!-- HEADER SUPERIOR -->
                 <div class="crud-top-header">
+                    <!-- ACCESOS DIRECTOS -->
                     <div class="crud-tittle">
                         <div class="title-shortcut-inventory">
                             <h1>
@@ -110,6 +112,7 @@
                         </button>
                     </form>
                 </div>
+
             </div>
 
             <!-- LISTA DE REGISTROS -->
