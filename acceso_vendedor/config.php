@@ -1,5 +1,7 @@
 <?php
+
     require_once __DIR__ . '/../app/config.php';
+    
     session_start();
 
     const SELLER_ACCESS = ' | Punto de venta | ';
@@ -11,3 +13,4 @@
     define('SELLER_HTTP_VIEWS', SELLER_HTTP_URL . 'views/');
 
     define('SELLER_FNS', SELLER_HTTP_URL . 'functions/');
+    define('SELLER_DOCT_FNS', SELLER_DOC_ROOT . 'functions/');

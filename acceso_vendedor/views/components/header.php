@@ -1,8 +1,14 @@
 
 <header class="header">
     <nav class="navbar">
-        <!-- LOGO -->
-        <div class="brand-logo">
+
+
+        <!-- LOGO --> <!-- SIDEBAR OPEN BUTTON -->
+        <div class="brand-logo-sidebar-button">
+            <button id="sidebar-open-button">
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
+            </button>
+
             <img src="https://www.hubspot.com/hs-fs/hubfs/Shell_logo.svg.png?width=450&height=417&name=Shell_logo.svg.png" alt="brand-logo">
         </div>
 
@@ -41,12 +47,13 @@
             <!-- PERFIL -->
             <div class="profile-access">
                 <p>
-                    Use name
+                    User name
                 </p>
                 <a href="" class="<?= strpos($_SERVER['PHP_SELF'], 'inventario/create.php') ? 'active' : '' ?>">
-                    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQxVmSdpTR8Kof2WifgjHIyvu6Ji72xvRtMqg&s" alt="profile-picture">
+                    <img src="<?= HTTP_URL ?>imgs_avatars/avatar-m5.jpg" alt="profile-picture">
                 </a>
             </div>
         </div>
     </nav>
 </header>
+

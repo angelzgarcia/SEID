@@ -1,13 +1,15 @@
 <?php
-require_once __DIR__ . '/../database.php';
-require_once __DIR__ . '/../config.php';
-foreach (glob(__DIR__ . "/helpers/*.php") as $helper)
-    require_once $helper;
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['p'])) show();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST')
     redirect();
+
+require_once __DIR__ . '/../config.php';
+require_once MATRIX_DOC_ROOT . 'database.php';
+foreach (glob(__DIR__ . "/helpers/*.php") as $helper)
+    require_once $helper;
+
 
 match ($_POST['accion']) {
     'guardar' => store(),
@@ -99,7 +101,7 @@ function store()
     ];
 
     foreach ($index_data as &$value) {
-        if ($value === null) $value = '';
+        // if ($value === null) $value = '';
         $types .= $type_map[gettype($value)] ?? 's';
     }
 

@@ -845,6 +845,9 @@
   .max-h-screen {
     max-height: 100vh;
   }
+  .min-h-full {
+    min-height: 100%;
+  }
   .min-h-screen {
     min-height: 100vh;
   }
@@ -903,6 +906,12 @@
     flex-grow: 1;
   }
   .grow {
+    flex-grow: 1;
+  }
+  .grow-1 {
+    flex-grow: 1;
+  }
+  .grow-\[1\] {
     flex-grow: 1;
   }
   .basis-auto {
@@ -1276,6 +1285,9 @@
   }
   .justify-items-stretch {
     justify-items: stretch;
+  }
+  .gap-1 {
+    gap: calc(var(--spacing) * 1);
   }
   .gap-1\.5 {
     gap: calc(var(--spacing) * 1.5);
@@ -1709,6 +1721,9 @@
   .\!p-1 {
     padding: calc(var(--spacing) * 1) !important;
   }
+  .p-0 {
+    padding: calc(var(--spacing) * 0);
+  }
   .p-0\.5 {
     padding: calc(var(--spacing) * 0.5);
   }
@@ -1717,6 +1732,9 @@
   }
   .p-\[3px\] {
     padding: 3px;
+  }
+  .px-2 {
+    padding-inline: calc(var(--spacing) * 2);
   }
   .\!text-center {
     text-align: center !important;
@@ -1872,9 +1890,6 @@
   }
   .text-gray-500 {
     color: var(--color-gray-500);
-  }
-  .\!normal-case {
-    text-transform: none !important;
   }
   .capitalize {
     text-transform: capitalize;

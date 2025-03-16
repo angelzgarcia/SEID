@@ -1,7 +1,9 @@
 <?php require_once __DIR__ . '/../../config.php' ?>
-<?php require_once __DIR__ . '/../../database.php' ?>
-<?php require_once __DIR__ . '/../../functions/helpers/encrypt.php' ?>
+<?php require_once MATRIX_DOC_ROOT . 'database.php' ?>
+<?php require_once MATRIX_DOC_FNS . 'helpers/encrypt.php' ?>
+
 <?php $page_name = ACCESO . 'Añadir producto' ?>
+
 <?php
     $sql_categorias = 'SELECT id_categoria, nombre_categoria FROM categorias WHERE status_categoria = 0 ORDER BY nombre_categoria ASC';
     $categorias = simpleQuery($sql_categorias, [], '', true) ?: [];
@@ -167,19 +169,6 @@
                         <option <?= isset($_SESSION['olds']['unidad_venta']) && $_SESSION['olds']['unidad_venta'] === 'pieza' ? 'selected' : '' ?> value="pieza">Pieza</option>
                         <option <?= isset($_SESSION['olds']['unidad_venta']) && $_SESSION['olds']['unidad_venta'] === 'paquete' ? 'selected' : '' ?> value="paquete">Paquete</option>
                         <option <?= isset($_SESSION['olds']['unidad_venta']) && $_SESSION['olds']['unidad_venta'] === 'caja' ? 'selected' : '' ?> value="caja">Caja</option>
-                        <!-- <option value="saco">Saco</option>
-                        <option value="bulto">Bulto</option>
-                        <option value="rollo">Rollo</option>
-                        <option value="botella">Botella</option>
-                        <option value="lata">Lata</option>
-                        <option value="kg">Kilogramos</option>
-                        <option value="gramo">Gramos</option>
-                        <option value="tonelada">Toneladas</option>
-                        <option value="litro">Litros</option>
-                        <option value="mililitro">Mililitros</option>
-                        <option value="metro">Metros</option>
-                        <option value="centimetro">Centímetros</option>
-                        <option value="milimetro">Milímetros</option> -->
                     </select>
                 </fieldset>
 
@@ -338,6 +327,8 @@
         unset($_SESSION['olds']);
         unset($_SESSION['errors']);
     ?>
+
+
 
     <!-- MOSTRAR CAMPOS PARA MAYOREO -->
     <script>

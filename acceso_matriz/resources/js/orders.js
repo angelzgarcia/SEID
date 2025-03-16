@@ -68,8 +68,6 @@ function buscar() {
 
     const params = { "busqueda": busqueda, "sucursal": sucursal, "fecha": fecha, "order_by": orderBy };
 
-    console.log(fecha);
-
     $.ajax({
         data: params,
         type: 'POST',

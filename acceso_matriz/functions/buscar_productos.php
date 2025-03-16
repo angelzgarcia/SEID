@@ -187,7 +187,13 @@ if ($busqueda && empty($productos)): ?>
                     <?php endif; ?>
 
                     <!-- CAMBIAS STATUS -->
-                    <form action="<?= MATRIX_HTTP_URL ?>functions/crud_producto?p=<?=$p?>" class="status-btn <?= $status === 0 ? 'inactive-btn' : 'active-btn' ?>" data-id="<?=$p?>" method="POST" title="Cambiar status">
+                    <form
+                        action="<?= MATRIX_HTTP_URL ?>functions/crud_producto?p=<?=$p?>"
+                        class="status-btn <?= $status === 0 ? 'inactive-btn' : 'active-btn' ?>"
+                        data-id="<?=$p?>"
+                        method="POST"
+                        title="Cambiar status"
+                    >
                         <input type="hidden" name="accion" value="modificar">
 
                         <button type="button" title="Cambiar status">
