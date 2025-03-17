@@ -1,22 +1,28 @@
 
-let productosContainer = document.getElementById('products-list');
+let saleInProgress = JSON.parse(localStorage.getItem('saleInProgress')) || [];
 
-document.addEventListener("DOMContentLoaded", function () {
 
-    // <!-- R E S I Z E S A B L E    W I N D O W S -->
+// <!-- C A R G A R   E S T A D O   I N I C I A L   D E L   S I S T E M A -->
+document.addEventListener("DOMContentLoaded", function ()
+{
     const resizer = document.querySelector(".resizer");
     const leftPanel = document.querySelector(".sale-details-container");
-    const rightPanel = document.querySelector(".name_product_searcher-products-list-container");
+    const rightPanel = document.querySelector(".product_search-products-list-container");
     const container = document.querySelector(".point-of-sale-grid-container");
 
+
+    // <!-- R E S I Z E S A B L E    W I N D O W S -->
     resizer.addEventListener("mousedown", (event) => {
+        document.body.style.userSelect = "none";
+
         document.addEventListener("mousemove", resize);
         document.addEventListener("mouseup", () => {
             document.removeEventListener("mousemove", resize);
-        });
-    });
 
-    function resize(event) {
+            document.body.style.userSelect = "";
+        }, { once: true });
+    });
+    const resize = (event) => {
         let newLeftWidth = event.clientX - container.offsetLeft;
         let totalWidth = container.clientWidth;
 
@@ -25,28 +31,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         container.style.gridTemplateColumns = `${leftPercentage}% 4px auto`;
     }
-
-
-    // <!-- R E Z I E   O B S E R V E R --> (products buttons)
-    const productHeaders = document.querySelectorAll(".product-header");
-
-    productHeaders.forEach(productHeader => {
-        const addRemoveBtns = productHeader.querySelector(".add-remove-btns");
-
-        if (!addRemoveBtns) return;
-
-        const observer = new ResizeObserver(entries => {
-            for (let entry of entries) {
-                if (entry.contentRect.width < 400) {
-                    addRemoveBtns.classList.add("compact");
-                } else {
-                    addRemoveBtns.classList.remove("compact");
-                }
-            }
-        });
-
-        observer.observe(productHeader);
-    });
 
 
     // <!-- V A L I D A R   C A M P O:   P A G Ó   C O N -->
@@ -177,7 +161,24 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    productosContainer.innerHTML = `
+
+    // <!-- L O G O S -->
+    withoutSearch();
+
+
+    // <!-- M O S T R A R   L I S T A   D E   P R O D U C T O S   D E   L A   V E N T A   E N   C U R S O -->
+    showProductsList();
+
+
+    // <!-- R E S U M E N   D E   L A   V E N T A -->
+    showTotalPaymentAndCountProductsList();
+});
+
+
+// <!--  L O G O S    D E N E D I G -->
+function withoutSearch()
+{
+    document.getElementById('products-list').innerHTML = `
         <div class="min-h-full items-center justify-center">
             <div class="denedig-logo">
                 <img src="../../imgs_denedig/logo-denedig.png" alt="denedig logo">
@@ -185,34 +186,233 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
         </div>
     `;
-});
+}
 
 
-// <!-- BUSCAR PRODUCTOS POR CODIGO DE BARRAS O NOMBRE SOLO AL PRESIONAR ENTER -->
-$(document).on('keydown', '#name_product_searcher', function(event) {
-    let producto = document.getElementById('name_product_searcher').value.trim() || '';
+// <!--  C O L O R   D E   F O N D O   D E L   I N P U T   D E   E S C A N E O -->
+function setInputStatusColor(status)
+{
+    let barcodeInput = document.getElementById('product_scan');
+    barcodeInput.classList.add(status);
 
-    if (event.key === 'Enter') {
-        event.preventDefault();
-        buscar();
+    let timeColor = null;
+    clearTimeout(timeColor);
 
-    } else if (producto === '') {
-        productosContainer.innerHTML = `
-            <div class="min-h-full items-center justify-center">
-                <div class="denedig-logo">
-                    <img src="../../imgs_denedig/logo-denedig.png" alt="denedig logo">
-                    <img src="../../imgs_denedig/denedig.webp" alt="denedig logo">
-                </div>
-            </div>
-        `;
+    timeColor = setTimeout(() => {
+        barcodeInput.classList.remove(status);
+    }, 400);
+}
+
+
+// <!--  R E F R E S C A R   I N P U T   D E    E S C A N E O -->
+function  refreshProductScanInput(withTimeout = false)
+{
+    let productScanInput = document.getElementById('product_scan');
+    let productSearchInput = document.getElementById('product_search');
+
+    productScanInput.value = '';
+
+    if (withTimeout) {
+        let time = null;
+        clearTimeout(time);
+
+        time = setTimeout(() => {
+            productSearchInput.classList.remove('disabled');
+            productSearchInput.removeAttribute('disabled');
+        }, 1000);
+
+    } else {
+        $(productScanInput).trigger($.Event('keydown', { key: 'Enter' }));
+    }
+}
+
+
+// <!--  R E Z I E   O B S E R V E R -->
+function resizeButtonsObserver()
+{
+    const productHeaders = document.querySelectorAll(".product-header");
+    console.log(productHeaders);
+
+    productHeaders.forEach(productHeader => {
+        const addRemoveBtns = productHeader.querySelector(".add-remove-btns");
+
+        if (!addRemoveBtns) return;
+
+        const observer = new ResizeObserver(entries => {
+            for (let entry of entries) {
+                if (entry.contentRect.width < 400) {
+                    addRemoveBtns.classList.add("compact");
+                } else {
+                    addRemoveBtns.classList.remove("compact");
+                }
+            }
+        });
+
+        observer.observe(productHeader);
+    });
+}
+
+
+// <!-- B U S C A D O R   E N   T I E M P O   R E A L  (CODIGO DE BARRAS Y NOMBRE) -->
+$(document).on('keyup', '#product_search', function()
+{
+    let productoName = this.value.trim() || '';
+    let productBarcodeInput = document.getElementById('product_scan');
+
+    if (productoName === '' || productoName.length <= 1) {
+        productBarcodeInput.classList.remove('disabled');
+        productBarcodeInput.removeAttribute('disabled');
+        productBarcodeInput.value= '';
+
+        withoutSearch();
+    } else {
+        productBarcodeInput.classList.add('disabled');
+        productBarcodeInput.setAttribute('disabled', 'true');
+
+        busqueda();
     }
 });
 
+
+// <!--  B U S C A R    P O R   C O D I G O   D E   B A R R A S   (AL ACTIVAR LA TECLA ENTER) -->
+$(document).on('keydown', '#product_scan', function(event)
+{
+    let productBarcode = this.value.trim();
+    let productSearchInput = document.getElementById('product_search');
+
+    if (event.key === 'Enter')
+        if (productBarcode === '' || productBarcode.length <= 1) {
+            productSearchInput.classList.remove('disabled');
+            productSearchInput.removeAttribute('disabled');
+            productSearchInput.value= '';
+
+            withoutSearch();
+
+        } else {
+            busqueda(false);
+        }
+});
+
+
+// <!--   M O S T R A R   P R O D U C T O S   D E   L A   V E N T A   E N   C U R S O  -->
+function showProductsList()
+{
+    let productsInProgressList = document.getElementById('products-sale-in-progress-list');
+    productsInProgressList.innerHTML = '';
+
+    JSON.parse(localStorage.getItem('saleInProgress')).forEach(p => {
+        productsInProgressList.innerHTML += `
+            <li>
+                <div class="sale-product-details">
+                    <div class="sale-product-header">
+                        <p>${p.nombre_producto}</p>
+                        <span>
+                            ${
+                                p.quantity > 1
+                                    ? p.quantity + ' ' + p.unidad_venta_producto + 's'
+                                    : p.quantity + ' ' + p.unidad_venta_producto
+                            }
+                        </span>
+                    </div>
+
+                    <div class="sale-product-body">
+                        <div class="unit-price">
+                            <p>Precio unitario:</p>
+                            <span>$${parseFloat(p.precio_venta_producto).toFixed(2)}.°°</span>
+                        </div>
+
+                        ${
+                            (!Boolean(p.aplica_mayoreo) && p.quantity >= p.cantidad_minima_mayoreo_producto)
+                            ?
+                                `<div class="wholesale-price">
+                                    <p>Precio al por mayor:</p>
+                                    <span>$${parseFloat(p.precio_mayoreo_producto).toFixed(2)}.°°</span>
+                                </div>`
+                            :
+                                `<div class="wholesale-price">
+                                    <p>Precio al por mayor:</p>
+                                    <span>No aplica</span>
+                                </div>`
+                        }
+
+                        <div class="subtotal">
+                            <p>Subtotal:</p>
+                            <span>
+                                $${
+                                    p.subtotal
+                                }.°°
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="add-discount-remove-btns">
+                        <button type="button" class="remove-btn" data-barcode="">🗑️</button>
+
+                        <div class="add-remove-btns">
+                            <button type="button" class="remove-btn" data-barcode="">➖</button>
+                            <button type="button" class="add-btn" data-barcode="">➕</button>
+                        </div>
+                    </div>
+                </div>
+            </li>
+        `;
+    })
+}
+
+
+// <!-- A C T U A L I Z A R   E L   S U B T O T A L   D E   C A D A   P R O D U  C T O -->
+function updateSubtotalProduct(product)
+{
+    (!Boolean(product.aplica_mayoreo) && product.quantity >= product.cantidad_minima_mayoreo_producto)
+    ?
+        product.subtotal = parseFloat(parseInt(product.quantity, 10) * parseFloat(product.precio_mayoreo_producto).toFixed(2)).toFixed(2)
+    :
+        product.subtotal =  parseFloat(parseInt(product.quantity, 10) * parseFloat(product.precio_venta_producto).toFixed(2)).toFixed(2)
+}
+
+
+// <!-- R E S U M E N   D E   L A   V E N T A -->
+function showTotalPaymentAndCountProductsList()
+{
+    let saleInProgressList = JSON.parse(localStorage.getItem('saleInProgress')) || [];
+
+    let {totalProducts, totalPayment} = saleInProgressList.reduce((totals, p) => {
+        totals.totalProducts += p.quantity;
+        totals.totalPayment += p.quantity * 5;
+
+        return totals;
+    }, {totalProducts: 0, totalPayment: 0});
+
+    document.getElementById('total_products').innerHTML = totalProducts;
+    document.getElementById('total_payment').innerHTML = totalPayment;
+}
+
+
+// <!--   R E T R A S O   E N   L A S   P E T I C I O N E S   D E   B U S Q U E D A  -->
+let time = null;
+function busqueda(withTimeout = true)
+{
+    if (withTimeout) {
+        clearTimeout(time);
+
+        time = setTimeout(() => {
+            buscar();
+        }, 600);
+
+    } else {
+        buscar();
+    }
+}
+
+
+// <!--   P E T I C I O N E S   D E   B U S Q U E D A   -->
 function buscar()
 {
-    let producto = document.getElementById('name_product_searcher').value.trim() || '';
+    let product_search = document.getElementById('product_search').value.trim();
+    let productScan = document.getElementById('product_scan').value.trim();
+    let productosContainer = document.getElementById('products-list');
 
-    if (producto !== '') {
+    if (product_search !== '' || productScan !== '') {
         const errorMessage = `
             <div class="registers-empty">
                 <animated-icons
@@ -228,14 +428,59 @@ function buscar()
             </div>
         `;
 
-        const params = { "producto": producto };
+        const params = { "product_search": product_search, "product_scan": productScan };
 
         $.ajax({
             data: params,
             type: 'POST',
             url: '../functions/buscar_productos.php',
             success: data => {
-                productosContainer.innerHTML = data;
+                let producto = '';
+
+                try { producto = JSON.parse(data); }
+                catch (error) { producto = null; }
+
+                // SE ESCANÉO Y NO SE ENCONTRÓ RESULTADO
+                if (productScan && !producto) {
+                    productosContainer.innerHTML = data;
+
+                    setInputStatusColor('error');
+                    refreshProductScanInput(true);
+                }
+
+                // SE ESCANÉO Y SE OBTUVO RESULTADO
+                if (productScan && producto) {
+                    setInputStatusColor('success');
+
+                    let existingProduct = saleInProgress.find(p => p.nombre_producto === producto.nombre_producto);
+
+                    if (existingProduct) {
+                        existingProduct.quantity++;
+
+                        updateSubtotalProduct(existingProduct);
+
+                    } else {
+                        producto.quantity = 1;
+
+                        updateSubtotalProduct(producto);
+
+                        saleInProgress.push(producto);
+                    }
+
+                    localStorage.setItem('saleInProgress', JSON.stringify(saleInProgress));
+
+                    refreshProductScanInput();
+
+                    showProductsList();
+                    showTotalPaymentAndCountProductsList();
+                }
+
+                // BUSCADOR
+                if (product_search) {
+                    productosContainer.innerHTML = data;
+                    resizeButtonsObserver();
+                }
+
             },
             error: (xhr, status, error) => {
                 productosContainer.innerHTML = errorMessage;
