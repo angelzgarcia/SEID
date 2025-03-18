@@ -18,7 +18,7 @@
         <!-- CREAR CREDENCIAL -->
         <div class="form-create-container">
             <div class="form-header">
-                <h1>Añadir vendedor</h1>
+                <h1>Añadir personal</h1>
 
                 <!-- ACCESOS DIRECTOS -->
                 <div class="shortcuts-links">
@@ -88,11 +88,11 @@
                     <legend>
                         Correo electrónico *
                         <p class='message-error'>
-                            <?= $_SESSION['errors']['correo_electronico'] ?? '' ?>
+                            <?= $_SESSION['errors']['correo'] ?? '' ?>
                         </p>
                     </legend>
 
-                    <input type="text" name="correo" placeholder="Ingrese el correo del usuario" value="<?= $_SESSION['olds']['correo_electronico'] ?? '' ?>">
+                    <input type="text" name="correo" placeholder="Ingrese el correo del usuario" value="<?= $_SESSION['olds']['correo'] ?? '' ?>">
                 </fieldset>
 
                 <!-- SUCURSAL -->
@@ -100,7 +100,7 @@
                     <legend>
                         Sucursal *
                         <p class='message-error'>
-                            <?= $_SESSION['errors']['sucursal'] ?? '' ?>
+                            <?= $_SESSION['errors']['id_sucursal'] ?? '' ?>
                         </p>
                     </legend>
 
@@ -110,10 +110,20 @@
                             <option disabled selected>No hay sucursales registradas</option>
 
                         <?php else: ?>
-                            <option disabled selected>Asigne al vendedor en una sucursal</option>
+                            <?php $old_sucursal = $_SESSION['olds']['id_sucursal'] ?? ''; ?>
+
+                            <option
+                                disabled
+                                <?= !$old_sucursal ?  'selected' : ''?>
+                            >
+                                Asigne al vendedor en una sucursal
+                            </option>
 
                             <?php foreach ($sucursales as $sucursal): ?>
-                                <option value="<?= encryptValue($sucursal['id_sucursal'], SECRETKEY) ?>">
+                                <option
+                                    value="<?= encryptValue($sucursal['id_sucursal'], SECRETKEY) ?>"
+                                    <?= ($old_sucursal && $old_sucursal === $sucursal['id_sucursal']) ?  'selected' : ''?>
+                                >
                                     <?= ucwords($sucursal['nombre_sucursal']); ?>
                                 </option>
                             <?php endforeach; ?>
@@ -131,13 +141,90 @@
             </form>
         </div>
     </main>
+
+    <?php require_once MATRIX_DOC_VIEWS . 'credenciales/show_credential_modal.php' ?>
+
     <?php
         if (isset($_SESSION['swal'])) {
             echo $_SESSION['swal'];
             unset($_SESSION['swal']);
         }
+
         unset($_SESSION['errors']);
         unset($_SESSION['olds']);
     ?>
+
+
+    <script>
+        // <--      ABRIR MODAL        -->
+        $(document).ready(function () {
+            const $newUserAuthInfo = $('.newUserAuthInfo');
+            const $modalContainer = $('.modal-container');
+
+            if ($newUserAuthInfo.length && $modalContainer.length) {
+                $newUserAuthInfo.addClass('show').removeClass('hide');
+                $modalContainer.addClass('show').removeClass('hide');
+            }
+        });
+
+
+        // <--      CERRAR MODAL        -->
+        $(document).on('click', '.close-modal', function() {
+            let modal = $(this).closest('.modal-background');
+            let modalContainer = modal.find('.modal-container');
+
+            modal.addClass('hide').removeClass('show');
+            modal.removeClass('newUserAuthInfo');
+            modalContainer.addClass('hide').removeClass('show');
+
+            setTimeout(() => {
+                modal.removeClass('show');
+                modalContainer.removeClass('show');
+            }, 300);
+        });
+
+
+        // <--      DESCARGAR QR        -->
+        $(document).on('click', '#download-qr-button', function() {
+            const qrPath = $(this).data('qr-path');
+
+            if (!qrPath) return;
+
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                iconColor: 'white',
+                timerProgressBar: true,
+                customClass: {
+                    popup: 'colored-toast',
+                },
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+
+            try {
+                window.location.href = '<?=MATRIX_FNS?>descargar_archivo.php?file=' + qrPath;
+
+                setTimeout(() => {
+                    Toast.fire({
+                        icon: 'success',
+                        title: '¡Archivo descargado!'
+                    })
+                }, 2000);
+
+            } catch (e) {
+                console.log(e);
+
+                Toast.fire({
+                    icon: 'erorr',
+                    title: '¡No se pudo atender la petición!'
+                });
+            }
+        });
+    </script>
 </body>
 </html>

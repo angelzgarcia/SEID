@@ -1,5 +1,6 @@
-<?php // INICIO DE SESION CON CORREO Y CONTRASEÑA
+<?php 
 require_once 'database.php';
+
 function decryptValue($encryptedValue, $secretKey) {
     [$ciphertext, $iv] = explode('::', base64_decode($encryptedValue), 2);
     $iv = base64_decode($iv);

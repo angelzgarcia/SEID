@@ -1,14 +1,10 @@
-<?php require_once __DIR__ . '/app/config.php' ?>
-<?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+<?php require_once __DIR__ . '/acceso_visitante/config.php' ?>
 
-?>
 <!DOCTYPE html>
 <html lang="es">
-<?php require_once DOC_ROOT . 'acceso_visitante/views/modules/head.php'; ?>
+<?php require_once VISITOR_DOC_VIEWS . 'components/head.php'; ?>
 <body class="visitante-body">
-    <?php require_once DOC_ROOT . 'acceso_visitante/views/modules/header.php'; ?>
+    <?php require_once VISITOR_DOC_VIEWS . 'components/header.php'; ?>
 
     <main class="index-main">
         <section id="home" class="hero-section">
@@ -35,6 +31,7 @@ ini_set('display_errors', 1);
                             </div>
                         </div>
                     </div>
+
                     <div class="col-md-4">
                         <div class="card">
                             <div class="card-header">
@@ -49,6 +46,7 @@ ini_set('display_errors', 1);
                             </div>
                         </div>
                     </div>
+
                     <div class="col-md-4">
                         <div class="card">
                             <div class="card-header">
@@ -62,19 +60,20 @@ ini_set('display_errors', 1);
                             </div>
                         </div>
                     </div>
-                    <!-- Botón -->
+
                     <div class="text-center my-4 login-button">
-                        <a href="./auth/views/login-qr.php" class="btn btn-primary btn-lg" role="button">
+                        <a href="<?=VISITOR_HTTP_VIEWS?>auth/loginqr" class="btn btn-primary btn-lg" role="button">
                             <i class="bi bi-arrow-right"></i> Iniciar sesión
                         </a>
-                        <button onclick="location.href='./auth/views/login.php'" class="btn mt-3" style="background-color: indigo; color:white;"><i class="bi bi-arrow-right"></i> Login con correo</button>
+
+                        <button onclick="location.href='<?=VISITOR_HTTP_VIEWS?>auth/login'" class="btn mt-3" style="background-color: indigo; color:white;"><i class="bi bi-arrow-right"></i> Login con correo</button>
                     </div>
                 </div>
             </div>
         </section>
     </main>
 
-    <?php include DOC_ROOT . 'acceso_visitante/views/modules/footer.php'; ?>
+    <?php include VISITOR_DOC_VIEWS . 'components/footer.php'; ?>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

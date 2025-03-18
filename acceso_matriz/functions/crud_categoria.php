@@ -16,7 +16,8 @@ match($_POST['accion']) {
 
 function redirect()
 {
-    header("Location: {$_SERVER['HTTP_REFERER']}");
+    $redirect_ulr = $_SERVER['HTTP_REFERER'] ?? MATRIX_HTTP_VIEWS . 'dashboard';
+    header("Location: $redirect_ulr");
     exit;
 }
 
@@ -121,8 +122,8 @@ function store()
     $sql = 'INSERT INTO categorias (nombre_categoria, descripcion_categoria, imagen_categoria, slug_categoria) VALUES (?, ?, ?, ?)';
 
     $_SESSION['swal'] = (!simpleQuery($sql, [$category, $descripcion, $img_path, $slug], 'ssss')) ?
-    swal("error", "¡Ocurrió un error. Contacta con soporte!") :
-    swal("success", "¡Categoría añadida exitosamente!");
+        swal("error", "¡Ocurrió un error. Contacta con soporte!") :
+        swal("success", "¡Categoría añadida exitosamente!");
 
     unset($_SESSION['olds']);
     unset($_SESSION['errors']);

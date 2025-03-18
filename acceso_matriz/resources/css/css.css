@@ -40,7 +40,12 @@
         background-color: #435385;
         color: white;
     }
+
+
 }
+
+
+
 
 
 
@@ -738,6 +743,24 @@ body {
             align-items: start;
             gap: 1rem;
             & ul li { text-align: start; }
+        }
+        & .qrcode {
+            & button {
+                background-color: var(--save-color);
+                color: white;
+                padding: .5rem 2rem;
+                border-radius: .25rem;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 1rem;
+                &:hover {
+                    filter: invert();
+                    color: black;
+                    & svg { fill: black; }
+                }
+            }
         }
     }
     & .register-fact.images-history {
@@ -1761,7 +1784,7 @@ select.crud-header-select.select-destination-branch { max-width: max-content; }
 
 /*  S U C U R S A L E S  */
 .form-create-container > .sucursal-create {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     grid-auto-rows: auto;
 }
 .form-create-container > .sucursal-create > .form-btn{

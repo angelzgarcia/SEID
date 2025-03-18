@@ -1,100 +1,120 @@
 <?php
 
-require_once '../database.php';
+if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+    redirect();
 
-global $conn;
-session_start();
-$secretKey = 'your-secret-key';
+require_once __DIR__ . '/../acceso_visitante/config.php';
+require_once VISITOR_DOC_ROOT . 'database.php';
+require_once DOC_ROOT . 'qrlib/barcode.php';
+foreach (glob(VISITOR_DOCT_FNS . "/helpers/*.php") as $helper)
+    require_once $helper;
 
-function decryptValue($encryptedId, $secretKey) {
-    [$ciphertext, $iv] = explode('::', base64_decode($encryptedId), 2);
-    $iv = base64_decode($iv);
-    return openssl_decrypt($ciphertext, 'aes-256-cbc', $secretKey, 0, $iv);
+
+loginQr();
+
+function redirect()
+{
+    $redirect_ulr = $_SERVER['HTTP_REFERER'] ?? VISITOR_HTTP_VIEWS . 'auth/loginqr';
+    header("Location: $redirect_ulr");
+    exit;
 }
 
-date_default_timezone_set('America/Mexico_City');
+function loginQr()
+{
+    $qr_code = clearEntry($_POST['qr_code'] ?? '') ?? null;
+    $token = clearEntry($_POST['token'] ?? '') ?? null;
 
-$qr_code = isset($_POST['qr_code']) ? trim($_POST['qr_code']) : '';
-$token = isset($_POST['token']) ? trim($_POST['token']) : '';
+    if (!$qr_code && !$token) {
+        $_SESSION['swal'] = swal('warning', '¡Los campos son obligatorios!');
+        redirect();
+    }
 
-if (empty($qr_code) || empty($token)) {
-    die("Código QR o token no proporcionado.");
-}
+    $errors = [];
+    $olds = [];
 
-$credential_id = (int)decryptValue($qr_code, $secretKey);
+    !$qr_code ? $errors['qr'] = 'El QR es obligatorio' : $olds['qr'] = $qr_code;
+    !$token ? $errors['token'] = 'El token es obligatorio' : $olds['token'] = $token;
 
-if (!$credential_id || intval($credential_id) <= 0) {
-    die("ID no válido.");
-}
+    $_SESSION['olds'] = $olds;
+    if (!empty($errors)) {
+        $_SESSION['errors'] = $errors;
+        redirect();
+    }
 
-$stmt = $conn -> prepare("SELECT nivel_usuario FROM credenciales WHERE id_credencial = ?");
-$stmt -> bind_param("i", $credential_id);
-$stmt -> execute();
-$result = $stmt -> get_result();
+    $credential_id = decryptValue($qr_code, SECRETKEY) ?? null;
+    if (!$credential_id) {
+        $_SESSION['swal'] = swal('warning', '¡Código QR no válido!');
+        redirect();
+    }
 
-if ($result -> num_rows === 0) {
-    die("Registro no encontrado.");
-}
+    $sql = '
+        SELECT nivel_usuario, nombres_credencial, apellidos_credencial, token_verificacion
+        FROM credenciales
+        WHERE id_credencial = ?
+    ';
+    $user = simpleQuery($sql, [(int)$credential_id], 'i', true)[0];
+    var_dump($user);exit;
 
-$row = $result -> fetch_assoc();
-$nivel_usuario = (int)decryptValue($row['nivel_usuario'], $secretKey);
+    if (!$user) {
+        $_SESSION['swal'] = swal('warning', '¡Usuario no encontrado!');
+        redirect();
+    }
 
-// $_SESSION['credential_id'] = $credential_id;
-$_SESSION['id_credencial'] = $credential_id;
-$_SESSION['nivel_usuario'] = $nivel_usuario;
+    $_SESSION['credential_id'] = $qr_code;
+    $_SESSION['user_level'] = encryptValue($user_level, SECRETKEY);
 
-$stmt = $conn -> prepare("SELECT nombres_credencial, apellidos_credencial, token_verificacion FROM credenciales WHERE id_credencial = ?");
-$stmt -> bind_param("i", $credential_id);
-$stmt -> execute();
-$result = $stmt -> get_result();
+    $stmt = $conn -> prepare("SELECT  FROM credenciales WHERE id_credencial = ?");
+    $stmt -> bind_param("i", $credential_id);
+    $stmt -> execute();
+    $result = $stmt -> get_result();
 
-if ($result->num_rows === 0) {
-    die("Registro no encontrado.");
-}
+    if ($result->num_rows === 0) {
+        die("Registro no encontrado.");
+    }
 
-$row = $result -> fetch_assoc();
-$user_name = $row['nombres_credencial'];
-$encryptedToken = $row['token_verificacion'];
-$last_name = $row['apellidos_credencial'];
+    $row = $result -> fetch_assoc();
+    $user_name = $row['nombres_credencial'];
+    $encryptedToken = $row['token_verificacion'];
+    $last_name = $row['apellidos_credencial'];
 
-$_SESSION['nombres'] = $user_name;
-$_SESSION['apellidos'] = $last_name;
+    $_SESSION['nombres'] = $user_name;
+    $_SESSION['apellidos'] = $last_name;
 
 
-$decryptedToken = decryptValue($encryptedToken, $secretKey);
-// $descryptlastname = decryptValue($last_name, $secretKey);
+    $decryptedToken = decryptValue($encryptedToken, $secretKey);
+    // $descryptlastname = decryptValue($last_name, $secretKey);
 
-if ($decryptedToken !== $token) {
-    header('Location: ../views/login-qr.php');
-    exit();
-}
-
-switch ($nivel_usuario) {
-    case 1:
-        header('Location: ../../acceso_matriz/views/dashboard.php');
-        $conn -> close();
+    if ($decryptedToken !== $token) {
+        header('Location: ../views/login-qr.php');
         exit();
-    case 2:
-        $conn -> close();
-        header('Location: ../../acceso_director/views/dashboard.php');
-        exit();
-    case 3:
-        $conn -> close();
-        header('Location: ../../acceso_vendedor/views/dashboard.php');
-        exit();
-    default:
-        $conn -> close();
-        $errorMensaje = "Nivel de usuario no válido.";
-        header('Location: ../login.php?error=' . urlencode($errorMensaje));
-        exit();
+    }
+
+    switch ($nivel_usuario) {
+        case 1:
+            header('Location: ../../acceso_matriz/views/dashboard.php');
+            $conn -> close();
+            exit();
+        case 2:
+            $conn -> close();
+            header('Location: ../../acceso_director/views/dashboard.php');
+            exit();
+        case 3:
+            $conn -> close();
+            header('Location: ../../acceso_vendedor/views/dashboard.php');
+            exit();
+        default:
+            $conn -> close();
+            $errorMensaje = "Nivel de usuario no válido.";
+            header('Location: ../login.php?error=' . urlencode($errorMensaje));
+            exit();
+    }
 }
 
 
 
 
 
-// SEGUNDA ASIGNACION
-
+//
 
 // Obtener la hora actual y restar una hora
 // $now = new DateTime();

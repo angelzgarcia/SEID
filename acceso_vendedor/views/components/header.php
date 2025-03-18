@@ -1,8 +1,6 @@
 
 <header class="header">
     <nav class="navbar">
-
-
         <!-- LOGO --> <!-- SIDEBAR OPEN BUTTON -->
         <div class="brand-logo-sidebar-button">
             <button id="sidebar-open-button">

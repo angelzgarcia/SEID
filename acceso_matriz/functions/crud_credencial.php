@@ -5,11 +5,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST')
 
 require_once __DIR__ . '/../config.php';
 require_once MATRIX_DOC_ROOT . 'database.php';
+require_once DOC_ROOT . 'qrlib/barcode.php';
 foreach (glob(__DIR__ . "/helpers/*.php") as $helper)
     require_once $helper;
 
 match ($_POST['accion']) {
-    'crear' => create(),
+    'crear' => store(),
     'ver' => show(),
     'editar' => edit(),
     'actualizar' => update(),
@@ -24,28 +25,16 @@ function redirect()
     exit;
 }
 
-function create()
+function store()
 {
     unset($_POST['accion']);
 
+    $olds = $_POST;
     $errors = [];
-    $olds = [];
-
-    $token = str_pad(random_int(0, 9999), 4, '0', STR_PAD_LEFT);
-    $pass = bin2hex(random_bytes(15));
-    $nivel_usuario = '3';
-
-    $post_data = [
-        'sucursal' => clearEntry($_POST['id_sucursal'] ?? ''),
-        'nombres' => clearEntry($_POST['nombres'] ?? ''),
-        'apellidos' => clearEntry($_POST['apellidos'] ?? ''),
-        'curp' => clearEntry($_POST['curp'] ?? ''),
-        'telefono' => clearEntry($_POST['telefono'] ?? ''),
-        'correo_electronico' => clearEntry($_POST['correo'] ?? ''),
-    ];
 
     // VALIDAR CAMPOS VACÍOS
-    foreach ($post_data as $key => $dato) {
+    $data = array_map(fn($value) => clearEntry($value) ?: null, $_POST);
+    foreach ($_POST as $key => $dato) {
         $olds[$key] = $dato;
 
         if (!$dato)
@@ -55,7 +44,7 @@ function create()
     $_SESSION['olds'] = $olds;
 
     // VALIDAR SI HAY ERRORES
-    if (count($errors) === count($post_data)) {
+    if (count($errors) === count($_POST)) {
         $_SESSION['swal'] = swal('warning', '¡Los campos son obligatorios!');
         redirect();
     }
@@ -65,47 +54,85 @@ function create()
         redirect();
     }
 
-    $generate_data = [
-        'pass' => $pass,
-        'usuario_nivel' => encryptValue(clearEntry($nivel_usuario), SECRETKEY) ?? null,
-        'token_verificacion' => encryptValue($token, SECRETKEY)
-    ];
-
-    $data = array_merge($post_data, $generate_data);
-    var_dump($data);
-    exit;
-
     // VALIDAR EL FORMATO DE LOS CAMPOS
-    !validateNames($post_data['nombres']) ? $errors['nombres'] = 'Solo se permiten letras y espacios' : '';
+    !validateNames($_POST['nombres']) ? $errors['nombres'] = 'Solo se permiten letras y espacios' : '';
 
-    !validateLastNames($post_data['apellidos']) ? $errors['apellidos'] = 'Solo se permiten letras y espacios' : '';
+    !validateLastNames($_POST['apellidos']) ? $errors['apellidos'] = 'Solo se permiten letras y espacios' : '';
 
-    !validateEmail($post_data['correo']) ? $errors['correo'] = 'Correo electrónico no válido' : '';
+    !validateEmail($_POST['correo']) ? $errors['correo'] = 'Correo electrónico no válido' : '';
 
-    !validateCellPhone($post_data['telefono']) ? $errors['telefono'] = 'Número de teléfono no válido' : '';
+    !validateCellPhone($_POST['telefono']) ? $errors['telefono'] = 'Número de teléfono no válido' : '';
 
-    !validateCurp($post_data['curp']) ? $errors['curp'] = 'CURP no válido' : '';
+    // !validateCurp($post_data['curp']) ? $errors['curp'] = 'CURP no válido' : '';
 
-    !validateUserLevel((int)$post_data['usuario_nivel']) ? $errors['usuario_nivel'] = 'Nivel de usuario no permitido' : '';
+    // !validateUserLevel((int)$_POST['usuario_nivel']) ? $errors['usuario_nivel'] = 'Nivel de usuario no permitido' : '';
+
+    $token = str_pad(random_int(0, 9999), 4, '0', STR_PAD_LEFT);
+    $pass = generarPassword();
+    $nivel_usuario = '3';
+    $status_credencial = 1;
+
+    $post_data = [
+        'sucursal' => (int)clearEntry(decryptValue($_POST['id_sucursal'] ?? '', SECRETKEY) ?? '') ?? null,
+        'usuario_nivel' => encryptValue(clearEntry($nivel_usuario), SECRETKEY) ?? null,
+        'nombres' => clearEntry($_POST['nombres'] ?? ''),
+        'apellidos' => clearEntry($_POST['apellidos'] ?? ''),
+        'curp' => clearEntry(encryptValue($_POST['curp'] ?? '', SECRETKEY) ?? '') ?? null,
+        'telefono' => clearEntry(encryptValue($_POST['telefono'] ?? '', SECRETKEY) ?? '') ?? null,
+        'correo_electronico' => clearEntry(encryptValue($_POST['correo'] ?? '', SECRETKEY) ?? '') ?? null,
+        'pass' => encryptValue($pass, SECRETKEY) ?? null,
+        'token_verificacion' => encryptValue($token, SECRETKEY) ?? null,
+        'status_credencial' => (int)$status_credencial,
+    ];
 
     if (!empty($errors)) {
         $_SESSION['errors'] = $errors;
         redirect();
     }
 
-    if (!simpleQuery(
-        'SELECT * FROM sucursales WHERE id_sucursal = ?',
-        [$post_data['id_sucursal']],
-    'i'
-    )) {
+    if (!simpleQuery('
+        SELECT id_sucursal
+        FROM sucursales
+        WHERE id_sucursal = ?
+    ', [$post_data['sucursal']],'i')) {
         $_SESSION['swal'] = swal('error', '¡Sucursal no válida!');
         redirect();
     }
 
-    // CREAR CREDENCIAL
+    if (simpleQuery('
+        SELECT id_credencial
+        FROM credenciales WHERE telefono_credencial = ?
+    ', [$post_data['telefono']], 's')) {
+        $_SESSION['swal'] = swal('warning', '¡Número telefónico ya vinculado!');
+        redirect();
+    }
+
+    if (simpleQuery('
+        SELECT id_credencial
+        FROM credenciales WHERE correo_inicio = ?
+    ', [$post_data['correo_electronico']], 's')) {
+        $_SESSION['swal'] = swal('warning', '¡Correo electrónico ya vinculado!');
+        redirect();
+    }
+
+    if (simpleQuery('
+        SELECT id_credencial
+        FROM credenciales WHERE curp_credencial = ?
+    ', [$post_data['curp']], 's')) {
+        $_SESSION['swal'] = swal('warning', '¡CURP ya vinculado!');
+        redirect();
+    }
+
     $index_arr = array_values($post_data);
+
+    // CREAR CREDENCIAL
+    startTransaction();
+
+    global $conn;
+
     $sql = '
         INSERT INTO credenciales (
+            id_sucursal_fk_credencial,
             nivel_usuario,
             nombres_credencial,
             apellidos_credencial,
@@ -114,31 +141,28 @@ function create()
             correo_inicio,
             pass_inicio,
             token_verificacion,
-            id_sucursal
+            status_credencial
         )
-        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     ';
-    $query = $conn -> prepare($sql);
-    $query -> bind_param(
-        'ssssssssi',
-        ...$index_arr
-    );
 
-    if (!$query -> execute()) {
-        $_SESSION['swal'] = swal('error', '¡Ocurrió al registrar la credencial!');
-        $query -> close();
+    if (!simpleQuery($sql, $index_arr, 'issssssssi')) {
+        $_SESSION['swal'] = swal('error', '¡Ocurrió un error al registrar al usuario!');
+        rollbackTransaction();
         redirect();
     }
 
-    $credential_id = $query -> insert_id;
-    $qrs_path = __DIR__ . '/../storage/imgs/qrcodes/';
-    $qr_png_name = "qr_$credential_id.png";
-    $qr_png_path = "{$qrs_path}{$qr_png_name}";
-
-    if (!file_exists($qrs_path))
-        mkdir($qrs_path, 0777, true);
+    $credential_id = $conn -> insert_id;
 
     // CREAR QR CON EL ID DE LA CREDENCIAL ANTES CREADA
+    $qrs_doc_path = DOC_ROOT . 'imgs_qrcodes/';
+    $qrs_http_path = HTTP_URL . 'imgs_qrcodes/';
+    $qr_png_name = "qr_$credential_id.png";
+    $qr_png_path = "{$qrs_doc_path}{$qr_png_name}";
+
+    if (!file_exists($qrs_doc_path))
+        mkdir($qrs_doc_path, 0777, true);
+
     $generator = new barcode_generator();
     $options = [
         'version' => 5,
@@ -152,33 +176,50 @@ function create()
 
     if (!file_exists($qr_png_path)) {
         $_SESSION['swal'] = swal('error', '¡No se pudo generar el QR!');
-        $query -> close();
+        rollbackTransaction();
         redirect();
     }
 
+    $qr_webp_name = createWebpImage($qr_png_name, $qrs_doc_path);
+    if (!$qr_webp_name) {
+        $_SESSION['swal'] = swal('error', '¡No se pudo generar el QR!');
+        destroyImage($qr_png_name);
+        rollbackTransaction();
+        redirect();
+    }
+
+    destroyImage($qr_png_name);
+
     $horaActual = new DateTime();
-    $horaActual -> modify('-1 hour');
     $formatDateTime = $horaActual -> format('Y-m-d H:i:s');
 
-    // CREAR REGISTRO DEL QR ANTES CREADO
+    // CREAR REGISTRO DEL QR ANTES GENERADO
     $sql = "
-        INSERT INTO qr_codes (id_credencial_qr_codes, file_path, created_at)
+        INSERT INTO qr_codes (id_credencial_fk_qr_code, file_path, created_at)
         VALUES (?, ?, ?)
         ON DUPLICATE KEY UPDATE
         file_path = VALUES(file_path),
         created_at = VALUES(created_at)
     ";
-    $query = $conn -> prepare($sql);
-    $query -> bind_param('iss', $credential_id, $qr_png_name, $formatDateTime);
 
-    if (!$query -> execute()) {
-        $_SESSION['swal'] = swal('error', '¡Error al crear el QR!');
-        $query -> close();
+    if (!simpleQuery($sql, [(int)$credential_id, "$qrs_http_path$qr_webp_name", $formatDateTime], 'iss')) {
+        $_SESSION['swal'] = swal('error', '¡No se pudo almacenar el QR!');
+        rollbackTransaction();
+        destroyImage($qr_png_name);
         redirect();
     }
 
     $_SESSION['swal'] = swal('success', '¡Credencial y QR creados con éxito!', '', 4000);
-    $query -> close();
+    $_SESSION['userAuthInfo'] = [
+        'qr' => "$qrs_http_path$qr_webp_name",
+        'pass' => $pass,
+        'token' => $token,
+    ];
+
+    unset($_SESSION['olds']);
+    unset($_SESSION['errors']);
+
+    commitTransaction();
     redirect();
 }
 
@@ -200,6 +241,36 @@ function update()
 function destroy()
 {
 
+}
+
+function generarPassword($longitud = 12) {
+    $caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_';
+    $bytes = random_bytes($longitud);
+    $password = '';
+
+    for ($i = 0; $i < $longitud; $i++)
+        $password .= $caracteres[ord($bytes[$i]) % strlen($caracteres)];
+
+    return $password;
+}
+
+function createWebpImage($filename, $doc_path)
+{
+    $imagen = imagecreatefrompng("$doc_path$filename");
+    $new_filename = str_replace(['.png', '.jpg', 'jpeg'], '.webp', $filename);
+
+    imagewebp($imagen, "$doc_path$new_filename", 100);
+    imagedestroy($imagen);
+
+    return $new_filename ?: false;
+}
+
+function destroyImage($file_name)
+{
+    $path = DOC_ROOT . 'imgs_qrcodes/';
+
+    if (file_exists("$path$file_name"))
+        unlink("$path$file_name");
 }
 
 function validateNames($nombre) {

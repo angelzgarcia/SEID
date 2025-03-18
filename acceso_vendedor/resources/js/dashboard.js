@@ -54,15 +54,19 @@ document.addEventListener("DOMContentLoaded", function ()
 
     payButton.addEventListener('click', () => {
         let timerInterval;
-        const totalPay = document.getElementById('total-pay').textContent;
+        const totalPay = document.getElementById('total_payment').textContent;
 
         Swal.fire({
             title: "Cargando...",
-            timer: 700,
+            timer: 500,
             timerProgressBar: true,
             allowOutsideClick: false,
             allowEscapeKey: false,
             toast: true,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            allowEnterKey: false,
+            showConfirmButton: false,
             showConfirmButton: false,
             didOpen: () => {
                 Swal.showLoading();
@@ -134,7 +138,7 @@ document.addEventListener("DOMContentLoaded", function ()
                 }
             }).then((result) => {
                 if (result.isConfirmed) {
-                    if (result.value) Swal.fire(JSON.stringify(result.value));
+                    if (result.value) Swal.fire(JSON.stringify(localStorage.getItem('saleInProgress')));
 
                 } else {
                     const Toast = Swal.mixin({
@@ -297,25 +301,38 @@ $(document).on('keydown', '#product_scan', function(event)
 // <!--   M O S T R A R   P R O D U C T O S   D E   L A   V E N T A   E N   C U R S O  -->
 function showProductsList()
 {
+    let saleInProgress = JSON.parse(localStorage.getItem('saleInProgress')) || [];
     let productsInProgressList = document.getElementById('products-sale-in-progress-list');
     productsInProgressList.innerHTML = '';
 
-    JSON.parse(localStorage.getItem('saleInProgress')).forEach(p => {
+    if (saleInProgress.length < 1) {
+        productsInProgressList.innerHTML = `
+            <div class="seid-logo">
+                <div class="seid-letter"><span>S</span></div>
+                <div class="seid-letter"><span>E</span></div>
+                <div class="seid-letter"><span>I</span></div>
+                <div class="seid-letter"><span>D</span></div>
+            </div>
+        `;
+    }
+
+    saleInProgress.forEach(p => {
         productsInProgressList.innerHTML += `
             <li>
                 <div class="sale-product-details">
-                    <div class="sale-product-header">
-                        <p>${p.nombre_producto}</p>
-                        <span>
-                            ${
-                                p.quantity > 1
-                                    ? p.quantity + ' ' + p.unidad_venta_producto + 's'
-                                    : p.quantity + ' ' + p.unidad_venta_producto
-                            }
-                        </span>
-                    </div>
 
-                    <div class="sale-product-body">
+                <div class="sale-product-body">
+                        <div class="sale-product-header">
+                            <p>${p.nombre_producto}</p>
+                            <span>
+                                ${
+                                    p.quantity > 1
+                                        ? p.quantity + ' ' + p.unidad_venta_producto + 's'
+                                        : p.quantity + ' ' + p.unidad_venta_producto
+                                }
+                            </span>
+                        </div>
+                        
                         <div class="unit-price">
                             <p>Precio unitario:</p>
                             <span>$${parseFloat(p.precio_venta_producto).toFixed(2)}.°°</span>
@@ -345,12 +362,12 @@ function showProductsList()
                         </div>
                     </div>
 
-                    <div class="add-discount-remove-btns">
-                        <button type="button" class="remove-btn" data-barcode="">🗑️</button>
+                    <div class="add-discount-remove-btns" data-barcode="${p.codigo_barras_producto}">
+                        <button type="button" class="remove-btn">🗑️</button>
 
                         <div class="add-remove-btns">
-                            <button type="button" class="remove-btn" data-barcode="">➖</button>
-                            <button type="button" class="add-btn" data-barcode="">➕</button>
+                            <button type="button" class="discount-btn">➖</button>
+                            <button type="button" class="add-btn">➕</button>
                         </div>
                     </div>
                 </div>
@@ -371,7 +388,7 @@ function updateSubtotalProduct(product)
 }
 
 
-// <!-- R E S U M E N   D E   L A   V E N T A -->
+// <!-- A C T U A L I Z A R   R E S U M E N   D E   T O T A L E S   D E   L A   V E N T A -->
 function showTotalPaymentAndCountProductsList()
 {
     let saleInProgressList = JSON.parse(localStorage.getItem('saleInProgress')) || [];
@@ -386,6 +403,40 @@ function showTotalPaymentAndCountProductsList()
     document.getElementById('total_products').innerHTML = totalProducts;
     document.getElementById('total_payment').innerHTML = totalPayment;
 }
+
+
+// <!--  E L I M I N A R    U N   P R O D U C T O   D E   L A   V E N T A   E N   C U S O  -->
+$(document).on('click', '.remove-btn', function() {
+    const $barcode = $(this).closest('.add-discount-remove-btns').data('barcode');
+
+    if (!$barcode) return;
+
+    let saleInProgress = localStorage.getItem('saleInProgress');
+
+    if (saleInProgress) {
+        let saleArray = JSON.parse(saleInProgress);
+
+        if (Array.isArray(saleArray)) {
+            saleArray = saleArray.filter(p => p.codigo_barras_producto !== $barcode);
+
+            localStorage.setItem('saleInProgress', JSON.stringify(saleArray));
+        }
+
+        if (saleArray.length < 1) localStorage.removeItem('saleInProgress');
+    }
+
+
+    showProductsList();
+    showTotalPaymentAndCountProductsList();
+});
+
+
+// <!--  A Ñ A D I R   U N   P R O D U C T O   D E   L A   V E N T A   E N   C U S O  -->
+
+
+
+// <!--  D E S C O N T A R   U N   P R O D U C T O   D E   L A   V E N T A   E N   C U S O  -->
+
 
 
 // <!--   R E T R A S O   E N   L A S   P E T I C I O N E S   D E   B U S Q U E D A  -->

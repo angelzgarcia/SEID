@@ -16,9 +16,11 @@ match($_POST['accion']) {
 
 function redirect()
 {
-    header("Location: {$_SERVER['HTTP_REFERER']}");
+    $redirect_ulr = $_SERVER['HTTP_REFERER'] ?? MATRIX_HTTP_VIEWS . 'dashboard';
+    header("Location: $redirect_ulr");
     exit;
 }
+
 
 function store()
 {
@@ -121,8 +123,8 @@ function store()
     $sql = 'INSERT INTO marcas (nombre_marca, descripcion_marca, imagen_marca, slug_marca) VALUES (?, ?, ?, ?)';
 
     $_SESSION['swal'] = (!simpleQuery($sql, [$brand, $descripcion, $img_path, $slug], 'ssss')) ?
-    swal("error", "¡Ocurrió un error. Contacta con soporte!") :
-    swal("success", "¡Marca añadida exitosamente!");
+        swal("error", "¡Ocurrió un error. Contacta con soporte!") :
+        swal("success", "¡Marca añadida exitosamente!");
 
     unset($_SESSION['olds']);
     unset($_SESSION['errors']);

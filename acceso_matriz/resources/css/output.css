@@ -1280,9 +1280,6 @@
   .justify-items-stretch {
     justify-items: stretch;
   }
-  .gap-1 {
-    gap: calc(var(--spacing) * 1);
-  }
   .gap-1\.5 {
     gap: calc(var(--spacing) * 1.5);
   }
@@ -1714,9 +1711,6 @@
   }
   .\!p-1 {
     padding: calc(var(--spacing) * 1) !important;
-  }
-  .p-0 {
-    padding: calc(var(--spacing) * 0);
   }
   .p-0\.5 {
     padding: calc(var(--spacing) * 0.5);
@@ -3073,6 +3067,26 @@ body {
         text-align: start;
       }
     }
+    & .qrcode {
+      & button {
+        background-color: var(--save-color);
+        color: white;
+        padding: .5rem 2rem;
+        border-radius: .25rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        &:hover {
+          filter: invert();
+          color: black;
+          & svg {
+            fill: black;
+          }
+        }
+      }
+    }
   }
   & .register-fact.images-history {
     & details {
@@ -4052,7 +4066,7 @@ select.crud-header-select.select-destination-branch {
   }
 }
 .form-create-container > .sucursal-create {
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   grid-auto-rows: auto;
 }
 .form-create-container > .sucursal-create > .form-btn {

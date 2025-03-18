@@ -125,3 +125,5 @@
 
 </aside>
 
+<!-- TOOLTIPS -->
+<script src="<?=SELLER_HTTP_URL?>resources/js/tooltips.js"></script>

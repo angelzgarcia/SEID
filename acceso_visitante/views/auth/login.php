@@ -1,9 +1,9 @@
 <?php require_once __DIR__ . '/../../config.php' ?>
 <!DOCTYPE html>
 <html lang="es">
-<?php require_once DOC_ROOT . 'acceso_visitante/views/modules/head.php' ?>
+<?php require_once DOC_ROOT . 'acceso_visitante/views/components/head.php' ?>
 <body>
-    <?php require_once DOC_ROOT . 'acceso_visitante/views/modules/header.php' ?>
+    <?php require_once DOC_ROOT . 'acceso_visitante/views/components/header.php' ?>
 
     <main class="index-main">
         <div class="login-container">
@@ -32,6 +32,6 @@
         </div>
     </main>
 
-    <?php require_once DOC_ROOT . 'acceso_visitante/views/modules/footer.php' ?>
+    <?php require_once DOC_ROOT . 'acceso_visitante/views/components/footer.php' ?>
 </body>
 </html>
