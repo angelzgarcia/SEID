@@ -45,8 +45,9 @@
             <!-- PERFIL -->
             <div class="profile-access">
                 <p>
-                    User name
+                    <?=$auth_user ? "{$auth_user['nombres_credencial']} {$auth_user['apellidos_credencial']}" : 'Uknown user'?>
                 </p>
+
                 <a href="" class="<?= strpos($_SERVER['PHP_SELF'], 'inventario/create.php') ? 'active' : '' ?>">
                     <img src="<?= HTTP_URL ?>imgs_avatars/avatar-m5.jpg" alt="profile-picture">
                 </a>

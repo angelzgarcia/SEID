@@ -1280,6 +1280,9 @@
   .justify-items-stretch {
     justify-items: stretch;
   }
+  .gap-1 {
+    gap: calc(var(--spacing) * 1);
+  }
   .gap-1\.5 {
     gap: calc(var(--spacing) * 1.5);
   }
@@ -1711,6 +1714,9 @@
   }
   .\!p-1 {
     padding: calc(var(--spacing) * 1) !important;
+  }
+  .p-0 {
+    padding: calc(var(--spacing) * 0);
   }
   .p-0\.5 {
     padding: calc(var(--spacing) * 0.5);
@@ -3049,6 +3055,9 @@ body {
       font-style: italic;
       text-align: end;
     }
+    & p {
+      word-break: break-all;
+    }
     &.register-fact-image {
       flex-direction: column;
       align-items: start;
@@ -3604,7 +3613,7 @@ select.crud-header-select.select-destination-branch {
   border-radius: 0 1rem 1rem 0;
   padding: .6rem;
   flex-wrap: wrap;
-  & a, button, .status-btn > button, .aproved-btn, .add-stock-btn, .return-stock-btn {
+  & a, button, .status-btn, .aproved-btn, .add-stock-btn, .return-stock-btn {
     display: flex;
     justify-content: space-between;
     gap: .4rem;
@@ -3639,10 +3648,10 @@ select.crud-header-select.select-destination-branch {
       transform: rotateY(180deg);
     }
   }
-  & .active-btn > button {
+  & .active-btn {
     background-color: #b4822a;
   }
-  & .inactive-btn > button {
+  & .inactive-btn {
     background-color: #b92525;
   }
   & .aproved-btn {
@@ -3713,7 +3722,7 @@ select.crud-header-select.select-destination-branch {
       flex-direction: column;
       justify-content: end;
       gap: 1rem;
-      & p {
+      & p, .message-error {
         font-size: small;
         padding-bottom: .6rem;
         color: rgb(235, 26, 26);
@@ -3898,8 +3907,7 @@ select.crud-header-select.select-destination-branch {
       border-radius: .5rem;
       padding: .5rem;
       & svg {
-        width: 20px;
-        height: 20px;
+        height: 22px;
       }
     }
   }
@@ -3931,6 +3939,17 @@ select.crud-header-select.select-destination-branch {
     grid-area: boton;
     place-self: center;
     min-width: 100%;
+  }
+}
+.category-body-register {
+  & .quantities {
+    & p {
+      align-items: start;
+      & span {
+        text-align: start;
+        min-width: max-content;
+      }
+    }
   }
 }
 .curd-history-sales-container {

@@ -14,6 +14,8 @@
 
     $query = $conn->query($sql);
     $productos = $query -> fetch_all(MYSQLI_ASSOC) ?: [];
+
+    $auth_user = $_SESSION['auth_user'] ?? [];
 ?>
 
 <!DOCTYPE html>

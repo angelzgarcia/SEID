@@ -18,14 +18,14 @@
                 <img src="<?= HTTP_URL ?>imgs_avatars/avatar-m5.jpg" alt="profile-picture">
             </div>
             <h2>
-                <?= 'Admin name lastname' ?>
+                <?=$auth_user ? "{$auth_user['nombres_credencial']} {$auth_user['apellidos_credencial']}" : 'Uknown user'?>
             </h2>
         </div>
 
         <div class="date-name-branch">
             <strong><?= $full_current_date ?></strong>
-            <h1>
-                SUCURSAL <?= 'EDOMEX - CARMELO PÉREZ' ?>
+            <h1 class="uppercase">
+                <?=$auth_user ? $auth_user['nombre_sucursal'] : 'Uknown user'?>
             </h1>
         </div>
 

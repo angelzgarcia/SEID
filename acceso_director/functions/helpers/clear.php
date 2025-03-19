@@ -26,7 +26,6 @@ function clearEntry($entry)
     $entry = str_ireplace("&&", "", $entry);
     $entry = str_ireplace("===", "", $entry);
     $entry = str_ireplace("!=", "", $entry);
-    $entry = str_ireplace("==", "", $entry);
     $entry = str_ireplace("<", "", $entry);
     $entry = str_ireplace(">", "", $entry);
     $entry = str_ireplace("^", "", $entry);

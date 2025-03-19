@@ -53,6 +53,18 @@ function buscar() {
         url: '../../functions/buscar_productos.php',
         success: data => {
             document.getElementById('products-container').innerHTML = data;
+
+            tippy('[title]', {
+                content: (reference) => {
+                    const title = reference.getAttribute('title');
+                    reference.removeAttribute('title');
+                    return title;
+                },
+                theme: 'light',
+                arrow: true,
+                animation: 'scale',
+                delay: [500, 100],
+            });
         },
         error: (xhr, status, error) => {
             document.getElementById('products-container').innerHTML = `

@@ -1,18 +1,26 @@
 <?php
-if ($_SERVER['REQUEST_METHOD'] !== 'POST')
-    redirect();
-
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../database.php';
 foreach (glob(__DIR__ . "/helpers/*.php") as $helper)
     require_once $helper;
 
-match($_POST['accion']) {
-    'guardar' => store(),
-    'actualizar' => update(),
-    'modificar' => changeStatus(),
-    default => redirect(),
-};
+if ($_SERVER['REQUEST_METHOD'] === 'POST')
+    match($_POST['accion']) {
+        'guardar' => store(),
+        'actualizar' => update(),
+        default => redirect(),
+    };
+
+else if ($_SERVER['REQUEST_METHOD'] === 'GET')
+    !$_GET['m']
+        ? redirect_json('¡Marca no definida!')
+        : match($_GET['accion']) {
+            'detalles' => show(),
+            'status' => changeStatus(),
+            default => redirect_json('¡Acción no válida!', 'warning'),
+        };
+else redirect_json('¡Acceso denegado!', 'error');
+
 
 function redirect()
 {
@@ -21,60 +29,71 @@ function redirect()
     exit;
 }
 
+function redirect_json($message = '¡Ocurrió un error!', $status = 'error')
+{
+    header('Content-Type: application/json');
+    echo json_encode(['status' => $status, 'message' => $message]);
+    exit;
+}
+
 
 function store()
 {
-    $olds = [];
+    unset($_POST['accion']);
+
+    $olds = $_POST;
     $errors = [];
 
-    $brand = clearEntry($_POST['nombre']) ?: null;
-    $descripcion = clearEntry($_POST['descripcion']) ?: null;
+    $data = array_map(fn($field) => clearEntry($field) ?? null, $_POST);
+
+    $empty_fields = array_filter($data, fn($field) => empty($field));
+
+    foreach($empty_fields as $field => $value)
+        $errors[$field] = "El campo " . str_replace(['-', '_'], ' ', $field) . " es obligatorio";
+
     $file_name = $_FILES['imagen'];
     $file = $file_name['tmp_name'] ?: null;
 
-    $http_path = HTTP_URL . 'imgs_marcas/';
-    $doc_path = DOC_ROOT . 'imgs_marcas/';
+    !isset($file)
+        ? $errors['imagen'] = 'La imagen de la marca es obligatoria'
+        : ((strlen($file_name['name']) > 60) ? $errors['imagen'] = 'El nombre de la imagen es demasiado largo' : '');
 
-    $olds['nombre'] = $brand;
-    $olds['descripcion'] = $descripcion;
-    $_SESSION['olds'] = $olds;
-
-    $sql = 'SELECT id_marca FROM marcas WHERE nombre_marca = ?';
-
-    if (simpleQuery($sql,[$brand],'s')) {
-        $_SESSION['swal'] = swal("warning", "¡La marca ya existe!");
-        redirect();
-    }
-
-    if (!isset($brand) && !isset($descripcion) && !isset($file)) {
+    if (count($olds) + 1 === count($errors)) {
         $_SESSION['swal'] = swal("warning", "¡Los campos son obligatorios!");
         redirect();
     }
 
-    $expresion_regular = '/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/';
+    $_SESSION['olds'] = $olds;
 
-    if (!isset($brand)) {
-        $errors['nombre'] = 'El nombre de la marca es obligatorio';
-    } else {
-        validateStringMinLenght($brand, 4) ? $errors['nombre'] = 'Mínimo 4 caracteres' : '';
-        validateStringMaxLenght($brand, 40) ? $errors['nombre'] = 'Máximo 40 caracteres' : '';
-        !validateStringCharts($expresion_regular, $brand) ? $errors['nombre'] = 'Solo se permiten letras' : '';
+    (!empty($data['nombre']) && !onlyLetters($data['nombre']) ? $errors['nombre'] = 'Solo se permiten letras y espacios' : '');
+
+    $fields_length_rules = [
+        'nombre' => [4, 40],
+        'descripcion' => [10, 150],
+    ];
+
+    foreach ($fields_length_rules as $field => [$min, $max]) {
+        if (!empty($data[$field])) {
+            if (inputMinLenght($data[$field], $min))
+                $errors[$field] = "Mínimo $min caracteres";
+
+            if (inputMaxLenght($data[$field], $max))
+                $errors[$field] = "Máximo $max caracteres";
+        }
     }
-
-    if (!isset($descripcion)) {
-        $errors['descripcion'] = 'La descripción de la marca es obligatoria';
-    } else {
-        validateStringMinLenght($descripcion, 10) ? $errors['descripcion'] = 'Mínimo 10 caracteres' : '';
-        validateStringMaxLenght($descripcion, 100) ? $errors['descripcion'] = 'Máximo 100 caracteres' : '';
-        !validateStringCharts($expresion_regular, $descripcion) ? $errors['descripcion'] = 'Solo se permiten letras' : '';
-    }
-
-    !isset($file)
-        ? $errors['imagen'] = 'La imagen de la marca es obligatoria'
-        : ((strlen($file_name['name']) > 40) ? $errors['imagen'] = 'El nombre de la imagen es demasiado largo' : '');
 
     if (!empty($errors)) {
         $_SESSION['errors'] = $errors;
+        redirect();
+    }
+
+    $http_path = HTTP_URL . 'imgs_marcas/';
+    $doc_path = DOC_ROOT . 'imgs_marcas/';
+
+    $sql = 'SELECT id_marca FROM marcas WHERE nombre_marca = ?';
+
+    if (simpleQuery($sql,[$data['nombre']],'s')) {
+        $_SESSION['swal'] = swal("warning", "¡La marca ya existe!");
         redirect();
     }
 
@@ -88,10 +107,10 @@ function store()
     $file_width = $file_resolution[0];
     $file_heigth = $file_resolution[1];
 
-    // if ($file_width !== 720 && $file_heigth !== 720) {
-    //     $_SESSION['swal'] = swal("warning", "¡Sube una imagen de (720px)×(720px)!");
-    //     redirect();
-    // }
+    if ($file_width > 720 && $file_heigth > 720) {
+        $_SESSION['swal'] = swal("warning", "¡Sube una imagen de (720px)×(720px) o menor!");
+        redirect();
+    }
 
     $file_size = (int)$file_name['size'];
 
@@ -109,7 +128,7 @@ function store()
     }
 
     $date = date('mY');
-    $slug = createSlug($brand);
+    $slug = createSlug($data['nombre']);
     $file_name = createSlug($file_name, true);
     $img_path = "{$date}_{$slug}_{$file_name}";
 
@@ -122,7 +141,7 @@ function store()
 
     $sql = 'INSERT INTO marcas (nombre_marca, descripcion_marca, imagen_marca, slug_marca) VALUES (?, ?, ?, ?)';
 
-    $_SESSION['swal'] = (!simpleQuery($sql, [$brand, $descripcion, $img_path, $slug], 'ssss')) ?
+    $_SESSION['swal'] = (!simpleQuery($sql, [$data['nombre'], $data['descripcion'], $img_path, $slug], 'ssss')) ?
         swal("error", "¡Ocurrió un error. Contacta con soporte!") :
         swal("success", "¡Marca añadida exitosamente!");
 
@@ -130,6 +149,7 @@ function store()
     unset($_SESSION['errors']);
     redirect();
 }
+
 
 function update()
 {
@@ -172,22 +192,20 @@ function update()
         redirect();
     }
 
-    $expresion_regular = '/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/';
-
     if (!isset($brand)) {
         $errors['nombre'] = 'El nombre de la marca es obligatorio';
     } else {
-        validateStringMinLenght($brand, 4) ? $errors['nombre'] = 'Mínimo 4 caracteres' : '';
-        validateStringMaxLenght($brand, 40) ? $errors['nombre'] = 'Máximo 40 caracteres' : '';
-        !validateStringCharts($expresion_regular, $brand) ? $errors['nombre'] = 'Solo se permiten letras' : '';
+        inputMinLenght($brand, 4) ? $errors['nombre'] = 'Mínimo 4 caracteres' : '';
+        inputMaxLenght($brand, 40) ? $errors['nombre'] = 'Máximo 40 caracteres' : '';
+        !onlyLetters($brand) ? $errors['nombre'] = 'Solo se permiten letras' : '';
     }
 
     if (!isset($descripcion)) {
         $errors['descripcion'] = 'La descripción de la marca es obligatoria';
     } else {
-        validateStringMinLenght($descripcion, 10) ? $errors['descripcion'] = 'Mínimo 10 caracteres de descripción' : '';
-        validateStringMaxLenght($descripcion, 100) ? $errors['descripcion'] = 'Máximo 100 caracteres de descripción' : '';
-        !validateStringCharts($expresion_regular, $descripcion) ? $errors['descripcion'] = 'Solo se permiten letras' : '';
+        inputMinLenght($descripcion, 10) ? $errors['descripcion'] = 'Mínimo 10 caracteres de descripción' : '';
+        inputMaxLenght($descripcion, 100) ? $errors['descripcion'] = 'Máximo 100 caracteres de descripción' : '';
+        !onlyLetters($descripcion) ? $errors['descripcion'] = 'Solo se permiten letras' : '';
     }
 
     (strlen($file_name) > 40) ? $errors['imagen'] = 'El nombre de la imagen es demasiado largo' : '';
@@ -299,67 +317,95 @@ function update()
     redirect();
 }
 
+
+function show()
+{
+    try {
+        header('Content-Type: application/json');
+
+        $id = clearEntry(decryptValue($_GET['m'] ?? '', SECRETKEY)) ?: null;
+
+        if (!$id) throw new Exception('¡Marca no válida!');
+
+        $sql = '
+            SELECT *
+            FROM marcas
+            WHERE id_marca = ?
+            ORDER BY id_marca DESC
+        ';
+
+        $brand = simpleQuery($sql, [(int)$id], 'i', true) ?: null;
+        if (!$brand) throw new Exception('¡Marca no encontrada!');
+
+        $brand = $brand[0];
+        $http_path = HTTP_URL . 'imgs_marcas/';
+        $doc_path = DOC_ROOT . 'imgs_marcas';
+        $files_paths_history_root = glob("{$doc_path}/*_{$brand['slug_marca']}_*", GLOB_NOSORT) ?? 0;
+
+        if (count($files_paths_history_root) > 1) {
+            usort($files_paths_history_root, fn($a, $b) => filemtime($b) - filemtime($a));
+
+            $files_names = array_map(fn($f) => $http_path . basename($f), array_slice($files_paths_history_root, 0, 3));
+
+            $brand['images'] = $files_names;
+        }
+
+        echo json_encode($brand);
+        exit;
+    } catch (Exception $e) {
+        redirect_json($e -> getMessage(), 'warning');
+    }
+}
+
+
 function changeStatus()
 {
-    $id = (int)decryptValue($_GET['m'], SECRETKEY);
-    if (!$id) redirect();
+    try {
+        $id = (int)decryptValue($_GET['m'], SECRETKEY);
+        if (!$id) throw new Exception('¡Marca no válida!');
 
-    global $conn;
-    $sql = '
-        SELECT * FROM marcas
-        WHERE id_marca = ?
-    ';
-    $query = $conn -> prepare($sql);
-    $query -> bind_param('i', $id);
+        global $conn;
+        $sql = '
+            SELECT * FROM marcas
+            WHERE id_marca = ?
+        ';
+        $query = $conn -> prepare($sql);
+        $query -> bind_param('i', $id);
 
-    if (!$query -> execute()) {
-        $_SESSION['swal'] = swal("warning", "¡No se encontró la marca!");
-        redirect();
+        if (!$query -> execute()) {
+            throw new Exception('¡Marca no encontrada!');
+        }
+
+        $brand = $query -> get_result() -> fetch_assoc();
+        $query -> close();
+
+        if (!$brand) {
+            throw new Exception('¡Marca no encontrada!');
+        }
+
+        $current_status = (int)$brand['status_marca'];
+        $new_status = ($current_status === 0) ? 1 : 0;
+
+        $sql = '
+            UPDATE marcas
+            SET status_marca = ?
+            WHERE id_marca = ?
+        ';
+        $query = $conn -> prepare($sql);
+        $query -> bind_param('ii', $new_status, $id);
+
+        !$query -> execute()
+        ?
+        redirect_json('¡No se pudo actualizar el status!', 'error')
+        :
+        redirect_json('¡Status actualizado!', 'success');
+
+        $query -> close();
+    } catch (Exception $e) {
+        redirect_json($e -> getMessage(), 'warning');
     }
-
-    $brand = $query -> get_result() -> fetch_assoc();
-    $query -> close();
-
-    if (!$brand) {
-        $_SESSION['swal'] = swal("warning", "¡No se encontró la marca!");
-        redirect();
-    }
-
-    $current_status = (int)$brand['status_marca'];
-    $new_status = ($current_status === 0) ? 1 : 0;
-
-    $sql = '
-        UPDATE marcas
-        SET status_marca = ?
-        WHERE id_marca = ?
-    ';
-    $query = $conn -> prepare($sql);
-    $query -> bind_param('ii', $new_status, $id);
-
-    !$query -> execute()
-    ?
-    $_SESSION['swal'] = swal("error", "¡No se pudo actualizar el status!")
-    :
-    $_SESSION['swal'] = swal("success", "¡Status actualizo!");
-
-    $query -> close();
-    redirect();
 }
 
-function validateStringMaxLenght($string, $lenght)
-{
-    return strlen($string) > $lenght;
-}
-
-function validateStringMinLenght($string, $lenght)
-{
-    return strlen($string) < $lenght;
-}
-
-function validateStringCharts($regex, $string)
-{
-    return preg_match($regex, $string);
-}
 
 function createSlug($string, $is_an_image = false)
 {

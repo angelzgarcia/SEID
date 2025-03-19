@@ -157,3 +157,31 @@ function rejected()
     redirect_json('¡Orden rechazada!', 'success');
 }
 
+function validateNames($nombre) {
+    return !empty($nombre) ? preg_match("/^[a-zA-Z\s]+$/", $nombre) : true;
+}
+
+
+function validateLastNames($apellidos) {
+    return !empty($apellidos) ? preg_match("/^[a-zA-Z\s]+$/", $apellidos) : true;
+}
+
+
+function validateEmail($correo) {
+    return !empty($correo) ? filter_var($correo, FILTER_VALIDATE_EMAIL) !== false : true;
+}
+
+
+function validateCellPhone($telefono) {
+    return !empty($telefono) ? preg_match('/^\+?[0-9]{1,4}?[-.\s]?[0-9]{1,15}$/', $telefono) : true;
+}
+
+
+function validateCurp($curp) {
+    return !empty($curp) ? preg_match('/^[A-Z]{4}[0-9]{6}[HM]{1}[A-Z]{2}[A-Z]{3}[0-9A-Z]{1}[0-9]{1}$/', strtoupper($curp)) : true;
+}
+
+
+function validateUserLevel($nivel) {
+    return !empty($nivel) ? is_numeric($nivel) && $nivel >= 1 && $nivel <= 3 : true;
+}

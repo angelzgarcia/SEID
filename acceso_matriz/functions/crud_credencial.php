@@ -32,21 +32,48 @@ function store()
     $olds = $_POST;
     $errors = [];
 
-    // VALIDAR CAMPOS VACÍOS
     $data = array_map(fn($value) => clearEntry($value) ?: null, $_POST);
-    foreach ($_POST as $key => $dato) {
-        $olds[$key] = $dato;
+    $data['id_sucursal'] = $_POST['id_sucursal'];
 
-        if (!$dato)
-            $errors[$key] = "El campo " . str_replace(['-', '_'], ' ', $key) . " es obligatorio";
+    $empty_fields = array_filter($data, fn($value) => empty($value));
+
+    foreach ($empty_fields as $key => $value)
+        $errors[$key] = "El campo " . str_replace(['-', '_'], ' ', $key) . " es obligatorio";
+
+    if (count($errors) === count($olds)) {
+        $_SESSION['swal'] = swal('warning', '¡Los campos son obligatorios!');
+        redirect();
     }
 
     $_SESSION['olds'] = $olds;
 
-    // VALIDAR SI HAY ERRORES
-    if (count($errors) === count($_POST)) {
-        $_SESSION['swal'] = swal('warning', '¡Los campos son obligatorios!');
-        redirect();
+    (!empty($data['nombres']) && !onlyLetters($data['nombres'])) ? $errors['nombres'] = 'Solo se permiten letras y espacios' : '';
+
+    (!empty($data['apellidos']) && !onlyLetters($data['apellidos'])) ? $errors['apellidos'] = 'Solo se permiten letras y espacios' : '';
+
+    (!empty($data['correo']) && !validateEmail($data['correo'])) ? $errors['correo'] = 'Correo electrónico no válido' : '';
+
+    (!empty($data['telefono']) && !validateCellPhone($data['telefono'])) ? $errors['telefono'] = 'Número de teléfono no válido' : '';
+
+    (!empty($data['curp']) && !validateCurp($data['curp'])) ? $errors['curp'] = 'CURP no válido' : '';
+
+    // (!empty($data['nivel_usuario']) && !validateUserLevel((int)$data['nivel_usuario'])) ? $errors['nivel_usuario'] = 'Nivel de usuario no permitido' : '';
+
+    $fields_length_rules = [
+        'nombres' => [3, 30],
+        'apellidos' => [5, 40],
+        'telefono' => [7, 15],
+        'correo' => [10, 80]
+    ];
+
+    foreach ($fields_length_rules as $field => [$min, $max]) {
+        if (!empty($data[$field])) {
+            if (inputMinLenght($data[$field], $min))
+                $errors[$field] = "Mínimo $min caracteres";
+
+            if (inputMaxLenght($data[$field], $max))
+                $errors[$field] = "Máximo $max caracteres";
+        }
     }
 
     if (!empty($errors)) {
@@ -54,35 +81,29 @@ function store()
         redirect();
     }
 
-    // VALIDAR EL FORMATO DE LOS CAMPOS
-    !validateNames($_POST['nombres']) ? $errors['nombres'] = 'Solo se permiten letras y espacios' : '';
-
-    !validateLastNames($_POST['apellidos']) ? $errors['apellidos'] = 'Solo se permiten letras y espacios' : '';
-
-    !validateEmail($_POST['correo']) ? $errors['correo'] = 'Correo electrónico no válido' : '';
-
-    !validateCellPhone($_POST['telefono']) ? $errors['telefono'] = 'Número de teléfono no válido' : '';
-
-    // !validateCurp($post_data['curp']) ? $errors['curp'] = 'CURP no válido' : '';
-
-    // !validateUserLevel((int)$_POST['usuario_nivel']) ? $errors['usuario_nivel'] = 'Nivel de usuario no permitido' : '';
-
-    $token = str_pad(random_int(0, 9999), 4, '0', STR_PAD_LEFT);
+    $nivel_usuario = encryptValue('3', SECRETKEY) ?? null;
     $pass = generarPassword();
-    $nivel_usuario = '3';
-    $status_credencial = 1;
+    $token = str_pad(random_int(0, 9999), 4, '0', STR_PAD_LEFT);
+    $status_credencial = '1';
 
-    $post_data = [
-        'sucursal' => (int)clearEntry(decryptValue($_POST['id_sucursal'] ?? '', SECRETKEY) ?? '') ?? null,
-        'usuario_nivel' => encryptValue(clearEntry($nivel_usuario), SECRETKEY) ?? null,
-        'nombres' => clearEntry($_POST['nombres'] ?? ''),
-        'apellidos' => clearEntry($_POST['apellidos'] ?? ''),
-        'curp' => clearEntry(encryptValue($_POST['curp'] ?? '', SECRETKEY) ?? '') ?? null,
-        'telefono' => clearEntry(encryptValue($_POST['telefono'] ?? '', SECRETKEY) ?? '') ?? null,
-        'correo_electronico' => clearEntry(encryptValue($_POST['correo'] ?? '', SECRETKEY) ?? '') ?? null,
+    $generate_data = [
+        'nivel_usuario' => $nivel_usuario,
         'pass' => encryptValue($pass, SECRETKEY) ?? null,
         'token_verificacion' => encryptValue($token, SECRETKEY) ?? null,
         'status_credencial' => (int)$status_credencial,
+    ];
+
+    $merge_data = [
+        'sucursal' => (int)decryptValue($data['id_sucursal'], SECRETKEY) ?? '',
+        'nivel_usuario' => $generate_data['nivel_usuario'],
+        'nombres' => $data['nombres'],
+        'apellidos' => $data['apellidos'],
+        'curp' => $data['curp'],
+        'telefono' => (string)$data['telefono'],
+        'correo_electronico' => $data['correo'],
+        'pass' => $generate_data['pass'],
+        'token_verificacion' => $generate_data['token_verificacion'],
+        'status_credencial' => $generate_data['status_credencial']
     ];
 
     if (!empty($errors)) {
@@ -90,40 +111,35 @@ function store()
         redirect();
     }
 
-    if (!simpleQuery('
-        SELECT id_sucursal
-        FROM sucursales
-        WHERE id_sucursal = ?
-    ', [$post_data['sucursal']],'i')) {
+    if (!simpleQuery('SELECT id_sucursal FROM sucursales WHERE id_sucursal = ?', [$merge_data['sucursal']],'i')) {
         $_SESSION['swal'] = swal('error', '¡Sucursal no válida!');
         redirect();
     }
 
-    if (simpleQuery('
-        SELECT id_credencial
-        FROM credenciales WHERE telefono_credencial = ?
-    ', [$post_data['telefono']], 's')) {
+    $sql = '
+        SELECT curp_credencial, telefono_credencial, correo_inicio
+        FROM credenciales
+        WHERE curp_credencial = ?
+        OR telefono_credencial = ?
+        OR correo_inicio = ?
+    ';
+
+    $credential_exists = simpleQuery($sql, [$merge_data['curp'], $merge_data['telefono']. $merge_data['correo_electronico']], 'sss', true)[0] ?? '';
+
+    if ($credential_exists) {
+        if ($credential_exists['curp_credencial'] === $merge_data['curp'])
+            $_SESSION['swal'] = swal('warning', '¡CURP ya vinculado!');
+
+        if ($credential_exists['telefono_credencial'] === $merge_data['telefono'])
         $_SESSION['swal'] = swal('warning', '¡Número telefónico ya vinculado!');
+
+        if ($credential_exists['correo_inicio'] === $merge_data['correo_electronico'])
+            $_SESSION['swal'] = swal('warning', '¡Correo electrónico ya vinculado!');
+
         redirect();
     }
 
-    if (simpleQuery('
-        SELECT id_credencial
-        FROM credenciales WHERE correo_inicio = ?
-    ', [$post_data['correo_electronico']], 's')) {
-        $_SESSION['swal'] = swal('warning', '¡Correo electrónico ya vinculado!');
-        redirect();
-    }
-
-    if (simpleQuery('
-        SELECT id_credencial
-        FROM credenciales WHERE curp_credencial = ?
-    ', [$post_data['curp']], 's')) {
-        $_SESSION['swal'] = swal('warning', '¡CURP ya vinculado!');
-        redirect();
-    }
-
-    $index_arr = array_values($post_data);
+    $index_arr = array_values($merge_data);
 
     // CREAR CREDENCIAL
     startTransaction();
@@ -271,26 +287,6 @@ function destroyImage($file_name)
 
     if (file_exists("$path$file_name"))
         unlink("$path$file_name");
-}
-
-function validateNames($nombre) {
-    return !empty($nombre) ? preg_match("/^[a-zA-Z\s]+$/", $nombre) : true;
-}
-
-function validateLastNames($apellidos) {
-    return !empty($apellidos) ? preg_match("/^[a-zA-Z\s]+$/", $apellidos) : true;
-}
-
-function validateEmail($correo) {
-    return !empty($correo) ? filter_var($correo, FILTER_VALIDATE_EMAIL) !== false : true;
-}
-
-function validateCellPhone($telefono) {
-    return !empty($telefono) ? preg_match('/^\+?[0-9]{1,4}?[-.\s]?[0-9]{1,15}$/', $telefono) : true;
-}
-
-function validateCurp($curp) {
-    return !empty($curp) ? preg_match('/^[A-Z]{4}[0-9]{6}[HM]{1}[A-Z]{2}[A-Z]{3}[0-9A-Z]{1}[0-9]{1}$/', strtoupper($curp)) : true;
 }
 
 function validateUserLevel($nivel) {

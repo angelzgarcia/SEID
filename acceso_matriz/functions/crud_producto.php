@@ -1,15 +1,14 @@
 <?php
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['p'])) show();
-
-if ($_SERVER['REQUEST_METHOD'] !== 'POST')
-    redirect();
-
 require_once __DIR__ . '/../config.php';
 require_once MATRIX_DOC_ROOT . 'database.php';
 foreach (glob(__DIR__ . "/helpers/*.php") as $helper)
     require_once $helper;
 
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['p'])) show();
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST')
+    redirect();
 
 match ($_POST['accion']) {
     'guardar' => store(),
@@ -351,8 +350,8 @@ function update()
 
     }
 
-    var_dump($file_assoc, $file);
-    exit;
+    // var_dump($file_assoc, $file);
+    // exit;
 
     unset($_SESSION['olds']);
     unset($_SESSION['errors']);
@@ -361,8 +360,9 @@ function update()
 
 function changeStatus()
 {
-
+    
 }
+
 
 function createWebpImage($filename, $doc_path)
 {

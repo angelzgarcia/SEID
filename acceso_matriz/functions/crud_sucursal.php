@@ -33,9 +33,8 @@ function store()
     $data = array_map(fn($value) => clearEntry($value) ?: null, $_POST);
 
     $empty_fields = array_filter($data, fn($value) => empty($value));
-    foreach($empty_fields as $key => $value) {
+    foreach($empty_fields as $key => $value)
         $errors[$key] = "El campo " . str_replace(['_, -'], ' ', $key) . " es obligatorio";
-    }
 
     if (count($errors) === count($olds)) {
         $_SESSION['swal'] = swal('warning', '¡Los campos son obligatorios!');

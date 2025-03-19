@@ -1,11 +1,6 @@
-<?php 
+<?php
 require_once 'database.php';
 
-function decryptValue($encryptedValue, $secretKey) {
-    [$ciphertext, $iv] = explode('::', base64_decode($encryptedValue), 2);
-    $iv = base64_decode($iv);
-    return openssl_decrypt($ciphertext, 'aes-256-cbc', $secretKey, 0, $iv);
-}
 
 session_start();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

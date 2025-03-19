@@ -1,23 +1,40 @@
 <?php
-if ($_SERVER['REQUEST_METHOD'] !== 'POST')
-    redirect();
 
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../database.php';
 foreach (glob(__DIR__ . "/helpers/*.php") as $helper)
     require_once $helper;
 
-match($_POST['accion']) {
-    'guardar' => store(),
-    'actualizar' => update(),
-    'modificar' => changeStatus(),
-    default => redirect(),
-};
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST')
+    match($_POST['accion']) {
+        'guardar' => store(),
+        'actualizar' => update(),
+        default => redirect(),
+    };
+
+else if ($_SERVER['REQUEST_METHOD'] === 'GET')
+    !$_GET['c']
+        ? redirect_json('¡Categoría no definida!')
+        : match($_GET['accion']) {
+            'detalles' => show(),
+            'status' => changeStatus(),
+            default => redirect_json('¡Acción no válida!', 'warning'),
+        };
+else redirect_json('¡Acceso denegado!', 'error');
+
 
 function redirect()
 {
     $redirect_ulr = $_SERVER['HTTP_REFERER'] ?? MATRIX_HTTP_VIEWS . 'dashboard';
     header("Location: $redirect_ulr");
+    exit;
+}
+
+function redirect_json($message = '¡Ocurrió un error!', $status = 'error')
+{
+    header('Content-Type: application/json');
+    echo json_encode(['status' => $status, 'message' => $message]);
     exit;
 }
 
@@ -50,27 +67,25 @@ function store()
         redirect();
     }
 
-    $expresion_regular = '/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/';
-
     if (!isset($category)) {
         $errors['nombre'] = 'El nombre de la categoría es obligatorio';
     } else {
-        validateStringMinLenght($category, 4) ? $errors['nombre'] = 'Mínimo 4 caracteres' : '';
-        validateStringMaxLenght($category, 40) ? $errors['nombre'] = 'Máximo 40 caracteres' : '';
-        !validateStringCharts($expresion_regular, $category) ? $errors['nombre'] = 'Solo se permiten letras' : '';
+        inputMinLenght($category, 4) ? $errors['nombre'] = 'Mínimo 4 caracteres' : '';
+        inputMaxLenght($category, 40) ? $errors['nombre'] = 'Máximo 40 caracteres' : '';
+        !onlyLetters($category) ? $errors['nombre'] = 'Solo se permiten letras' : '';
     }
 
     if (!isset($descripcion)) {
         $errors['descripcion'] = 'La descripción de la categoría es obligatoria';
     } else {
-        validateStringMinLenght($descripcion, 10) ? $errors['descripcion'] = 'Mínimo 10 caracteres' : '';
-        validateStringMaxLenght($descripcion, 100) ? $errors['descripcion'] = 'Máximo 100 caracteres' : '';
-        !validateStringCharts($expresion_regular, $descripcion) ? $errors['descripcion'] = 'Solo se permiten letras' : '';
+        inputMinLenght($descripcion, 10) ? $errors['descripcion'] = 'Mínimo 10 caracteres' : '';
+        inputMaxLenght($descripcion, 100) ? $errors['descripcion'] = 'Máximo 100 caracteres' : '';
+        !onlyLetters($descripcion) ? $errors['descripcion'] = 'Solo se permiten letras' : '';
     }
 
     !isset($file)
         ? $errors['imagen'] = 'La imagen de la categoría es obligatoria'
-        : ((strlen($file_name['name']) > 40) ? $errors['imagen'] = 'El nombre de la imagen es demasiado largo' : '');
+        : ((strlen($file_name['name']) > 60) ? $errors['imagen'] = 'El nombre de la imagen es demasiado largo' : '');
 
     if (!empty($errors)) {
         $_SESSION['errors'] = $errors;
@@ -87,10 +102,10 @@ function store()
     $file_width = $file_resolution[0];
     $file_heigth = $file_resolution[1];
 
-    // if ($file_width !== 720 && $file_heigth !== 720) {
-    //     $_SESSION['swal'] = swal("warning", "¡Sube una imagen de (720px)×(720px)!");
-    //     redirect();
-    // }
+    if ($file_width > 720 && $file_heigth > 720) {
+        $_SESSION['swal'] = swal("warning", "¡Sube una imagen de (720px)×(720px) o menor!");
+        redirect();
+    }
 
     $file_size = (int)$file_name['size'];
 
@@ -128,6 +143,46 @@ function store()
     unset($_SESSION['olds']);
     unset($_SESSION['errors']);
     redirect();
+}
+
+
+function show()
+{
+    try {
+        header('Content-Type: application/json');
+
+        $id = clearEntry(decryptValue($_GET['c'] ?? '', SECRETKEY)) ?: null;
+
+        if (!$id) throw new Exception('¡Categoría no válida!');
+
+        $sql = '
+            SELECT *
+            FROM categorias
+            WHERE id_categoria = ?
+            ORDER BY id_categoria DESC
+        ';
+
+        $category = simpleQuery($sql, [(int)$id], 'i', true) ?: null;
+        if (!$category) throw new Exception('¡Categoría no encontrada!');
+
+        $category = $category[0];
+        $http_path = HTTP_URL . 'imgs_categorias/';
+        $doc_path = DOC_ROOT . 'imgs_categorias';
+        $files_paths_history_root = glob("{$doc_path}/*_{$category['slug_categoria']}_*", GLOB_NOSORT) ?? 0;
+
+        if (count($files_paths_history_root) > 1) {
+            usort($files_paths_history_root, fn($a, $b) => filemtime($b) - filemtime($a));
+
+            $files_names = array_map(fn($f) => $http_path . basename($f), array_slice($files_paths_history_root, 0, 3));
+
+            $category['images'] = $files_names;
+        }
+
+        echo json_encode($category);
+        exit;
+    } catch (Exception $e) {
+        redirect_json($e -> getMessage(), 'warning');
+    }
 }
 
 function update()
@@ -175,25 +230,23 @@ function update()
         redirect();
     }
 
-    $expresion_regular = '/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/';
-
     if (!isset($category)) {
         $errors['nombre'] = 'El nombre de la categoría es obligatorio';
     } else {
-        validateStringMinLenght($category, 4) ? $errors['nombre'] = 'Mínimo 4 caracteres' : '';
-        validateStringMaxLenght($category, 40) ? $errors['nombre'] = 'Máximo 40 caracteres' : '';
-        !validateStringCharts($expresion_regular, $category) ? $errors['nombre'] = 'Solo se permiten letras' : '';
+        inputMinLenght($category, 4) ? $errors['nombre'] = 'Mínimo 4 caracteres' : '';
+        inputMaxLenght($category, 40) ? $errors['nombre'] = 'Máximo 40 caracteres' : '';
+        !onlyLetters($category) ? $errors['nombre'] = 'Solo se permiten letras' : '';
     }
 
     if (!isset($descripcion)) {
         $errors['descripcion'] = 'La descripción de la categoría es obligatoria';
     } else {
-        validateStringMinLenght($descripcion, 10) ? $errors['descripcion'] = 'Mínimo 10 caracteres de descripción' : '';
-        validateStringMaxLenght($descripcion, 100) ? $errors['descripcion'] = 'Máximo 100 caracteres de descripción' : '';
-        !validateStringCharts($expresion_regular, $descripcion) ? $errors['descripcion'] = 'Solo se permiten letras' : '';
+        inputMinLenght($descripcion, 10) ? $errors['descripcion'] = 'Mínimo 10 caracteres de descripción' : '';
+        inputMaxLenght($descripcion, 100) ? $errors['descripcion'] = 'Máximo 100 caracteres de descripción' : '';
+        !onlyLetters($descripcion) ? $errors['descripcion'] = 'Solo se permiten letras' : '';
     }
 
-    (strlen($file_name) > 40) ? $errors['imagen'] = 'El nombre de la imagen es demasiado largo' : '';
+    (strlen($file_name) > 60) ? $errors['imagen'] = 'El nombre de la imagen es demasiado largo' : '';
 
     if (!empty($errors)) {
         $_SESSION['errors'] = $errors;
@@ -293,67 +346,55 @@ function update()
     redirect();
 }
 
+
 function changeStatus()
 {
-    $id = (int)decryptValue($_GET['c'], SECRETKEY);
-    if (!$id) redirect();
+    try {
+        $id = (int)decryptValue($_GET['c'], SECRETKEY);
+        if (!$id) throw new Exception('¡Categoria no válida!');
 
-    global $conn;
-    $sql = '
-        SELECT * FROM categorias
-        WHERE id_categoria = ?
-    ';
-    $query = $conn -> prepare($sql);
-    $query -> bind_param('i', $id);
+        global $conn;
+        $sql = '
+            SELECT * FROM categorias
+            WHERE id_categoria = ?
+        ';
+        $query = $conn -> prepare($sql);
+        $query -> bind_param('i', $id);
 
-    if (!$query -> execute()) {
-        $_SESSION['swal'] = swal("warning", "¡No se encontró la categoría!");
-        redirect();
+        if (!$query -> execute()) {
+            throw new Exception('¡Categoria no encontrada!');
+        }
+
+        $category = $query -> get_result() -> fetch_assoc();
+        $query -> close();
+
+        if (!$category) {
+            throw new Exception('¡Categoria no encontrada!');
+        }
+
+        $current_status = (int)$category['status_categoria'];
+        $new_status = ($current_status === 0) ? 1 : 0;
+
+        $sql = '
+            UPDATE categorias
+            SET status_categoria = ?
+            WHERE id_categoria = ?
+        ';
+        $query = $conn -> prepare($sql);
+        $query -> bind_param('ii', $new_status, $id);
+
+        !$query -> execute()
+        ?
+        redirect_json('¡No se pudo actualizar el status!', 'error')
+        :
+        redirect_json('¡Status actualizado!', 'success');
+
+        $query -> close();
+    } catch (Exception $e) {
+        redirect_json($e -> getMessage(), 'warning');
     }
-
-    $category = $query -> get_result() -> fetch_assoc();
-    $query -> close();
-
-    if (!$category) {
-        $_SESSION['swal'] = swal("warning", "¡No se encontró la categoría!");
-        redirect();
-    }
-
-    $current_status = (int)$category['status_categoria'];
-    $new_status = ($current_status === 0) ? 1 : 0;
-
-    $sql = '
-        UPDATE categorias
-        SET status_categoria = ?
-        WHERE id_categoria = ?
-    ';
-    $query = $conn -> prepare($sql);
-    $query -> bind_param('ii', $new_status, $id);
-
-    !$query -> execute()
-    ?
-    $_SESSION['swal'] = swal("error", "¡No se pudo actualizar el status!")
-    :
-    $_SESSION['swal'] = swal("success", "¡Status actualizo!");
-
-    $query -> close();
-    redirect();
 }
 
-function validateStringMaxLenght($string, $lenght)
-{
-    return strlen($string) > $lenght;
-}
-
-function validateStringMinLenght($string, $lenght)
-{
-    return strlen($string) < $lenght;
-}
-
-function validateStringCharts($regex, $string)
-{
-    return preg_match($regex, $string);
-}
 
 function createSlug($string, $is_an_image = false)
 {

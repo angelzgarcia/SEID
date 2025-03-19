@@ -122,10 +122,12 @@ if ($busqueda && empty($productos)): ?>
                                 ?>
                                 <span>$<?= $producto['precio_costo_producto'] ?></span>
                             </p>
+
                             <p>
                                 Precio de venta:
                                 <span>$<?= $producto['precio_venta'] ?? $producto['precio_venta_producto'] ?></span>
                             </p>
+
                             <p>
                                 Exsitencias:
                                 <span>
@@ -141,6 +143,7 @@ if ($busqueda && empty($productos)): ?>
                                     </span>
                                 </span>
                             </p>
+
                             <p>
                                 Codigo de barras:
                                 <span><?= $producto['codigo_barras_producto'] ?></span>
@@ -187,16 +190,12 @@ if ($busqueda && empty($productos)): ?>
                     <?php endif; ?>
 
                     <!-- CAMBIAS STATUS -->
-                    <form
-                        action="<?= MATRIX_HTTP_URL ?>functions/crud_producto?p=<?=$p?>"
+                    <button
+                        type="button"
                         class="status-btn <?= $status === 0 ? 'inactive-btn' : 'active-btn' ?>"
                         data-id="<?=$p?>"
-                        method="POST"
                         title="Cambiar status"
                     >
-                        <input type="hidden" name="accion" value="modificar">
-
-                        <button type="button" title="Cambiar status">
                             <?php if( $status === 0): ?>
                                 <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M280-240q-100 0-170-70T40-480q0-100 70-170t170-70h400q100 0 170 70t70 170q0 100-70 170t-170 70H280Zm0-80h400q66 0 113-47t47-113q0-66-47-113t-113-47H280q-66 0-113 47t-47 113q0 66 47 113t113 47Zm0-40q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35Zm200-120Z"/></svg>
                             <?php else: ?>

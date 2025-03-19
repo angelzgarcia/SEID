@@ -1,5 +1,7 @@
 
 
+
+
 :root {
     --navbar-heigh: 70px;
     --primary-color: #0070ea;
@@ -10,6 +12,26 @@
     }
 }
 
+
+fieldset {
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    gap: .5rem;
+    & p, .message-error {
+        font-size: small;
+        color: rgb(235, 26, 26);
+    }
+    & legend {
+        margin: 0;
+        font-weight: 600;
+        color: rgb(102, 97, 97);
+        font-size: large;
+        display: flex;
+        flex-direction: column;
+        gap: .5rem;
+    }
+}
 
 
 
@@ -22,7 +44,6 @@
 .colored-toast.swal2-icon-info { background-color: #d67636 !important; }
 .colored-toast.swal2-icon-question { background-color: #7ea6b8 !important; }
 .colored-toast .swal2-title { color: white; }
-
 
 
 

@@ -126,21 +126,27 @@
                     <div class="crud-order-by">
                         <select name="order-by-products" class="crud-header-select" id="order-by-products">
                             <option selected disabled> Ordenar por </option>
+
                             <option value="ultimos">
                                 Últimos añadidos
                             </option>
+
                             <option value="menor_stock">
                                 Menor stock
                             </option>
+
                             <option value="mayor_stock">
                                 Mayor stock
                             </option>
+
                             <option value="vencimiento">
                                 Próximo a vencer
                             </option>
+
                             <option value="az">
                                 A - Z
                             </option>
+
                             <option value="za">
                                 Z - A
                             </option>
@@ -233,6 +239,9 @@
     <?php require_once MATRIX_DOC_VIEWS . 'inventario/show_order_modal.php' ?>
 
     <?php require_once MATRIX_DOC_VIEWS . 'inventario/show_modal.php' ?>
+
+    <!-- TOOLTIPS -->
+    <script src="<?=MATRIX_HTTP_URL?>resources/js/tooltips.js"></script>
 
     <script src="<?= MATRIX_HTTP_URL ?>resources/js/inventory.js"></script>
 </body>

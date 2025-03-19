@@ -1,6 +1,7 @@
 <?php require_once __DIR__ . '/../../../config.php' ?>
 <?php require_once MATRIX_DOC_ROOT . 'database.php' ?>
 <?php require_once MATRIX_DOC_ROOT . 'functions/helpers/encrypt.php' ?>
+
 <?php $page_name = ACCESO . 'Editar marca' ?>
 
 <?php

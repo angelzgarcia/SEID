@@ -12,17 +12,19 @@ foreach (glob(VISITOR_DOCT_FNS . "/helpers/*.php") as $helper)
 
 loginQr();
 
-function redirect()
+function redirect($redirect_url = null)
 {
-    $redirect_ulr = $_SERVER['HTTP_REFERER'] ?? VISITOR_HTTP_VIEWS . 'auth/loginqr';
-    header("Location: $redirect_ulr");
+    $redirect_url ??= $_SERVER['HTTP_REFERER'] ?? VISITOR_HTTP_VIEWS . 'auth/loginqr';
+
+    header("Location: $redirect_url");
     exit;
 }
 
+
 function loginQr()
 {
-    $qr_code = clearEntry($_POST['qr_code'] ?? '') ?? null;
-    $token = clearEntry($_POST['token'] ?? '') ?? null;
+    $qr_code = trim($_POST['qr_code']) ?? null;
+    $token = (string)trim($_POST['token']) ?? null;
 
     if (!$qr_code && !$token) {
         $_SESSION['swal'] = swal('warning', '¡Los campos son obligatorios!');
@@ -47,67 +49,47 @@ function loginQr()
         redirect();
     }
 
+    $sql = 'SELECT correo_inicio, token_verificacion FROM credenciales WHERE id_credencial = ?';
+    $temporal_user = simpleQuery($sql, [(int)$credential_id], 'i', true)[0];
+
+    if (!$temporal_user) {
+        $_SESSION['swal'] = swal('warning', '¡Usuario no encontrado!');
+        redirect();
+    }
+
+    $decrypted_token = decryptValue($temporal_user['token_verificacion'], SECRETKEY) ?? '';
+    if ($token !== $decrypted_token) {
+        $_SESSION['swal'] = swal('warning', '¡Token no válido!');
+        redirect();
+    }
+
     $sql = '
-        SELECT nivel_usuario, nombres_credencial, apellidos_credencial, token_verificacion
-        FROM credenciales
-        WHERE id_credencial = ?
+        SELECT c.nivel_usuario, c.nombres_credencial, c.apellidos_credencial, s.nombre_sucursal
+        FROM credenciales AS c
+        INNER JOIN sucursales AS s ON s.id_sucursal = c.id_sucursal_fk_credencial
+        WHERE c.id_credencial = ?
+        AND c.correo_inicio = ?
     ';
-    $user = simpleQuery($sql, [(int)$credential_id], 'i', true)[0];
-    var_dump($user);exit;
+    $user = simpleQuery($sql, [(int)$credential_id, $temporal_user['correo_inicio']], 'is', true)[0];
 
     if (!$user) {
         $_SESSION['swal'] = swal('warning', '¡Usuario no encontrado!');
         redirect();
     }
 
-    $_SESSION['credential_id'] = $qr_code;
-    $_SESSION['user_level'] = encryptValue($user_level, SECRETKEY);
+    $_SESSION['auth_user'] = array_merge($temporal_user, $user);
 
-    $stmt = $conn -> prepare("SELECT  FROM credenciales WHERE id_credencial = ?");
-    $stmt -> bind_param("i", $credential_id);
-    $stmt -> execute();
-    $result = $stmt -> get_result();
+    match (decryptValue($user['nivel_usuario'], SECRETKEY)) {
+        '1' =>
+            redirect(HTTP_URL . 'acceso_director/views/dashboard'), // director
+        '2' =>
+            redirect(HTTP_URL . 'acceso_matriz/views/dashboard'), // matriz
+        '3' =>
+            redirect(HTTP_URL . 'acceso_vendedor/views/dashboard'), // vendedor
+        default =>
+            redirect(HTTP_URL . 'acceso_visitante/views/auth/loginqr'),
+    };
 
-    if ($result->num_rows === 0) {
-        die("Registro no encontrado.");
-    }
-
-    $row = $result -> fetch_assoc();
-    $user_name = $row['nombres_credencial'];
-    $encryptedToken = $row['token_verificacion'];
-    $last_name = $row['apellidos_credencial'];
-
-    $_SESSION['nombres'] = $user_name;
-    $_SESSION['apellidos'] = $last_name;
-
-
-    $decryptedToken = decryptValue($encryptedToken, $secretKey);
-    // $descryptlastname = decryptValue($last_name, $secretKey);
-
-    if ($decryptedToken !== $token) {
-        header('Location: ../views/login-qr.php');
-        exit();
-    }
-
-    switch ($nivel_usuario) {
-        case 1:
-            header('Location: ../../acceso_matriz/views/dashboard.php');
-            $conn -> close();
-            exit();
-        case 2:
-            $conn -> close();
-            header('Location: ../../acceso_director/views/dashboard.php');
-            exit();
-        case 3:
-            $conn -> close();
-            header('Location: ../../acceso_vendedor/views/dashboard.php');
-            exit();
-        default:
-            $conn -> close();
-            $errorMensaje = "Nivel de usuario no válido.";
-            header('Location: ../login.php?error=' . urlencode($errorMensaje));
-            exit();
-    }
 }
 
 

@@ -4,18 +4,19 @@
 <?php require_once MATRIX_DOC_ROOT . 'functions/helpers/swal.php' ?>
 
 <?php $page_name = ACCESO . 'Inventario | Categorias ' ?>
+
 <?php
-    $sql = 'SELECT * FROM categorias ORDER BY id_categoria DESC';
-    $categorias = simpleQuery($sql) ?: [];
+    $sql = '
+        SELECT COUNT(*) AS total_categorias,
+        SUM(CASE WHEN status_categoria = 0 THEN 1 ELSE 0 END) AS categorias_activas
+        FROM categorias
+    ';
 
-    if (!empty($categorias)) {
-        $count_categorias = count($categorias);
+    $categories_collector = simpleQuery($sql)[0] ?? ['total_categorias' => 0, 'categorias_activas' => 0];
 
-        $categorias_activas = array_filter($categorias, fn($categoria) => (int)$categoria['status_categoria'] === 0 );
-        $count_categorias_activas = count($categorias_activas);
-
-        $count_categorias_inactivas = $count_categorias - $count_categorias_activas;
-    }
+    $count_categories = $categories_collector['total_categorias'];
+    $count_enable_categories = $categories_collector['categorias_activas'];
+    $count_disable_categories = $count_categories - $count_enable_categories;
 ?>
 
 <!DOCTYPE html>
@@ -55,12 +56,12 @@
                     </div>
 
                     <div class="crud-order-by">
-                        <select name="" class="crud-header-select">
+                        <select name="order-by-categories" class="crud-header-select" id="order-by-categories">
                             <option selected disabled>Ordenar por</option>
-                            <option value="">Ver todos</option>
-                            <option value="">Más antiguas</option>
-                            <option value="">A - Z</option>
-                            <option value="">Z - A</option>
+                            <option value="recientes">Más recientes</option>
+                            <option value="antiguas">Más antiguas</option>
+                            <option value="az">A - Z</option>
+                            <option value="za">Z - A</option>
                         </select>
                     </div>
                     <a href="<?= MATRIX_HTTP_VIEWS ?>inventario/categorias/create" class="crud-add-btn">
@@ -74,21 +75,21 @@
                     <div class="details">
                         <div class="summary">
                             <p>N° de categorías</p>
-                            <span><?= $count_categorias ?? 0 ?></span>
+                            <span><?= $count_categories ?? 0 ?></span>
                         </div>
                     </div>
 
                     <div class="details">
                         <div class="summary">
                             <p>Categorías activas</p>
-                            <span><?= $count_categorias_activas ?? 0 ?></span>
+                            <span><?= $count_enable_categories ?? 0 ?></span>
                         </div>
                     </div>
 
                     <div class="details">
                         <div class="summary">
                             <p>Categorías inactivas</p>
-                            <span><?= $count_categorias_inactivas ?? 0 ?></span>
+                            <span><?= $count_disable_categories ?? 0 ?></span>
                         </div>
                     </div>
                 </div>
@@ -106,7 +107,15 @@
                     </form>
 
                     <form action="" class="crud-searcher">
-                        <input type="text" name="" id="" placeholder="Buscar producto.....">
+                        <input
+                            type="text" id="searcher" placeholder="Buscar categoria..." autocomplete="off"
+                            onkeyup="busqueda();"
+                        >
+
+                        <span id="erase-search">
+                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="m456-320 104-104 104 104 56-56-104-104 104-104-56-56-104 104-104-104-56 56 104 104-104 104 56 56Zm-96 160q-19 0-36-8.5T296-192L80-480l216-288q11-15 28-23.5t36-8.5h440q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H360ZM180-480l180 240h440v-480H360L180-480Zm400 0Z"/></svg>
+                        </span>
+
                         <button type="submit">
                             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
                         </button>
@@ -116,57 +125,10 @@
             </div>
 
             <!-- LISTA DE REGISTROS -->
-            <div class="crud-grid crud-grid-category">
+            <div class="crud-grid crud-grid-category" id="categories-container">
 
-                <?php if(empty($categorias)): ?>
-                    <div class="registers-empty">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M40.1 467.1l-11.2 9c-3.2 2.5-7.1 3.9-11.1 3.9C8 480 0 472 0 462.2L0 192C0 86 86 0 192 0S384 86 384 192l0 270.2c0 9.8-8 17.8-17.8 17.8c-4 0-7.9-1.4-11.1-3.9l-11.2-9c-13.4-10.7-32.8-9-44.1 3.9L269.3 506c-3.3 3.8-8.2 6-13.3 6s-9.9-2.2-13.3-6l-26.6-30.5c-12.7-14.6-35.4-14.6-48.2 0L141.3 506c-3.3 3.8-8.2 6-13.3 6s-9.9-2.2-13.3-6L84.2 471c-11.3-12.9-30.7-14.6-44.1-3.9zM160 192a32 32 0 1 0 -64 0 32 32 0 1 0 64 0zm96 32a32 32 0 1 0 0-64 32 32 0 1 0 0 64z"/></svg>
-                        <p>AÚN NO HAY CATEGORÍAS REGISTRADAS.</p>
-                    </div>
-                <?php else: ?>
-                    <?php foreach($categorias as $categoria): ?>
-                        <!-- MARCO DEL REGISTRO -->
-                        <div class="register-frame category-frame">
-                            <!-- DETALLES -->
-                            <div href="" class="register-details-link category-details-link">
-                                <p>
-                                    Nombre:
-                                    <span><?= ucfirst($categoria['nombre_categoria']) ?></span>
-                                </p>
-                                <p>
-                                    Descripción:
-                                    <span><?= ucfirst($categoria['descripcion_categoria']) ?></span>
-                                </p>
-                                <p>
-                                    Status:
-                                    <span><?= (int)$categoria['status_categoria'] === 0 ? 'Activa' : 'Inactiva'; ?></span>
-                                </p>
-                            </div>
+                    <!--  REGISTROS DESDE JQUERY  -->
 
-                            <?php $c = encryptValue($categoria['id_categoria'], SECRETKEY) ?>
-                            <?php $status = (int)$categoria['status_categoria'] ?>
-
-                            <!-- ACCIONES -->
-                            <div class="register-actions">
-                                <a href="./edit?c=<?=$c?>">
-                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M160-120v-170l527-526q12-12 27-18t30-6q16 0 30.5 6t25.5 18l56 56q12 11 18 25.5t6 30.5q0 15-6 30t-18 27L330-120H160Zm80-80h56l393-392-28-29-29-28-392 393v56Zm560-503-57-57 57 57Zm-139 82-29-28 57 57-28-29ZM560-120q74 0 137-37t63-103q0-36-19-62t-51-45l-59 59q23 10 36 22t13 26q0 23-36.5 41.5T560-200q-17 0-28.5 11.5T520-160q0 17 11.5 28.5T560-120ZM183-426l60-60q-20-8-31.5-16.5T200-520q0-12 18-24t76-37q88-38 117-69t29-70q0-55-44-87.5T280-840q-45 0-80.5 16T145-785q-11 13-9 29t15 26q13 11 29 9t27-13q14-14 31-20t42-6q41 0 60.5 12t19.5 28q0 14-17.5 25.5T262-654q-80 35-111 63.5T120-520q0 32 17 54.5t46 39.5Z"/></svg>
-                                </a>
-
-                                <form action="<?= MATRIX_HTTP_URL ?>functions/crud_categoria?c=<?=$c?>" class="status-btn <?= $status === 0 ? 'inactive-btn' : 'active-btn' ?>" data-id="<?=$c?>" method="POST">
-                                    <input type="hidden" name="accion" value="modificar">
-
-                                    <button type="button" title="Cambiar status">
-                                        <?php if( $status === 0): ?>
-                                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M280-240q-100 0-170-70T40-480q0-100 70-170t170-70h400q100 0 170 70t70 170q0 100-70 170t-170 70H280Zm0-80h400q66 0 113-47t47-113q0-66-47-113t-113-47H280q-66 0-113 47t-47 113q0 66 47 113t113 47Zm0-40q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35Zm200-120Z"/></svg>
-                                        <?php else: ?>
-                                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M280-240q-100 0-170-70T40-480q0-100 70-170t170-70h400q100 0 170 70t70 170q0 100-70 170t-170 70H280Zm0-80h400q66 0 113-47t47-113q0-66-47-113t-113-47H280q-66 0-113 47t-47 113q0 66 47 113t113 47Zm400-40q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35ZM480-480Z"/></svg>
-                                        <?php endif; ?>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
             </div>
         </div>
     </main>
@@ -180,5 +142,12 @@
             unset($_SESSION['swal']);
         }
     ?>
+
+    <?php require_once MATRIX_DOC_VIEWS . 'inventario/categorias/show_modal.php' ?>
+
+    <!-- TOOLTIPS -->
+    <script src="<?=MATRIX_HTTP_URL?>resources/js/tooltips.js"></script>
+
+    <script src="<?= MATRIX_HTTP_URL ?>resources/js/categories.js"></script>
 </body>
 </html>

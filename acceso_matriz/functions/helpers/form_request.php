@@ -20,7 +20,7 @@ function inputMatched($regex, $string)
 
 
 function onlyLetters($nombre) {
-    return !empty($nombre) && preg_match("/^[a-zA-Z\s]+$/", $nombre);
+    return !empty($nombre) && preg_match("/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/", $nombre);
 }
 
 
