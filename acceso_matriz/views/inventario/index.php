@@ -34,7 +34,7 @@
         $count_inactive_products += (int)$product['count_inactive_products'];
     }
 
-    $sql = 'SELECT id_sucursal, nombre_sucursal FROM sucursales ORDER BY nombre_sucursal ASC';
+    $sql = 'SELECT id_sucursal, nombre_sucursal FROM sucursales WHERE status_sucursal = 0 ORDER BY nombre_sucursal ASC';
     $sucursales = simpleQuery($sql) ?: [];
 ?>
 

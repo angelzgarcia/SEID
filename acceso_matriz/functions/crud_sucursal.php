@@ -135,10 +135,10 @@ function show()
             ORDER BY id_sucursal DESC
         ';
 
-        $brand = simpleQuery($sql, [(int)$id], 'i', true)[0] ?: null;
-        if (!$brand) redirect_json('¡Sucursal no encontrada!');
+        $sucursal = simpleQuery($sql, [(int)$id], 'i', true)[0] ?: null;
+        if (!$sucursal) redirect_json('¡Sucursal no encontrada!');
 
-        echo json_encode($brand);
+        echo json_encode($sucursal);
         exit;
     } catch (Exception $e) {
         redirect_json($e -> getMessage(), 'warning');
@@ -148,9 +148,71 @@ function show()
 
 function update()
 {
+    unset($_POST['accion']);
+
     $olds = [];
     $errors = [];
 
+    $id = (int)clearEntry(decryptValue($_GET['s'], SECRETKEY));
+    if (!$id) redirect();
+
+    $nombre = clearEntry($_POST['nombre']) ?: null;
+    $direccion = clearEntry($_POST['direccion']) ?: null;
+    $telefono = (string)clearEntry($_POST['telefono']) ?: null;
+
+    $sql = '
+        SELECT id_sucursal
+        FROM sucursales
+        WHERE (nombre_sucursal = ?
+            OR direccion_sucursal = ?
+            OR telefono_sucursal = ?)
+        AND id_sucursal != ?
+    ';
+
+    if (simpleQuery($sql, [$nombre, $direccion, $telefono, $id], 'sssi')) {
+        $_SESSION['swal'] = swal('warning', '¡Hay datos vinculados a otra sucursal!');
+        redirect();
+    }
+
+    $_SESSION['olds'] = $_POST;
+
+    if (!isset($nombre) && !isset($direccion) && !isset($telefono)) {
+        $_SESSION['swal'] = swal("warning", "¡Los campos son obligatorios!");
+        redirect();
+    }
+
+    if (!isset($nombre)) {
+        $errors['nombre'] = 'El nombre de la sucursal es obligatorio';
+    } else {
+        inputMinLenght($nombre, 4) ? $errors['nombre'] = 'Mínimo 4 caracteres' : '';
+        inputMaxLenght($nombre, 40) ? $errors['nombre'] = 'Máximo 40 caracteres' : '';
+        !onlyLetters($nombre) ? $errors['nombre'] = 'Solo se permiten letras' : '';
+    }
+
+    if (!isset($direccion)) {
+        $errors['direccion'] = 'La direccion de la sucursal es obligatoria';
+    } else {
+        inputMinLenght($direccion, 10) ? $errors['direccion'] = 'Mínimo 10 caracteres' : '';
+        inputMaxLenght($direccion, 100) ? $errors['direccion'] = 'Máximo 80 caracteres de direccion' : '';
+        !onlyLetters($direccion) ? $errors['direccion'] = 'Solo se permiten letras' : '';
+    }
+
+    if (!validateCellPhone($telefono) ? $errors['telefono'] = 'El formato del teléfono es incorrecto' : '');
+
+    if (!empty($errors)) {
+        $_SESSION['errors'] = $errors;
+        redirect();
+    }
+
+    $sql = '
+        UPDATE sucursales
+        SET nombre_sucursal = ?, direccion_sucursal = ?, telefono_sucursal = ?
+        WHERE id_sucursal = ?
+    ';
+
+    $_SESSION['swal'] = !simpleQuery($sql, [$nombre, $direccion, $telefono, $id], 'sssi') ?
+        swal("error", "¡Ocurrió un error al actualizar la sucursal!") :
+        swal("success", "¡Sucursal actualizada exitosamente!");
 
     unset($_SESSION['olds']);
     unset($_SESSION['errors']);
@@ -158,53 +220,33 @@ function update()
 }
 
 
+
 function changeStatus()
 {
-    $id = (int)decryptValue($_GET['s'], SECRETKEY);
-    if (!$id) redirect();
+    try {
+        header('Content-Type: application/json');
 
-    global $conn;
-    $sql = '
-        SELECT * FROM sucursales
-        WHERE id_sucursal = ?
-    ';
-    $query = $conn -> prepare($sql);
-    $query -> bind_param('i', $id);
+        $id = (int)decryptValue($_POST['s'] ?? '', SECRETKEY) ?? '';
+        if (!$id) redirect_json('¡Sucursal no válida!');
 
-    if (!$query -> execute()) {
-        $_SESSION['swal'] = swal("warning", "¡No se encontró la sucursal!");
-        redirect();
+        $sql = 'SELECT status_sucursal FROM sucursales WHERE id_sucursal = ?';
+
+        $branch = simpleQuery($sql, [$id], 'i', true)[0] ?? null;
+        if (!$branch) redirect_json('¡Sucursales no encontrada!');
+
+        $current_status = (int)$branch['status_sucursal'];
+        $new_status = ($current_status === 0) ? 1 : 0;
+
+        $sql = 'UPDATE sucursales SET status_sucursal = ? WHERE id_sucursal = ?';
+
+        !simpleQuery($sql, [$new_status, $id], 'ii')
+            ? redirect_json('¡No se pudo actualizar el status!', 'error')
+            : redirect_json('¡Status actualizado!', 'success');
+
+    } catch (Exception $e) {
+        redirect_json($e -> getMessage(), 'warning');
     }
-
-    $brand = $query -> get_result() -> fetch_assoc();
-    $query -> close();
-
-    if (!$brand) {
-        $_SESSION['swal'] = swal("warning", "¡No se encontró la sucursal!");
-        redirect();
-    }
-
-    $current_status = (int)$brand['status_sucursal'];
-    $new_status = ($current_status === 0) ? 1 : 0;
-
-    $sql = '
-        UPDATE sucursales
-        SET status_sucursal = ?
-        WHERE id_sucursal = ?
-    ';
-    $query = $conn -> prepare($sql);
-    $query -> bind_param('ii', $new_status, $id);
-
-    !$query -> execute()
-    ?
-    $_SESSION['swal'] = swal("error", "¡No se pudo actualizar el status!")
-    :
-    $_SESSION['swal'] = swal("success", "¡Status actualizo!");
-
-    $query -> close();
-    redirect();
 }
-
 
 
 

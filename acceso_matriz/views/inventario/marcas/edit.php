@@ -68,7 +68,12 @@
                         </p>
                     </legend>
 
-                    <input type="text" name="nombre" placeholder="Ingrese el nombre de la marca" value="<?= ucfirst($marca['nombre_marca'] ?? '') ?: ($_SESSION['olds']['nombre'] ?? ''); ?>">
+                    <input
+                        type="text"
+                        name="nombre"
+                        placeholder="Ingrese el nombre de la marca"
+                        value="<?= ucfirst($marca['nombre_marca'] ?? '') ?: ($_SESSION['olds']['nombre'] ?? ''); ?>"
+                    >
                 </fieldset>
 
 
@@ -124,6 +129,9 @@
             echo $_SESSION['swal'];
             unset($_SESSION['swal']);
         }
+        
+        unset($_SESSION['errors']);
+        unset($_SESSION['olds']);
     ?>
 
     <!-- VISTA PREVIA DEL INPUT FILE -->

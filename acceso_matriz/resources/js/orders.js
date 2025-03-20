@@ -74,6 +74,18 @@ function buscar() {
         url: '../../../functions/buscar_pedidos.php',
         success: data => {
             document.getElementById('orders-container').innerHTML = data;
+
+            tippy('[title]', {
+                content: (reference) => {
+                    const title = reference.getAttribute('title');
+                    reference.removeAttribute('title');
+                    return title;
+                },
+                theme: 'light',
+                arrow: true,
+                animation: 'scale',
+                delay: [500, 100],
+            });
         },
         error: (xhr, status, error) => {
             document.getElementById('orders-container').innerHTML = `
@@ -155,7 +167,7 @@ $(document).on('click', '.aproved-order-btn', function() {
                             Toast.fire({
                                 icon: res.status,
                                 title: res.message
-                            }).then(() => { busqueda() });
+                            }).then(() => { window.location.reload() });
                         } else {
                             Toast.fire({
                                 icon: res.status,
@@ -233,7 +245,7 @@ $(document).on('click', '.rejected-order-btn', function() {
                             Toast.fire({
                                 icon: res.status,
                                 title: res.message
-                            }).then(() => { busqueda() });
+                            }).then(() => { window.location.reload() });
                         } else {
                             Toast.fire({
                                 icon: res.status,

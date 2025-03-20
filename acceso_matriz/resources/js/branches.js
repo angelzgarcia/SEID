@@ -129,9 +129,9 @@ $(document).on('click', '.status-btn ', function() {
     }).then((result) => {
         if (result.isConfirmed) {
             $.ajax({
-                url: '../../../functions/crud_sucursal.php',
+                url: '../../functions/crud_sucursal.php',
                 method: 'POST',
-                data: { m: brancheId, accion: 'status' },
+                data: { s: brancheId, accion: 'status' },
                 dataType: 'json',
                 success: function(response) {
                     try {
@@ -223,7 +223,7 @@ $(document).on('click', '.open-register-details-modal ', function() {
 
                     $.each(data, function(key, value) {
                         let element = $('.' + key);
-                        
+
                         if (key === 'status_sucursal') {
                             let texto = value === 1 ? 'Inactiva' : 'Activa';
                             element.text(texto);

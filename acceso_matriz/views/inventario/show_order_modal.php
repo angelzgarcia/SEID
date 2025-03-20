@@ -11,8 +11,9 @@
 
         <?php if(empty($sucursales)): ?>
 
-            <h2>
-                ¡Debes agregar al menos una sucursal para realizar y enviar pedidos!
+            <h2 class="flex flex-col items-center justify-center text-center gap-6 font-medium tracking-wide">
+                ℹ️ ¡Debes agregar al menos una sucursal para realizar y enviar pedidos!
+
                 <animated-icons
                     src="https://animatedicons.co/get-icon?name=search&style=minimalistic&token=12e9ffab-e7da-417f-a9d9-d7f67b64d808"
                     trigger="loop"
@@ -41,6 +42,7 @@
                     <div class="select-destination-branch-container">
                         <select name="destination-branch" id="select-destination-branch" class="crud-header-select select-destination-branch">
                             <option disabled selected>Selecciona la sucursal de destino</option>
+
                             <?php foreach($sucursales as $sucursal): ?>
                                 <option value="<?=ucwords($sucursal['nombre_sucursal'])?>" data-branch-id="<?=encryptValue($sucursal['id_sucursal'], SECRETKEY)?>">
                                     <?=ucwords($sucursal['nombre_sucursal'])?>

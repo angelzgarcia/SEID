@@ -2,10 +2,35 @@
 <?php require_once MATRIX_DOC_ROOT . '/database.php' ?>
 <?php require_once MATRIX_DOC_FNS . 'helpers/encrypt.php' ?>
 <?php require_once MATRIX_DOC_FNS . 'helpers/clear.php' ?>
+
 <?php $page_name = ACCESO . ' Sucursales | Pedidos' ?>
 
 <?php
-    $sql = 'SELECT id_sucursal, nombre_sucursal FROM sucursales ORDER BY nombre_sucursal ASC';
+    $sql = '
+        SELECT COUNT(*) AS total_pedidos,
+            SUM(CASE WHEN status_pedido_sucursal = "pendiente" THEN 1 ELSE 0 END) AS pedidos_pendientes,
+            SUM(CASE WHEN status_pedido_sucursal = "aprobado" THEN 1 ELSE 0 END) AS pedidos_aprobados,
+            SUM(CASE WHEN status_pedido_sucursal = "rechazado" THEN 1 ELSE 0 END) AS pedidos_rechazados,
+            SUM(CASE WHEN status_pedido_sucursal = "recibido" THEN 1 ELSE 0 END) AS pedidos_recibidos
+        FROM pedidos_sucursales
+    ';
+
+    $pedidos_collector = simpleQuery($sql)[0] ?? [
+        'total_pedidos' => 0,
+        'pedidos_pendientes' => 0,
+        'pedidos_aprobados' => 0,
+        'pedidos_rechazados' => 0,
+        'pedidos_recibidos' => 0
+    ];
+
+    $total_pedidos = $pedidos_collector['total_pedidos'];
+    $pedidos_pendientes = $pedidos_collector['pedidos_pendientes'];
+    $pedidos_aprobados = $pedidos_collector['pedidos_aprobados'];
+    $pedidos_rechazados = $pedidos_collector['pedidos_rechazados'];
+    $pedidos_recibidos = $pedidos_collector['pedidos_recibidos'];
+
+
+    $sql = 'SELECT id_sucursal, nombre_sucursal FROM sucursales WHERE status_sucursal = 0 ORDER BY nombre_sucursal ASC';
     $sucursales = simpleQuery($sql) ?: [];
 ?>
 
@@ -136,23 +161,27 @@
                     <div class="details">
                         <div class="summary">
                             <p>N° de pedidos</p>
-                            <span><?= $count_products ?? 0 ?></span>
+                            <span><?= $total_pedidos ?? 0 ?></span>
                         </div>
+
                         <div class="summary">
                             <p>Pendientes</p>
-                            <span><?= $count_out_stock_products ?? 0 ?></span>
+                            <span><?= $pedidos_pendientes ?? 0 ?></span>
                         </div>
+
                         <div class="summary">
                             <obva>Aprobados</p>
-                            <span><?= $count_few_stock_products ?? 0 ?></span>
+                            <span><?= $pedidos_aprobados ?? 0 ?></span>
                         </div>
+
                         <div class="summary">
                             <p>Rechazados</p>
-                            <span><?= $count_close_expiration_products ?? 0 ?></span>
+                            <span><?= $pedidos_rechazados ?? 0 ?></span>
                         </div>
+
                         <div class="summary">
                             <p>Recibidos</p>
-                            <span><?= $count_close_expiration_products ?? 0 ?></span>
+                            <span><?= $pedidos_recibidos ?? 0 ?></span>
                         </div>
                     </div>
                 </div>

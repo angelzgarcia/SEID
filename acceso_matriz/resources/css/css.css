@@ -1931,6 +1931,7 @@ select.crud-header-select.select-destination-branch { max-width: max-content; }
         display: flex;
         justify-content: space-between;
         font-size: small;
+        font-style: italic;
         & span {
             font-weight: 700;
             font-style: italic;
@@ -1964,7 +1965,7 @@ select.crud-header-select.select-destination-branch { max-width: max-content; }
 .user-header-info :is(span, p) {
     text-transform: capitalize;
 }
-
+.body-register.credential-body-register img { box-shadow: none; }
 
 
 

@@ -83,17 +83,18 @@
                         </div>
 
                         <div class="summary">
-                            <p>Sucursales inactivas</p>
+                            <p>Sucursales activas</p>
                             <span><?=$count_enable_branches?></span>
                         </div>
 
                         <div class="summary">
-                            <p>Sucursales activas</p>
+                            <p>Sucursales inactivas</p>
                             <span><?=$count_disable_branches?></span>
                         </div>
 
                         <div class="summary">
                             <p>Sucursal más antigua</p>
+                            
                             <span class="uppercase"><?=$first_branch?></span>
                         </div>
                     </div>
@@ -121,7 +122,7 @@
                         <span id="erase-search">
                             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="m456-320 104-104 104 104 56-56-104-104 104-104-56-56-104 104-104-104-56 56 104 104-104 104 56 56Zm-96 160q-19 0-36-8.5T296-192L80-480l216-288q11-15 28-23.5t36-8.5h440q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H360ZM180-480l180 240h440v-480H360L180-480Zm400 0Z"/></svg>
                         </span>
-                        
+
                         <button type="submit">
                             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M784-120 532-372q-30 24-69 38t-83 14q-109 0-184.5-75.5T120-580q0-109 75.5-184.5T380-840q109 0 184.5 75.5T640-580q0 44-14 83t-38 69l252 252-56 56ZM380-400q75 0 127.5-52.5T560-580q0-75-52.5-127.5T380-760q-75 0-127.5 52.5T200-580q0 75 52.5 127.5T380-400Z"/></svg>
                         </button>

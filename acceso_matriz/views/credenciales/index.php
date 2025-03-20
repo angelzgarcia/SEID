@@ -1,5 +1,26 @@
 <?php require_once __DIR__ . '/../../config.php' ?>
+<?php require_once MATRIX_DOC_ROOT . '/database.php' ?>
+<?php require_once MATRIX_DOC_FNS . 'helpers/encrypt.php' ?>
+<?php require_once MATRIX_DOC_FNS . 'helpers/clear.php' ?>
+
 <?php $page_name = ACCESO . 'Personal' ?>
+
+<?php
+    $sql = '
+        SELECT COUNT(*) AS total_credenciales,
+        SUM(CASE WHEN status_credencial = 0 THEN 1 ELSE 0 END) AS credenciales_activas
+        FROM credenciales
+    ';
+
+    $branches_collector = simpleQuery($sql)[0] ?? ['total_credenciales' => 0, 'credenciales_activas' => 0];
+
+    $count_credentials = $branches_collector['total_credenciales'];
+    $count_enable_credentials = $branches_collector['credenciales_activas'];
+    $count_disable_credentials = $count_credentials - $count_enable_credentials;
+
+    $sql = 'SELECT id_sucursal, nombre_sucursal FROM sucursales WHERE status_sucursal = 0 ORDER BY nombre_sucursal ASC';
+    $sucursales = simpleQuery($sql) ?: [];
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -19,11 +40,13 @@
                     type="text" list="sucursales" name="sucursal_datalist" id="sucursal_datalist" placeholder="Buscar sucursal..."
                     onkeyup="busqueda();"
                 >
+
                 <datalist id="sucursales">
                     <?php if (!empty($sucursales)):
 
                         foreach ($sucursales as $suc):
                             $sucursal_name = ucwords($suc['nombre_sucursal']); ?>
+
                             <option value="<?= $sucursal_name ?>"  data-id="<?= encryptValue($suc['id_sucursal'], SECRETKEY) ?>">
                                 <?= $sucursal_name ?>
                             </option>
@@ -79,7 +102,7 @@
                     </div>
 
                     <div class="crud-order-by">
-                        <select name="order-by-order" class="crud-header-select" id="order-by-order">
+                        <select name="order-by-credentials" class="crud-header-select" id="order-by-credentials">
                             <option selected disabled>Ordenar por</option>
                             <option value="">Más recientes</option>
                             <option value="">Más antiguos</option>
@@ -101,15 +124,27 @@
                     <div class="details">
                         <div class="summary">
                             <p>Usuarios registrados</p>
-                            <span>52</span>
+                            <span><?=$count_credentials ?? 0?></span>
                         </div>
-                        <div class="summary">
-                            <p>Directores</p>
+
+                        <!-- <div class="summary">
+                            <p>Administradores</p>
                             <span>09</span>
-                        </div>
+                        </div> -->
+
                         <div class="summary">
                             <p>Vendedores</p>
-                            <span>43</span>
+                            <span><span><?=$count_sellers ?? 0?></span></span>
+                        </div>
+
+                        <div class="summary">
+                            <p>Usuarios activos</p>
+                            <span><?=$count_enable_credentials ?? 0?></span>
+                        </div>
+
+                        <div class="summary">
+                            <p>Usuarios inactivos</p>
+                            <span><?=$count_disable_credentials ?? 0?></span>
                         </div>
                     </div>
                 </div>
@@ -130,7 +165,8 @@
                     <div class="crud-searcher">
                         <input
                             type="text" id="searcher" placeholder="Buscar usuario..." autocomplete="off"
-                            onkeyup="busqueda();">
+                            onkeyup="busqueda();"
+                        >
 
                         <span id="erase-search">
                             <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed">
@@ -148,72 +184,9 @@
             </div>
 
             <!-- LISTA DE REGISTROS -->
-            <div class="crud-grid">
+            <div class="crud-grid" id="credentials-container">
 
-                <!-- MARCO DEL REGISTRO -->
-                <div class="register-frame">
-                    <!-- DETALLES -->
-                    <a href="" class="register-details-link open-register-details-modal">
-                        <div class="register-details">
-                            <div class="header-register user-header-info">
-                                <p>Nombres del usuario</p>
-                                <span>Apellidos del usuario</span>
-                            </div>
-
-                            <div class="body-register">
-                                <img src="https://http2.mlstatic.com/D_NQ_NP_639610-MLM76545318391_052024-O.webp" alt="product-img">
-
-                                <div class="quantities">
-                                    <p>
-                                        Teléfono
-                                        <span>5617523128</span>
-                                    </p>
-                                    <p>
-                                        Correo
-                                        <span>usuario_prueba392@gmail.com</span>
-                                    </p>
-                                    <p>
-                                        Sucursal
-                                        <span>Jardín Balbuena, CDMX</span>
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-
-                    <!-- ACCIONES -->
-                    <div class="register-actions-menu-container">
-                        <button class="menu-toggle" title="Opciones">
-                            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M120-240v-80h520v80H120Zm664-40L584-480l200-200 56 56-144 144 144 144-56 56ZM120-440v-80h400v80H120Zm0-200v-80h520v80H120Z"/></svg>
-                        </button>
-
-                        <div class="register-actions">
-                            <!-- EDITAR USUARIO -->
-                            <a href="" title="Actualizar datos del usuario">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M160-120v-170l527-526q12-12 27-18t30-6q16 0 30.5 6t25.5 18l56 56q12 11 18 25.5t6 30.5q0 15-6 30t-18 27L330-120H160Zm80-80h56l393-392-28-29-29-28-392 393v56Zm560-503-57-57 57 57Zm-139 82-29-28 57 57-28-29ZM560-120q74 0 137-37t63-103q0-36-19-62t-51-45l-59 59q23 10 36 22t13 26q0 23-36.5 41.5T560-200q-17 0-28.5 11.5T520-160q0 17 11.5 28.5T560-120ZM183-426l60-60q-20-8-31.5-16.5T200-520q0-12 18-24t76-37q88-38 117-69t29-70q0-55-44-87.5T280-840q-45 0-80.5 16T145-785q-11 13-9 29t15 26q13 11 29 9t27-13q14-14 31-20t42-6q41 0 60.5 12t19.5 28q0 14-17.5 25.5T262-654q-80 35-111 63.5T120-520q0 32 17 54.5t46 39.5Z"/></svg>
-                            </a>
-
-                            <!-- CAMBIAS STATUS -->
-                            <form
-                                action="<?= MATRIX_HTTP_URL ?>functions/crud_credencial?p=<?=''?>"
-                                class="status-btn <?= '' === 0 ? 'inactive-btn' : 'active-btn' ?>"
-                                method="POST"
-                                title="Cambiar status"
-                                data-id="<?=''?>"
-                            >
-                                <input type="hidden" name="accion" value="modificar">
-
-                                <button type="button" title="Cambiar status">
-                                    <?php if( '' === 0): ?>
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M280-240q-100 0-170-70T40-480q0-100 70-170t170-70h400q100 0 170 70t70 170q0 100-70 170t-170 70H280Zm0-80h400q66 0 113-47t47-113q0-66-47-113t-113-47H280q-66 0-113 47t-47 113q0 66 47 113t113 47Zm0-40q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35Zm200-120Z"/></svg>
-                                    <?php else: ?>
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M280-240q-100 0-170-70T40-480q0-100 70-170t170-70h400q100 0 170 70t70 170q0 100-70 170t-170 70H280Zm0-80h400q66 0 113-47t47-113q0-66-47-113t-113-47H280q-66 0-113 47t-47 113q0 66 47 113t113 47Zm400-40q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35ZM480-480Z"/></svg>
-                                    <?php endif; ?>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+                <!--  -->
 
             </div>
         </div>

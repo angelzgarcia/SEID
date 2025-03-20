@@ -100,7 +100,7 @@ function store()
     $nivel_usuario = encryptValue('3', SECRETKEY) ?? null;
     $pass = generarPassword();
     $token = str_pad(random_int(0, 9999), 4, '0', STR_PAD_LEFT);
-    $status_credencial = '1';
+    $status_credencial = '0';
 
     $generate_data = [
         'nivel_usuario' => $nivel_usuario,
@@ -260,20 +260,41 @@ function show()
 
 }
 
-function edit()
-{
-
-}
 
 function update()
 {
 
 }
 
-function destroy()
-{
 
+
+function changeStatus()
+{
+    try {
+        header('Content-Type: application/json');
+
+        $id = (int)decryptValue($_POST['c'] ?? '', SECRETKEY) ?? '';
+        if (!$id) redirect_json('¡Credencial no válida!');
+
+        $sql = 'SELECT status_credencial FROM credenciales WHERE id_credencial = ?';
+
+        $brand = simpleQuery($sql, [$id], 'i', true)[0] ?? null;
+        if (!$brand) redirect_json('¡Credencial no encontrada!');
+
+        $current_status = (int)$brand['status_credencial'];
+        $new_status = ($current_status === 0) ? 1 : 0;
+
+        $sql = 'UPDATE credenciales SET status_credencial = ? WHERE id_credencial = ?';
+
+        !simpleQuery($sql, [$new_status, $id], 'ii')
+            ? redirect_json('¡No se pudo actualizar el status!', 'error')
+            : redirect_json('¡Status actualizado!', 'success');
+
+    } catch (Exception $e) {
+        redirect_json($e -> getMessage(), 'warning');
+    }
 }
+
 
 function generarPassword($longitud = 12) {
     $caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()-_';

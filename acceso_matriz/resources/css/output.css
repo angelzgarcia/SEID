@@ -1280,6 +1280,9 @@
   .justify-items-stretch {
     justify-items: stretch;
   }
+  .gap-1 {
+    gap: calc(var(--spacing) * 1);
+  }
   .gap-1\.5 {
     gap: calc(var(--spacing) * 1.5);
   }
@@ -1291,6 +1294,9 @@
   }
   .gap-5 {
     gap: calc(var(--spacing) * 5);
+  }
+  .gap-6 {
+    gap: calc(var(--spacing) * 6);
   }
   .gap-8 {
     gap: calc(var(--spacing) * 8);
@@ -1712,6 +1718,9 @@
   .\!p-1 {
     padding: calc(var(--spacing) * 1) !important;
   }
+  .p-0 {
+    padding: calc(var(--spacing) * 0);
+  }
   .p-0\.5 {
     padding: calc(var(--spacing) * 0.5);
   }
@@ -1799,6 +1808,10 @@
   .font-medium {
     --tw-font-weight: var(--font-weight-medium);
     font-weight: var(--font-weight-medium);
+  }
+  .tracking-wide {
+    --tw-tracking: var(--tracking-wide);
+    letter-spacing: var(--tracking-wide);
   }
   .text-balance {
     text-wrap: balance;
@@ -4238,6 +4251,7 @@ select.crud-header-select.select-destination-branch {
     display: flex;
     justify-content: space-between;
     font-size: small;
+    font-style: italic;
     & span {
       font-weight: 700;
       font-style: italic;
@@ -4271,6 +4285,9 @@ select.crud-header-select.select-destination-branch {
 }
 .user-header-info :is(span, p) {
   text-transform: capitalize;
+}
+.body-register.credential-body-register img {
+  box-shadow: none;
 }
 .incidences-grid {
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -4462,6 +4479,10 @@ select.crud-header-select.select-destination-branch {
   inherits: false;
 }
 @property --tw-font-weight {
+  syntax: "*";
+  inherits: false;
+}
+@property --tw-tracking {
   syntax: "*";
   inherits: false;
 }
