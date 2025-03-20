@@ -425,7 +425,6 @@ function updateProduct($data, $producto_actual, $unfillable)
         'aplica_mayoreo' => 'aplica_mayoreo',
         'cantidad_minima_mayoreo_producto' => 'cantidad_minima_mayoreo_producto',
         'precio_mayoreo_producto' => 'precio_mayoreo_producto',
-        'vencimiento' => 'vencimiento',
     ];
     $type_map = [
         'integer' => 'i',
@@ -438,8 +437,11 @@ function updateProduct($data, $producto_actual, $unfillable)
     $types = '';
 
     $data = array_filter($data, fn($value, $key) => !array_key_exists($key, $unfillable), ARRAY_FILTER_USE_BOTH);
+    $vencimiento = $data['vencimiento'] ?? '';
+    if ($vencimiento) unset($data['vencimiento']);
+    if ($data['stock_producto']) (int)$data['stock_producto'] += (int)$producto_actual['stock_producto'];
 
-    foreach ($data as &$value)
+    foreach ($data as $value)
         $types .= $type_map[gettype($value)] ?? 's';
 
     $set_query = [];
@@ -454,13 +456,29 @@ function updateProduct($data, $producto_actual, $unfillable)
     array_push($params, $producto_actual['id_producto']);
     $types .= 'i';
 
+    startTransaction();
+    if ($vencimiento) {
+        $sql = 'INSERT INTO lotes_vencimientos (id_producto_fk_lote_vencimiento, fecha_vencimiento) VALUES (?, ?) ';
+
+        if (!simpleQuery($sql, [$producto_actual['id_producto'], $vencimiento], 'is')) {
+            rollbackTransaction();
+            return false;
+        }
+    }
+
     $sql = '
         UPDATE productos
         SET '. implode(', ', $set_query) . '
         WHERE id_producto = ?
     ';
 
-    return simpleQuery($sql, $params, $types);
+    if (!simpleQuery($sql, $params, $types)) {
+        rollbackTransaction();
+        return false;
+    }
+
+    commitTransaction();
+    return true;
 }
 
 

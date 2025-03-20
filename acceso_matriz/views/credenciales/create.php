@@ -104,6 +104,7 @@
                         </p>
                     </legend>
 
+                    <input type="hidden" name="id_sucursal" value="">
                     <select name="id_sucursal" id="sucursal">
                         <?php if (empty($sucursales)): ?>
 
@@ -131,7 +132,7 @@
                     </select>
                 </fieldset>
 
-                <input type="hidden" name="accion" value="crear">
+                <input type="hidden" name="accion" value="guardar">
 
                 <!-- ENVIAR FORMULARIO -->
                 <button type="submit" class="form-btn">

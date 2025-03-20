@@ -125,26 +125,13 @@
             echo $_SESSION['swal'];
             unset($_SESSION['swal']);
         }
+
+        unset($_SESSION['errors']);
+        unset($_SESSION['olds']);
     ?>
 
-    <!-- VISTA PREVIA DEL INPUT FILE -->
-    <script>
-        function mostrarVistaPrevia(event) {
-            const fileInput = event.target;
-            const file = fileInput.files[0];
-            const previewImg = document.getElementById("previewImg");
-            const uploadText = document.getElementById("uploadText");
+    <script src="<?=MATRIX_HTTP_URL?>resources/js/tooltips.js"></script>
 
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImg.src = e.target.result;
-                    previewImg.style.display = "block";
-                    uploadText.style.display = "none";
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-    </script>
+    <script src="<?= MATRIX_HTTP_URL ?>resources/js/product_form.js"></script>
 </body>
 </html>

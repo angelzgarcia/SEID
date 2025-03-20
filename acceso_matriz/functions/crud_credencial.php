@@ -49,7 +49,7 @@ function store()
     $errors = [];
 
     $data = array_map(fn($value) => clearEntry($value) ?: null, $_POST);
-    $data['id_sucursal'] = $_POST['id_sucursal'];
+    $data['id_sucursal'] = $_POST['id_sucursal'] ?? null;
 
     $empty_fields = array_filter($data, fn($value) => empty($value));
 
@@ -71,7 +71,7 @@ function store()
 
     (!empty($data['telefono']) && !validateCellPhone($data['telefono'])) ? $errors['telefono'] = 'Número de teléfono no válido' : '';
 
-    (!empty($data['curp']) && !validateCurp($data['curp'])) ? $errors['curp'] = 'CURP no válido' : '';
+    // (!empty($data['curp']) && !validateCurp($data['curp'])) ? $errors['curp'] = 'CURP no válido' : '';
 
     // (!empty($data['nivel_usuario']) && !validateUserLevel((int)$data['nivel_usuario'])) ? $errors['nivel_usuario'] = 'Nivel de usuario no permitido' : '';
 
