@@ -163,13 +163,14 @@
 
 
 
+
 /*  C A L E N D A R I O    F L A T P I C K R  */
-input.form-control.input {
+input.form-control.input, #datepicker {
     width: 100%;
     max-width: 250px;
     padding: 10px 15px;
     font-size: 16px;
-    border: 2px solid #4298bd;
+    border: 2px solid #4298bd !important;
     border-radius: 8px;
     outline: none;
     transition: all 0.3s ease;
@@ -179,8 +180,8 @@ input.form-control.input {
     background-repeat: no-repeat;
     cursor: pointer;
     &:focus {
-        border-color: #007bff;
-        box-shadow: 0 0 .15rem .06rem rgba(0, 90, 187, 0.297);
+        border-color: #007bff !important;
+        box-shadow: 0 0 .15rem .06rem rgba(0, 90, 187, 0.297) !important;
     }
     &::placeholder {
         color: #999;
@@ -984,6 +985,10 @@ select.crud-header-select.select-destination-branch { max-width: max-content; }
         padding-block-end: .6rem;
         justify-content: baseline;
         align-items: stretch;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem 0 ;
+        grid-template-rows: auto;
         & .summary {
             /* max-width: 100%; */
             min-width: 200px;
@@ -995,7 +1000,7 @@ select.crud-header-select.select-destination-branch { max-width: max-content; }
             /* min-height: 110px; */
             /* min-width: max-content; */
             &:last-of-type { box-shadow: none; }
-            &:first-of-type { padding-inline-start: 0; flex-shrink: 2; }
+            /* &:first-of-type { padding-inline-start: 0; flex-shrink: 2; } */
             &:nth-of-type(2) { flex-shrink: 2;  }
             & p {
                 display: block;
@@ -1415,6 +1420,7 @@ select.crud-header-select.select-destination-branch { max-width: max-content; }
             & p, .message-error {
                 font-size: small;
                 padding-bottom: .6rem;
+                /* font-weight: 700; */
                 color: rgb(235, 26, 26);
             }
             & legend {
@@ -1492,8 +1498,13 @@ select.crud-header-select.select-destination-branch { max-width: max-content; }
         & .reset-btn {
             background-color: red;
             width: 60%;
+            width: max-content;
             padding-inline: 1rem;
             max-width: 100%;
+            & svg {
+                min-width: 24px;
+                min-height: 24px;
+            }
         }
         & .field-image-edit-form {
             grid-column: 1 / span 1;
@@ -1526,7 +1537,7 @@ select.crud-header-select.select-destination-branch { max-width: max-content; }
             cursor: pointer;
         }
     }
-    & #form-editar :is(input, select, .current-image-container) {
+    & #form-editar :is(input, select, textarea, .current-image-container) {
         background-color: #f5efe2;
         &:focus { background-color: #fff; }
     }
@@ -1846,6 +1857,7 @@ select.crud-header-select.select-destination-branch { max-width: max-content; }
         border-radius: .8rem .8rem .8rem 2rem;
         padding: 1.5rem;
         transition: all .2s ease;
+        cursor: text;
         & .quantities {
             gap: .5rem;
             & details {
@@ -1853,6 +1865,7 @@ select.crud-header-select.select-destination-branch { max-width: max-content; }
                 flex-direction: column;
                 & summary {
                     list-style-type: none;
+                    cursor: pointer;
                     padding: .5rem;
                     padding-block-end: 0;
                     font-size: smaller;
@@ -1900,6 +1913,7 @@ select.crud-header-select.select-destination-branch { max-width: max-content; }
     & .register-actions-menu-container .menu-toggle svg { fill: #fff; }
     & .register-actions {
         z-index: 120;
+        left: 38px;
         & .edit-order-btn { background-color: var(--modify-order-color); }
         & .aproved-order-btn { background-color: var(--aproved-order-color); }
         & .rejected-order-btn { background-color: var(--rejected-order-color); }

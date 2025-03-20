@@ -5,10 +5,8 @@
 <?php $page_name = ACCESO . ' Sucursales | Pedidos' ?>
 
 <?php
-    //  S U C U R S A L E S
     $sql = 'SELECT id_sucursal, nombre_sucursal FROM sucursales ORDER BY nombre_sucursal ASC';
     $sucursales = simpleQuery($sql) ?: [];
-
 ?>
 
 <!DOCTYPE html>
@@ -232,5 +230,7 @@
     </main>
 
     <script src="<?= MATRIX_HTTP_URL ?>resources/js/orders.js"></script>
+
+    <script src="<?=MATRIX_HTTP_URL?>resources/js/tooltips.js"></script>
 </body>
 </html>

@@ -130,24 +130,35 @@ $(document).on('click', '.status-btn ', function() {
         if (result.isConfirmed) {
             $.ajax({
                 url: '../../../functions/crud_marca.php',
-                method: 'GET',
+                method: 'POST',
                 data: { m: brandId, accion: 'status' },
-                success: function(data) {
-                    if (data.status === 'success') {
-                        Toast.fire({
-                            icon: 'success',
-                            title: data.message,
-                            timer: 1000
-                        });
-                        setTimeout(() => {
-                            window.location.reload()
-                        }, 1000);
-                    } else {
+                dataType: 'json',
+                success: function(response) {
+                    try {
+                        let res = response;
+
+                        if (res.status === 'success') {
+                            Toast.fire({
+                                icon: 'success',
+                                title: res.message,
+                                timer: 1000
+                            });
+                            setTimeout(() => {
+                                window.location.reload()
+                            }, 1000);
+                        } else {
+                            Toast.fire({
+                                icon: 'error',
+                                title: res.message
+                            });
+                        }
+                    } catch (error) {
                         Toast.fire({
                             icon: 'error',
-                            title: data.message
+                            title: res.message
                         });
                     }
+
                 },
                 error: (xhr, status, error) => {
                     console.error("Error al cargar la marca:", error);

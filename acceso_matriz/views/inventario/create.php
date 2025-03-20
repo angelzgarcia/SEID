@@ -108,7 +108,12 @@
                         </p>
                     </legend>
 
-                    <input type="text" name="codigo_barras" placeholder="Ingrese el codigo de barras" value="<?= $_SESSION['olds']['codigo_barras'] ?? '' ?>" oninput="validarCodigoBarras(this)">
+                    <input
+                        type="text"
+                        name="codigo_barras"
+                        placeholder="Ingrese el codigo de barras" value="<?= $_SESSION['olds']['codigo_barras'] ?? '' ?>"
+                        oninput="validarCodigoBarras(this)"
+                    >
                 </fieldset>
 
                 <!-- NOMBRE -->
@@ -242,11 +247,22 @@
 
                     <div class="flex justify-start gap-8 items-center">
                         <div class="flex gap-2 items-center">
-                            <input type="radio" name="aplica_mayoreo" value="si" <?= isset($_SESSION['olds']['aplica_mayoreo']) && $_SESSION['olds']['aplica_mayoreo']  === 'si' ? 'checked' : '' ?>>
+                            <input
+                                type="radio"
+                                name="aplica_mayoreo"
+                                value="0"
+                                <?= isset($_SESSION['olds']['aplica_mayoreo']) && $_SESSION['olds']['aplica_mayoreo']  === 'si' ? 'checked' : '' ?>
+                            >
                             <span>Sí</span>
                         </div>
+
                         <div class="flex gap-2 items-center">
-                            <input type="radio" name="aplica_mayoreo" value="no" <?= !isset($_SESSION['olds']['aplica_mayoreo']) || $_SESSION['olds']['aplica_mayoreo'] === 'no' ? 'checked' : '' ?>>
+                            <input
+                                type="radio"
+                                name="aplica_mayoreo"
+                                value="1"
+                                <?= !isset($_SESSION['olds']['aplica_mayoreo']) || $_SESSION['olds']['aplica_mayoreo'] === 'no' ? 'checked' : '' ?>
+                            >
                             <span>No</span>
                         </div>
                     </div>
@@ -285,7 +301,7 @@
                         </p>
                     </legend>
 
-                    <input type="date" name="vencimiento" class="uppercase" value="<?= $_SESSION['olds']['vencimiento'] ?? '' ?>">
+                    <input type="text" id="datepicker" name="vencimiento" class="search-order-by-date" placeholder="Buscar pedidos por fecha">
                 </fieldset>
 
                 <!-- IMAGEN -->
@@ -328,154 +344,8 @@
         unset($_SESSION['errors']);
     ?>
 
+    <script src="<?=MATRIX_HTTP_URL?>resources/js/tooltips.js"></script>
 
-
-    <!-- MOSTRAR CAMPOS PARA MAYOREO -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const radios = document.querySelectorAll('input[name="aplica_mayoreo"]');
-            const minQuantityWholesale = document.getElementById('min-quantity-wholesale');
-            const wholesalePrice = document.getElementById('wholesale-price');
-
-            function toggleWholesaleFields() {
-                const selected = document.querySelector('input[name="aplica_mayoreo"]:checked');
-
-                if (selected && selected.value === 'si') {
-                    minQuantityWholesale.style.display = 'flex';
-                    wholesalePrice.style.display = 'flex';
-                } else {
-                    minQuantityWholesale.style.display = 'none';
-                    wholesalePrice.style.display = 'none';
-                }
-            }
-
-            toggleWholesaleFields();
-
-            radios.forEach(radio => {
-                radio.addEventListener('change', toggleWholesaleFields);
-            });
-        });
-    </script>
-
-    <!-- REEMPLAZAR NUMEROS NEGATIVOS -->
-    <script>
-        function validarCodigoBarras(input) {
-            input.value = input.value.replace(/[^0-9]/g, '');
-        }
-
-        function validarUnidades(input) {
-            input.value = input.value.replace(/^0+|[^0-9]/g, '');
-        }
-
-        function validarPrecios(input) {
-            let cursorPos = input.selectionStart;
-            let longitudAntes = input.value.length;
-
-            input.value = input.value.replace(/^0+(\d)/, '$1')
-                                    .replace(/[^0-9.]/g, '')
-                                    .replace(/(\..*)\./g, '$1')
-                                    .replace(/^(\d+\.\d{2})\d+$/, '$1');
-
-            if (input.value === "0") input.value = "";
-
-            if (input.value.startsWith('.')) input.value = '';
-        }
-    </script>
-
-    <!-- FACTOR DE CONVERSION -->
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const unidadCompra = document.getElementById("unidad_compra");
-            const unidadVenta = document.getElementById("unidad_venta");
-            const conversionExtra = document.getElementById("conversion_extra");
-            const cantidadConversion = document.getElementById("cantidad_conversion");
-            const factorConversion = document.getElementById("factor_conversion");
-            const conversionResult = document.getElementById("conversion_result");
-            const stockLabel = document.getElementById("stockLabel");
-
-            const unidadesConversión = ["paquete", "caja"];
-
-            unidadCompra.addEventListener("change", function() {
-                let selectedCompra = unidadCompra.value;
-                let selectedVenta = unidadVenta.value;
-
-                if (unidadesConversión.includes(selectedCompra) && selectedCompra !== selectedVenta) {
-                    conversionExtra.style.display = "block";
-                } else {
-                    conversionExtra.style.display = "none";
-                    cantidadConversion.value = 1;
-                    factorConversion.value = 1;
-                    conversionResult.textContent = "";
-                }
-
-                stockLabel.textContent = `Cantidad de ${selectedCompra}s en stock`;
-            });
-
-            unidadVenta.addEventListener("change", function() {
-                unidadCompra.dispatchEvent(new Event("change"));
-            });
-
-
-            unidadVenta.addEventListener("change", calcularFactorConversion);
-            cantidadConversion.addEventListener("input", calcularFactorConversion);
-
-            function calcularFactorConversion() {
-                let selectedCompra = unidadCompra.value;
-                let selectedVenta = unidadVenta.value;
-                let cantidad = cantidadConversion.value;
-
-                if (!cantidad || cantidad <= 0) {
-                    factorConversion.value = "";
-                    conversionResult.textContent = "";
-                    return;
-                }
-
-                let factor = 1;
-
-                if (selectedCompra === "bulto" && selectedVenta === "kg") {
-                    factor = cantidad;
-                } else if (selectedCompra === "bulto" && selectedVenta === "gramo") {
-                    factor = cantidad * 1000;
-                } else if (selectedCompra === "rollo" && selectedVenta === "metro") {
-                    factor = cantidad;
-                } else if (selectedCompra === "rollo" && selectedVenta === "centimetro") {
-                    factor = cantidad * 100;
-                } else if (selectedCompra === "saco" && selectedVenta === "kg") {
-                    factor = cantidad;
-                } else if (selectedCompra === "saco" && selectedVenta === "gramo") {
-                    factor = cantidad * 1000;
-                } else if (selectedCompra === "paquete" && selectedVenta === "pieza") {
-                    factor = cantidad;
-                } else if (selectedCompra === "caja" && selectedVenta === "pieza") {
-                    factor = cantidad;
-                } else if (selectedCompra === "pieza" && selectedVenta === "pieza") {
-                    factor = 1;
-                }
-
-                factorConversion.value = factor;
-                conversionResult.textContent = `1 ${selectedCompra} = ${factor} ${selectedVenta}s`;
-            }
-        });
-    </script>
-
-    <!-- VISTA PREVIA DE LA IMAGEN -->
-    <script>
-        function mostrarVistaPrevia(event) {
-            const fileInput = event.target;
-            const file = fileInput.files[0];
-            const previewImg = document.getElementById("previewImg");
-            const uploadText = document.getElementById("uploadText");
-
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previewImg.src = e.target.result;
-                    previewImg.style.display = "block";
-                    uploadText.style.display = "none";
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-    </script>
+    <script src="<?= MATRIX_HTTP_URL ?>resources/js/product_form.js"></script>
 </body>
 </html>

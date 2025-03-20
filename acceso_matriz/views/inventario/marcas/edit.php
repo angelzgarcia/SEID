@@ -51,7 +51,14 @@
                 </div>
             </div>
 
-            <form class="form-create category-add" action="<?= MATRIX_FNS ?>crud_marca.php?m=<?= encryptValue($id_marca, SECRETKEY) ?>" method="POST" autocomplete="off" enctype="multipart/form-data">
+            <form
+                class="form-create category-add"
+                action="<?= MATRIX_FNS ?>crud_marca.php?m=<?= encryptValue($id_marca, SECRETKEY) ?>"
+                method="POST"
+                autocomplete="off"
+                enctype="multipart/form-data"
+                id="form-editar"
+            >
                 <!-- NOMBRE -->
                 <fieldset class="category-field-name">
                     <legend>

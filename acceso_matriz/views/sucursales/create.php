@@ -92,5 +92,7 @@
         unset($_SESSION['errors']);
         unset($_SESSION['olds']);
     ?>
+
+    <script src="<?=MATRIX_HTTP_URL?>resources/js/tooltips.js"></script>
 </body>
 </html>

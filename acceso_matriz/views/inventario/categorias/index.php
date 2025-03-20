@@ -145,7 +145,6 @@
 
     <?php require_once MATRIX_DOC_VIEWS . 'inventario/categorias/show_modal.php' ?>
 
-    <!-- TOOLTIPS -->
     <script src="<?=MATRIX_HTTP_URL?>resources/js/tooltips.js"></script>
 
     <script src="<?= MATRIX_HTTP_URL ?>resources/js/categories.js"></script>

@@ -5,17 +5,21 @@ require_once MATRIX_DOC_ROOT . 'database.php';
 foreach (glob(__DIR__ . "/helpers/*.php") as $helper)
     require_once $helper;
 
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET['p'])) show();
+if ($_SERVER['REQUEST_METHOD'] === 'POST')
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST')
-    redirect();
+    match($_POST['accion']) {
+        'guardar' => store(),
+        'actualizar' => update(),
+        'status' => changeStatus(),
+        default => redirect(),
+    };
 
-match ($_POST['accion']) {
-    'guardar' => store(),
-    'actualizar' => update(),
-    'modificar' => changeStatus(),
-    default => redirect()
-};
+else if ($_SERVER['REQUEST_METHOD'] === 'GET')
+
+    (!empty($_GET['p']) && $_GET['accion'] === 'detalles') ? show() : redirect_json('¡Datos incompletos!');
+
+else redirect_json('¡Acceso denegado!', 'error');
+
 
 function redirect()
 {
@@ -24,12 +28,23 @@ function redirect()
     exit;
 }
 
+function redirect_json($message = '¡Ocurrió un error!', $status = 'error')
+{
+    header('Content-Type: application/json');
+
+    echo json_encode(['status' => $status, 'message' => $message]);
+    exit;
+}
+
+
 function store()
 {
     $data = [];
     $errors = [];
     $olds = [];
-    $unfillable = ['precio_mayoreo' => '', 'cantidad_minima_mayoreo' => '', 'vencimiento' => ''];
+    $unfillable = ['aplica_mayoreo' => '', 'precio_mayoreo' => '', 'cantidad_minima_mayoreo' => '', 'vencimiento' => ''];
+    if ((int)$_POST['aplica_mayoreo'] === 1)
+        unset($unfillable['aplica_mayoreo']);
 
     $vencimiento = isset($_POST['vencimiento']) ? clearEntry($_POST['vencimiento']) : null;
     unset($_POST['vencimiento']);
@@ -46,6 +61,9 @@ function store()
             if (!isset($data[$key]))
                 $errors[$key] = "El campo " . str_replace(['-','_'], ' ', $key) . " es obligatorio";
     }
+
+    $data['aplica_mayoreo'] = (int)$_POST['aplica_mayoreo'];
+    // var_dump($data, $_POST);exit;
 
     $_SESSION['olds'] = $olds;
 
@@ -99,10 +117,8 @@ function store()
         'null'    => 's',
     ];
 
-    foreach ($index_data as &$value) {
-        // if ($value === null) $value = '';
+    foreach ($index_data as &$value)
         $types .= $type_map[gettype($value)] ?? 's';
-    }
 
     $sql = '
         INSERT INTO productos (
@@ -127,7 +143,7 @@ function store()
 
     $params = array_map(fn(&$value) => $value, $index_data);
 
-    if (isset($vencimiento)) {
+    if ($vencimiento) {
         startTransaction();
 
         if (!simpleQuery($sql, $params, $types)) {
@@ -166,69 +182,79 @@ function store()
     redirect();
 }
 
+
 function show()
 {
-    $id = clearEntry(decryptValue($_GET['p'] ?? '', SECRETKEY)) ?: null;
+    try {
+        header('Content-Type: application/json');
 
-    $sql = '
-        SELECT
-            p.*, c.nombre_categoria,
-            m.nombre_marca,
-            GROUP_CONCAT(CONCAT(v.fecha_vencimiento, "|", v.created_at) SEPARATOR ",") AS lotes
-        FROM productos AS p
-        INNER JOIN categorias AS c ON p.id_categoria_fk_producto = c.id_categoria
-        INNER JOIN marcas AS m ON p.id_marca_fk_producto = m.id_marca
-        LEFT JOIN lotes_vencimientos AS v ON v.id_producto_fk_lote_vencimiento = p.id_producto
-        WHERE id_producto = ?
-        GROUP BY p.id_producto
-        ORDER BY v.fecha_vencimiento ASC
-    ';
-    $product = simpleQuery($sql, [(int)$id], 'i', true) ?: null;
-    if (!$product) {
-        echo json_encode(["error" => "Producto no encontrado"]);
+        $id = clearEntry(decryptValue($_GET['p'] ?? '', SECRETKEY)) ?: null;
+        if (!$id) redirect_json("¡Producto no encontrado!");
+
+        $sql = '
+            SELECT
+                p.*, c.nombre_categoria,
+                m.nombre_marca,
+                GROUP_CONCAT(CONCAT(v.fecha_vencimiento, "|", v.created_at) SEPARATOR ",") AS lotes
+            FROM productos AS p
+            INNER JOIN categorias AS c ON p.id_categoria_fk_producto = c.id_categoria
+            INNER JOIN marcas AS m ON p.id_marca_fk_producto = m.id_marca
+            LEFT JOIN lotes_vencimientos AS v ON v.id_producto_fk_lote_vencimiento = p.id_producto
+            WHERE id_producto = ?
+            GROUP BY p.id_producto
+            ORDER BY v.fecha_vencimiento ASC
+        ';
+        $product = simpleQuery($sql, [(int)$id], 'i', true) ?: null;
+        if (!$product) {
+            redirect_json("Producto no encontrado");
+        }
+
+        $product = $product[0];
+        if ($product['lotes']) {
+            $lotesArray = array_map(function ($lote) {
+                return explode('|', $lote);
+            }, explode(',', $product['lotes']));
+
+            usort($lotesArray, function ($a, $b) {
+                return strtotime($a[0]) - strtotime($b[0]);
+            });
+
+            $product['lotes'] = $lotesArray;
+        } else {
+            $product['lotes'] = [];
+        }
+
+
+        $http_path = HTTP_URL . 'imgs_productos/';
+        $doc_path = DOC_ROOT . 'imgs_productos';
+        $files_paths_history_root = glob("{$doc_path}/*_{$product['slug_producto']}_*", GLOB_NOSORT) ?? 0;
+
+        if (count($files_paths_history_root) > 1) {
+            usort($files_paths_history_root, fn($a, $b) => filemtime($b) - filemtime($a));
+
+            $files_names = array_map(fn($f) => $http_path . basename($f), array_slice($files_paths_history_root, 0, 3));
+
+            $product['images'] = $files_names;
+        }
+
+        header('Content-Type: application/json');
+        echo json_encode($product);
         exit;
+    } catch (Exception $e) {
+        redirect_json($e -> getMessage(), 'warning');
     }
-
-    $product = $product[0];
-    if ($product['lotes']) {
-        $lotesArray = array_map(function ($lote) {
-            return explode('|', $lote);
-        }, explode(',', $product['lotes']));
-
-        usort($lotesArray, function ($a, $b) {
-            return strtotime($a[0]) - strtotime($b[0]);
-        });
-
-        $product['lotes'] = $lotesArray;
-    } else {
-        $product['lotes'] = [];
-    }
-
-
-    $http_path = HTTP_URL . 'imgs_productos/';
-    $doc_path = DOC_ROOT . 'imgs_productos';
-    $files_paths_history_root = glob("{$doc_path}/*_{$product['slug_producto']}_*", GLOB_NOSORT) ?? 0;
-
-    if (count($files_paths_history_root) > 1) {
-        usort($files_paths_history_root, fn($a, $b) => filemtime($b) - filemtime($a));
-
-        $files_names = array_map(fn($f) => $http_path . basename($f), array_slice($files_paths_history_root, 0, 3));
-
-        $product['images'] = $files_names;
-    }
-
-    header('Content-Type: application/json');
-    echo json_encode($product);
-    exit;
 }
+
 
 function update()
 {
     unset($_POST['accion']);
+
     $data = [];
     $errors = [];
-    $olds = [];
-    $unfillable = ['stock_producto' => '', 'imagen' => ''];
+    $olds = $_POST;
+    $cambios = false;
+    $unfillable = ['stock_producto' => '', 'imagen' => '', 'aplica_mayoreo' => '', 'vencimiento' => ''];
 
     $id = (int)clearEntry(decryptValue($_GET['p'] ?? '', SECRETKEY)) ?: null;
     if (!$id) redirect();
@@ -239,7 +265,9 @@ function update()
         WHERE id_producto = ?
         LIMIT 1
     ';
+
     $producto_actual = simpleQuery($sql, [$id], 'i', true)[0] ?: false;
+
     if (!$producto_actual) {
         $_SESSION['swal'] = swal('error', '¡El producto no existe!');
         redirect();
@@ -252,44 +280,74 @@ function update()
         LIMIT 1
     ';
 
-    if (empty(simpleQuery($sql, [$id], 'i', true)) || !$_POST['stock_producto'] ) $unfillable['vencimiento'] = '';
-    if (!empty($_POST['stock_producto'])) unset($unfillable['stock_producto']);
+    $has_expiration = simpleQuery($sql, [$id], 'i', true) ?? '';
 
-    if ((int)$_POST['aplica_mayoreo'] === 0) {
+    if (!$has_expiration) {
+        if ($olds['vencimiento']) {
+            $cambios = true;
+            unset($unfillable['stock_producto']);
+            unset($unfillable['vencimiento']);
+
+        } else if ($olds['stock_producto']) {
+            $cambios = true;
+            unset($unfillable['stock_producto']);
+        }
+    } else {
+        if (($olds['stock_producto'] || $olds['vencimiento'])) {
+            $cambios = true;
+            unset($unfillable['vencimiento']);
+            unset($unfillable['stock_producto']);
+        }
+    }
+
+    if ((int)$olds['aplica_mayoreo'] === 1) {
         $unfillable['precio_mayoreo_producto'] = '';
         $unfillable['cantidad_minima_mayoreo_producto'] = '';
     }
 
-    $cambios = false;
+    $data = array_map(fn($field) => clearEntry($field) ?: null, $olds);
+    $data['aplica_mayoreo'] = (int)$olds['aplica_mayoreo'];
 
-    foreach($_POST as $key => $request) {
-        $data[$key] = is_numeric($request) ?
-            (strpos($request, '.') !== false ? (float)$request :
-            (int)$request) : (clearEntry($request) ?: null);
+    $keys_map = [
+        'categoria' => 'id_categoria_fk_producto',
+        'marca' => 'id_marca_fk_producto',
+    ];
 
-        $request ? $olds[$key] = $request : '';
+    $data['categoria'] = (int)decryptValue($olds['categoria'] ?? '', SECRETKEY) ?? '';
+    $data['marca'] = (int)decryptValue($olds['marca'] ?? '', SECRETKEY) ?? '';
 
-        if (!isset($data[$key]) && !array_key_exists($key, $unfillable))
-            $errors[$key] = "El campo " . str_replace(['-','_', 'producto'], ' ', $key) . " es obligatorio";
+    if (!$cambios) {
+        foreach ($data as $key => $v) {
+            if (!array_key_exists($key, $unfillable)) {
+                $product_key = $keys_map[$key] ?? $key;
 
-        if (isset($producto_actual[$key]) && $producto_actual[$key] != $data[$key] && !array_key_exists($key, $unfillable))
-            $cambios = true;
+                if (array_key_exists($product_key, $producto_actual)) {
+                    if ($producto_actual[$product_key] != $v) {
+                        $cambios = true;
+                    }
+                }
+            }
+        }
     }
-
-    $_SESSION['olds'] = $olds;
 
     if (!$cambios && !$_FILES['imagen']['name']) {
         $_SESSION['swal'] = swal('success', '¡No se detectaron cambios!');
         redirect();
     }
 
-    if (count($errors) > 0) {
-        $_SESSION['errors'] = $errors;
-        redirect();
-    }
+    $empty_fields = array_filter(
+        $data,
+        fn($field, $key) => empty($field) && !array_key_exists($key, $unfillable),
+        ARRAY_FILTER_USE_BOTH
+    );
 
-    if (!array_key_exists('vencimiento', $unfillable) && !isset($data['vencimiento'])) {
-        $_SESSION['swal'] = swal('info', '¡Este producto requiere fecha de vencimiento!', '', 4000);
+    foreach ($empty_fields as $field => $value)
+        $errors[$field] = "El campo " . str_replace(['-','_', 'producto'], ' ', $field) . " es obligatorio";
+
+    $_SESSION['olds'] = $olds;
+
+    if (!empty($errors)) {
+        $_SESSION['errors'] = $errors;
         redirect();
     }
 
@@ -305,62 +363,163 @@ function update()
         redirect();
     }
 
-    if (count($errors) === (count($_POST) + 1) - count($unfillable)) {
+    if (count($errors) === (count($olds) + 1) - count($unfillable)) {
         $_SESSION['swal'] = swal('error', '¡No puedes dejar vaciós los campos!', '', 4000);
         redirect();
     }
 
-    $http_path = HTTP_URL . 'imgs_productos/';
-    $doc_path = DOC_ROOT . 'imgs_productos/';
+
     $file_assoc = $_FILES['imagen'];
     $file = $file_assoc['tmp_name'] ?: null;
 
+
     if (!$cambios && $file) {
-        $slug = $producto_actual['slug_producto'];
-        $file_name = $file_assoc['name'];
-
-        $date = date('mY');
-        $file_name = createSlug(basename($file_name), true);
-        $img_name = "{$date}_{$slug}_{$file_name}";
-        storeImage($file_assoc, $img_name, $doc_path);
-
-        // C O N V E R T I R   I M A G E N   A  .webp
-        $webp_img_name = createWebpImage($img_name, $doc_path);
-        if ($webp_img_name) unlink("$doc_path$img_name");
-
-        $sql = '
-            UPDATE productos SET imagen_producto = ?, updated_at = NOW()
-            WHERE id_producto = ?
-        ';
-        if (!simpleQuery($sql, ["$http_path$webp_img_name", $id], 'si')) {
+        if (!updateProductImage($producto_actual, $file_assoc)) {
             $_SESSION['swal'] = swal('error', '¡No se pudo actualizar el fichero!', '', 3500);
-            destroyImage($webp_img_name);
             redirect();
         }
 
         $_SESSION['swal'] = swal('success', '¡Imagen actualizada!');
-        redirect();
+
+    } else if ($cambios && !$file) {
+        if (!updateProduct($data, $producto_actual, $unfillable)) {
+            $_SESSION['swal'] = swal('error', '¡No se pudo actualizar el producto!');
+            redirect();
+        }
+
+        $_SESSION['swal'] = swal('success', '¡Producto actualizado!');
+
+    } else if ($cambios && $file) {
+        if (!updateProduct($data, $producto_actual, $unfillable)) {
+            $_SESSION['swal'] = swal('error', '¡No se pudo actualizar el producto!');
+            redirect();
+        }
+
+        if (!updateProductImage($producto_actual, $file_assoc)) {
+            $_SESSION['swal'] = swal('error', '¡No se pudo actualizar el fichero!', '', 3500);
+            redirect();
+        }
+
+        $_SESSION['swal'] = swal('success', '¡Producto actualizado!');
     }
-
-    if ($cambios && !$file) {
-
-    }
-
-    if ($cambios && $file) {
-
-    }
-
-    // var_dump($file_assoc, $file);
-    // exit;
 
     unset($_SESSION['olds']);
     unset($_SESSION['errors']);
     redirect();
 }
 
+
+function updateProduct($data, $producto_actual, $unfillable)
+{
+    $keys_map = [
+        'categoria' => 'id_categoria_fk_producto',
+        'marca' => 'id_marca_fk_producto',
+        'codigo_barras_producto' => 'codigo_barras_producto',
+        'nombre_producto' => 'nombre_producto',
+        'unidad_compra_producto' => 'unidad_compra_producto',
+        'unidad_venta_producto' => 'unidad_venta_producto',
+        'stock_producto' => 'stock_producto',
+        'factor_conversion' => 'factor_conversion',
+        'precio_costo_producto' => 'precio_costo_producto',
+        'precio_venta_producto' => 'precio_venta_producto',
+        'aplica_mayoreo' => 'aplica_mayoreo',
+        'cantidad_minima_mayoreo_producto' => 'cantidad_minima_mayoreo_producto',
+        'precio_mayoreo_producto' => 'precio_mayoreo_producto',
+        'vencimiento' => 'vencimiento',
+    ];
+    $type_map = [
+        'integer' => 'i',
+        'double'  => 'd',
+        'float'   => 'd',
+        'string'  => 's',
+        'NULL'    => 's',
+        'null'    => 's',
+    ];
+    $types = '';
+
+    $data = array_filter($data, fn($value, $key) => !array_key_exists($key, $unfillable), ARRAY_FILTER_USE_BOTH);
+
+    foreach ($data as &$value)
+        $types .= $type_map[gettype($value)] ?? 's';
+
+    $set_query = [];
+    $params = [];
+    foreach($data as $key => $value) {
+        if (isset($keys_map[$key])) {
+            array_push($set_query, "{$keys_map[$key]} = ?");
+            array_push($params, $value);
+        }
+    }
+
+    array_push($params, $producto_actual['id_producto']);
+    $types .= 'i';
+
+    $sql = '
+        UPDATE productos
+        SET '. implode(', ', $set_query) . '
+        WHERE id_producto = ?
+    ';
+
+    return simpleQuery($sql, $params, $types);
+}
+
+
+function updateProductImage($producto_actual, $file_assoc)
+{
+    $http_path = HTTP_URL . 'imgs_productos/';
+    $doc_path = DOC_ROOT . 'imgs_productos/';
+
+    $slug = $producto_actual['slug_producto'];
+    $file_name = $file_assoc['name'];
+
+    $date = date('mY');
+    $file_name = createSlug(basename($file_name), true);
+    $img_name = "{$date}_{$slug}_{$file_name}";
+    storeImage($file_assoc, $img_name, $doc_path);
+
+    // C O N V E R T I R   I M A G E N   A  .webp
+    $webp_img_name = createWebpImage($img_name, $doc_path);
+    if ($webp_img_name) unlink("$doc_path$img_name");
+
+    $sql = '
+        UPDATE productos SET imagen_producto = ?, updated_at = NOW()
+        WHERE id_producto = ?
+    ';
+
+    if (!simpleQuery($sql, ["$http_path$webp_img_name", $producto_actual['id_producto']], 'si')) {
+        destroyImage($webp_img_name);
+        return false;
+    }else {
+        return true;
+    }
+}
+
+
 function changeStatus()
 {
-    
+    try {
+        header('Content-Type: application/json');
+
+        $id = (int)decryptValue($_POST['p'] ?? '', SECRETKEY) ?? '';
+        if (!$id) redirect_json('¡Producto no válido!');
+
+        $sql = 'SELECT status_producto FROM productos WHERE id_producto = ?';
+
+        $product = simpleQuery($sql, [$id], 'i', true)[0] ?? null;
+        if (!$product) redirect_json('¡Producto no encontrado!');
+
+        $current_status = (int)$product['status_producto'];
+        $new_status = ($current_status === 0) ? 1 : 0;
+
+        $sql = 'UPDATE productos SET status_producto = ? WHERE id_producto = ?';
+
+        !simpleQuery($sql, [$new_status, $id], 'ii')
+            ? redirect_json('¡No se pudo actualizar el status!', 'error')
+            : redirect_json('¡Status actualizado!', 'success');
+
+    } catch (Exception $e) {
+        redirect_json($e -> getMessage(), 'warning');
+    }
 }
 
 

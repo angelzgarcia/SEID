@@ -1,19 +1,25 @@
 
 <?php
-if ($_SERVER['REQUEST_METHOD'] !== 'POST')
-    redirect();
-
 require_once __DIR__ . '/../config.php';
 require_once __DIR__ . '/../database.php';
 foreach (glob(__DIR__ . "/helpers/*.php") as $helper)
     require_once $helper;
 
-match($_POST['accion'] ?? '') {
-    'guardar' => store(),
-    'actualizar' => update(),
-    'modificar' => changeStatus(),
-    default => redirect(),
-};
+if ($_SERVER['REQUEST_METHOD'] === 'POST')
+
+    match($_POST['accion']) {
+        'guardar' => store(),
+        'actualizar' => update(),
+        'status' => changeStatus(),
+        default => redirect(),
+    };
+
+else if ($_SERVER['REQUEST_METHOD'] === 'GET')
+
+    (!empty($_GET['s']) && $_GET['accion'] === 'detalles') ? show() : redirect_json('¡Datos incompletos!');
+
+else redirect_json('¡Acceso denegado!', 'error');
+
 
 function redirect()
 {
@@ -21,6 +27,15 @@ function redirect()
     header("Location: $redirect_ulr");
     exit;
 }
+
+function redirect_json($message = '¡Ocurrió un error!', $status = 'error')
+{
+    header('Content-Type: application/json');
+
+    echo json_encode(['status' => $status, 'message' => $message]);
+    exit;
+}
+
 
 function store()
 {
@@ -94,14 +109,42 @@ function store()
     ';
 
     $index_data = array_values($data);
-    $_SESSION['swal'] = (!simpleQuery($sql, $index_data, 'sss')) ?
-            swal("error", "¡Ocurrió un error. Contacta con soporte!") :
-            swal("success", "¡Sucursal añadida exitosamente!");
+    $_SESSION['swal'] = (!simpleQuery($sql, $index_data, 'sss'))
+        ? swal("error", "¡Ocurrió un error. Contacta con soporte!")
+        : swal("success", "¡Sucursal añadida exitosamente!");
 
     unset($_SESSION['olds']);
     unset($_SESSION['errors']);
     redirect();
 }
+
+
+function show()
+{
+    try {
+        header('Content-Type: application/json');
+
+        $id = clearEntry(decryptValue($_GET['s'] ?? '', SECRETKEY)) ?: null;
+
+        if (!$id) redirect_json('¡Sucursal no válida!');
+
+        $sql = '
+            SELECT *
+            FROM sucursales
+            WHERE id_sucursal = ?
+            ORDER BY id_sucursal DESC
+        ';
+
+        $brand = simpleQuery($sql, [(int)$id], 'i', true)[0] ?: null;
+        if (!$brand) redirect_json('¡Sucursal no encontrada!');
+
+        echo json_encode($brand);
+        exit;
+    } catch (Exception $e) {
+        redirect_json($e -> getMessage(), 'warning');
+    }
+}
+
 
 function update()
 {
@@ -114,21 +157,22 @@ function update()
     redirect();
 }
 
+
 function changeStatus()
 {
-    $id = (int)decryptValue($_GET['m'], SECRETKEY);
+    $id = (int)decryptValue($_GET['s'], SECRETKEY);
     if (!$id) redirect();
 
     global $conn;
     $sql = '
-        SELECT * FROM marcas
-        WHERE id_marca = ?
+        SELECT * FROM sucursales
+        WHERE id_sucursal = ?
     ';
     $query = $conn -> prepare($sql);
     $query -> bind_param('i', $id);
 
     if (!$query -> execute()) {
-        $_SESSION['swal'] = swal("warning", "¡No se encontró la marca!");
+        $_SESSION['swal'] = swal("warning", "¡No se encontró la sucursal!");
         redirect();
     }
 
@@ -136,17 +180,17 @@ function changeStatus()
     $query -> close();
 
     if (!$brand) {
-        $_SESSION['swal'] = swal("warning", "¡No se encontró la marca!");
+        $_SESSION['swal'] = swal("warning", "¡No se encontró la sucursal!");
         redirect();
     }
 
-    $current_status = (int)$brand['status_marca'];
+    $current_status = (int)$brand['status_sucursal'];
     $new_status = ($current_status === 0) ? 1 : 0;
 
     $sql = '
-        UPDATE marcas
-        SET status_marca = ?
-        WHERE id_marca = ?
+        UPDATE sucursales
+        SET status_sucursal = ?
+        WHERE id_sucursal = ?
     ';
     $query = $conn -> prepare($sql);
     $query -> bind_param('ii', $new_status, $id);

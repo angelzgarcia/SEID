@@ -220,5 +220,7 @@
     </main>
 
     <script src="<?= MATRIX_HTTP_URL ?>resources/js/credentials.js"></script>
+
+    <script src="<?=MATRIX_HTTP_URL?>resources/js/tooltips.js"></script>
 </body>
 </html>

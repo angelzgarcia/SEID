@@ -334,15 +334,18 @@
                     </legend>
 
                     <div class="flex justify-start gap-8 items-center">
-                        <?php $aplica_mayoreo_registro = $producto['aplica_mayoreo'] ?? null; ?>
-                        <?php $aplica_mayoreo_sesion = isset($_SESSION['olds']['aplica_mayoreo']) ? $_SESSION['olds']['aplica_mayoreo'] : null; ?>
+                        <?php $aplica_mayoreo_registro = (int)$producto['aplica_mayoreo'] ?>
+                        <?php $aplica_mayoreo_sesion = isset($_SESSION['olds']) ? (int)$_SESSION['olds']['aplica_mayoreo'] : '' ?>
 
                         <div class="flex gap-2 items-center">
                             <input
                                 type="radio" name="aplica_mayoreo" value="0"
-                                <?php
-                                    if (isset($aplica_mayoreo_sesion) && $aplica_mayoreo_sesion === 'si') echo 'checked';
-                                    elseif ((int)$aplica_mayoreo_registro === 0 && $aplica_mayoreo_sesion !== 'no') echo 'checked';
+                                <?=
+                                    $aplica_mayoreo_sesion === 0
+                                        ? 'checked'
+                                        : ($aplica_mayoreo_registro === 0
+                                            ? 'checked'
+                                            : '');
                                 ?>
                             >
                             <span>Sí</span>
@@ -351,9 +354,12 @@
                         <div class="flex gap-2 items-center">
                             <input
                                 type="radio" name="aplica_mayoreo" value="1"
-                                <?php
-                                    if (isset($aplica_mayoreo_sesion) && $aplica_mayoreo_sesion === 'no') echo 'checked';
-                                    elseif ((int)$aplica_mayoreo_registro === 1 && $aplica_mayoreo_sesion !== 'si') echo 'checked';
+                                <?=
+                                    $aplica_mayoreo_sesion === 1
+                                        ? 'checked'
+                                        : ($aplica_mayoreo_registro === 1
+                                            ? 'checked'
+                                            : '');
                                 ?>
                             >
                             <span>No</span>
@@ -597,6 +603,8 @@
             }
         });
     </script>
+
+    <script src="<?=MATRIX_HTTP_URL?>resources/js/tooltips.js"></script>
 
     <!-- VISTA PREVIA DE LA IMAGEN -->
     <script>

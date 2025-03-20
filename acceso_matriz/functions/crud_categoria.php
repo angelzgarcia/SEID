@@ -7,20 +7,18 @@ foreach (glob(__DIR__ . "/helpers/*.php") as $helper)
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST')
+
     match($_POST['accion']) {
         'guardar' => store(),
         'actualizar' => update(),
+        'status' => changeStatus(),
         default => redirect(),
     };
 
 else if ($_SERVER['REQUEST_METHOD'] === 'GET')
-    !$_GET['c']
-        ? redirect_json('¡Categoría no definida!')
-        : match($_GET['accion']) {
-            'detalles' => show(),
-            'status' => changeStatus(),
-            default => redirect_json('¡Acción no válida!', 'warning'),
-        };
+
+    (!empty($_GET['c']) && $_GET['accion'] === 'detalles') ? show() : redirect();
+
 else redirect_json('¡Acceso denegado!', 'error');
 
 
@@ -34,6 +32,7 @@ function redirect()
 function redirect_json($message = '¡Ocurrió un error!', $status = 'error')
 {
     header('Content-Type: application/json');
+
     echo json_encode(['status' => $status, 'message' => $message]);
     exit;
 }
@@ -350,27 +349,16 @@ function update()
 function changeStatus()
 {
     try {
-        $id = (int)decryptValue($_GET['c'], SECRETKEY);
-        if (!$id) throw new Exception('¡Categoria no válida!');
+        header('Content-Type: application/json');
 
-        global $conn;
-        $sql = '
-            SELECT * FROM categorias
-            WHERE id_categoria = ?
-        ';
-        $query = $conn -> prepare($sql);
-        $query -> bind_param('i', $id);
+        $id = (int)decryptValue($_POST['c'] ?? '', SECRETKEY) ?? '';
+        if (!$id) redirect_json('¡Categoria no válida!');
 
-        if (!$query -> execute()) {
-            throw new Exception('¡Categoria no encontrada!');
-        }
+        $sql = 'SELECT status_categoria FROM categorias WHERE id_categoria = ?';
 
-        $category = $query -> get_result() -> fetch_assoc();
-        $query -> close();
+        $category = simpleQuery($sql, [$id], 'i', true)[0] ?? null;
 
-        if (!$category) {
-            throw new Exception('¡Categoria no encontrada!');
-        }
+        if (!$category) redirect_json('¡Categoria no encontrada!');
 
         $current_status = (int)$category['status_categoria'];
         $new_status = ($current_status === 0) ? 1 : 0;
@@ -380,16 +368,11 @@ function changeStatus()
             SET status_categoria = ?
             WHERE id_categoria = ?
         ';
-        $query = $conn -> prepare($sql);
-        $query -> bind_param('ii', $new_status, $id);
 
-        !$query -> execute()
-        ?
-        redirect_json('¡No se pudo actualizar el status!', 'error')
-        :
-        redirect_json('¡Status actualizado!', 'success');
+        !simpleQuery($sql, [(int)$new_status, $id], 'ii')
+            ? redirect_json('¡No se pudo actualizar el status!', 'error')
+            : redirect_json('¡Status actualizado!', 'success');
 
-        $query -> close();
     } catch (Exception $e) {
         redirect_json($e -> getMessage(), 'warning');
     }

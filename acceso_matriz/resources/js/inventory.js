@@ -1,6 +1,24 @@
 
+
 let productos = JSON.parse(localStorage.getItem('productos')) || [];
 let orderPriceValue = parseFloat(localStorage.getItem('orderPriceValue')) || 0.00;
+
+const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    iconColor: 'white',
+    timerProgressBar: true,
+    customClass: {
+        popup: 'colored-toast',
+    },
+    didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+    }
+});
+
 
 document.addEventListener('DOMContentLoaded', () => {
     //  <-- SE CARGAN LOS PORDUCTOS -->
@@ -23,7 +41,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // <-- DISPLAY DE LA CANTIDAD DE PRODUCTOS ENVIADOS POR MATRIZ -->
     updateProductsOrderCount();
 });
-
 
 
 
@@ -100,6 +117,84 @@ $(document).on('click', '.menu-toggle', function() {
         $container.removeClass('inverted');
     }
 });
+
+
+
+// <--      C A M B I A R   S T A T U S       -->
+$(document).on('click', '.status-btn ', function() {
+    let productId = $(this).data('id');
+
+    if (!productId) return;
+
+    Swal.fire({
+        title: "¿Cambiar status?",
+        toast: true,
+        icon: "question",
+        position: 'center',
+        iconColor: 'white',
+        showCancelButton: true,
+        showConfirmButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        cancelButtonText: 'Cancelar',
+        confirmButtonText: "Sí, cambiar",
+        customClass: {
+            popup: 'colored-toast',
+        },
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                url: '../../functions/crud_producto.php',
+                method: 'POST',
+                data: { p: productId, accion: 'status' },
+                dataType: 'json',
+                success: function(response) {
+                    try {
+                        let res = response;
+
+                        if (res.status === 'success') {
+                            Toast.fire({
+                                icon: 'success',
+                                title: res.message,
+                                timer: 1000
+                            });
+                            setTimeout(() => {
+                                window.location.reload()
+                            }, 1000);
+                        } else {
+                            Toast.fire({
+                                icon: 'error',
+                                title: res.message
+                            });
+                        }
+                    } catch (error) {
+                        Toast.fire({
+                            icon: 'error',
+                            title: res.message
+                        });
+                    }
+
+                },
+                error: (xhr, status, error) => {
+                    console.error("Error al cargar el producto:", error);
+
+                    Toast.fire({
+                        icon: "error",
+                        title: "¡No se encontró el producto!"
+                    });
+                }
+            });
+
+        } else {
+            Toast.fire({
+                icon: "info",
+                title: "Operación cancelada",
+                timer: 3000
+            });
+        }
+    });
+});
+
 
 
 
@@ -485,7 +580,7 @@ $(document).on('click', '#send-order-btn', function() {
             data: { productos: productos, orderValue: orderPriceValue, sucursal: branchSelectedId, accion: 'guardar' },
             success: function(response) {
                 try {
-                    var res = JSON.parse(response);
+                    var res = response;
 
                     if (res.status === 'success') {
                         modal.addClass('hide').removeClass('show');
@@ -535,7 +630,10 @@ $(document).on('click', '#send-order-btn', function() {
                     }
                 } catch (e) {
                     console.error("Error al procesar la respuesta", e);
-                    Swal.fire("Error", "No se pudo procesar la respuesta del servidor", "error");
+                    Toast.fire({
+                        icon: "error",
+                        title: "¡No se pudo resolver la respuesta del servidor!"
+                    });
                 }
             },
             error: function() {
@@ -558,87 +656,85 @@ $(document).on('click', '.open-register-details-modal ', function() {
     let modal = $(modalClass);
     let modalContainer = modal.find('.modal-container');
 
-    modal.addClass('show').removeClass('hide');
-    modalContainer.addClass('show').removeClass('hide');
-
     let productId = $(this).data('id');
 
     $.ajax({
         url: '../../functions/crud_producto.php',
         method: 'GET',
-        data: {p: productId},
+        data: { p: productId, accion: 'detalles' },
         success: function(data) {
-
-            $.each(data, function(key, value) {
-                let element = $('.' + key);
-
-                if (key === 'imagen_producto') {
-                    $('.register-fact-image img').attr('src', value);
-                } else if (key === 'lotes') {
-                    if (value.length === 0) {
-                        $('.lotes').html('<p>No hay fechas de vencimientos para este producto</p>');
-                    } else {
-                        let lotesHtml = '<ul>';
-
-                        value.forEach(lote => {
-                            let fecha = lote[0];
-                            let creado = lote[1];
-
-                            lotesHtml += `<li>Vence: ${fecha} | Añadido: ${creado}</li>`;
-                        });
-
-                        lotesHtml += '</ul>';
-                        $('.lotes').html(lotesHtml);
-                    }
-                } else if (key === 'cantidad_minima_mayoreo_producto') {
-                    let texto = value === 0 ? 'No aplica' : value;
-                    element.text(texto);
-                } else if (key === 'aplica_mayoreo') {
-                    let texto = value === 1 ? 'No aplica' : 'Aplica';
-                    element.text(texto);
-                } else if (key === 'precio_mayoreo_producto') {
-                    let texto = parseInt(value,10) === 0 ? 'No aplica' : value;
-                    element.text(texto);
-                } else if (key === 'status_producto') {
-                    let texto = value === 1 ? 'Inactivo' : 'Activo';
-                    element.text(texto);
-                } else if (element.length) {
-                    element.text(value);
-                }
-
-                if (data.images && Array.isArray(data.images) && data.images.length > 0) {
-                    $('.register-fact.images-history').show();
-                    let imagesHtml = '';
-
-                    data.images.forEach(img => {
-                        imagesHtml += `<img src="${img}" alt="Imagen de historial" style="max-width: 100px; margin: 5px;">`;
+            try {
+                if (data.status === 'error') {
+                    Toast.fire({
+                        icon: data.status,
+                        title: data.message
                     });
 
-                    $('.images-history-grid').html(imagesHtml);
                 } else {
-                    $('.register-fact.images-history').hide();
+                    modal.addClass('show').removeClass('hide');
+                    modalContainer.addClass('show').removeClass('hide');
+
+                    $.each(data, function(key, value) {
+                        let element = $('.' + key);
+
+                        if (key === 'imagen_producto') {
+                            $('.register-fact-image img').attr('src', value);
+                        } else if (key === 'lotes') {
+                            if (value.length === 0) {
+                                $('.lotes').html('<p>No hay fechas de vencimientos para este producto</p>');
+                            } else {
+                                let lotesHtml = '<ul>';
+
+                                value.forEach(lote => {
+                                    let fecha = lote[0];
+                                    let creado = lote[1];
+
+                                    lotesHtml += `<li>Vence: ${fecha} | Añadido: ${creado}</li>`;
+                                });
+
+                                lotesHtml += '</ul>';
+                                $('.lotes').html(lotesHtml);
+                            }
+                        } else if (key === 'cantidad_minima_mayoreo_producto') {
+                            let texto = !value ? 'No aplica' : value;
+                            element.text(texto);
+                        } else if (key === 'aplica_mayoreo') {
+                            let texto = value ? 'No aplica' : 'Aplica';
+                            element.text(texto);
+                        } else if (key === 'precio_mayoreo_producto') {
+                            let texto = (parseInt(value,10) === 0 || !value) ? 'No aplica' : value;
+                            element.text(texto);
+                        } else if (key === 'status_producto') {
+                            let texto = value === 1 ? 'Inactivo' : 'Activo';
+                            element.text(texto);
+                        } else if (element.length) {
+                            element.text(value);
+                        }
+
+                        if (data.images && Array.isArray(data.images) && data.images.length > 0) {
+                            $('.register-fact.images-history').show();
+                            let imagesHtml = '';
+
+                            data.images.forEach(img => {
+                                imagesHtml += `<img src="${img}" alt="Imagen de historial" style="max-width: 100px; margin: 5px;">`;
+                            });
+
+                            $('.images-history-grid').html(imagesHtml);
+                        } else {
+                            $('.register-fact.images-history').hide();
+                        }
+                    });
                 }
-            });
+            } catch(e) {
+                Toast.fire({
+                    icon: data.status,
+                    title: data.message
+                });
+            }
 
         },
         error: (xhr, status, error) => {
             console.error("Error al cargar el producto:", error);
-
-            const Toast = Swal.mixin({
-                toast: true,
-                position: "top-end",
-                showConfirmButton: false,
-                timer: 3000,
-                iconColor: 'white',
-                timerProgressBar: true,
-                customClass: {
-                    popup: 'colored-toast',
-                },
-                didOpen: (toast) => {
-                    toast.onmouseenter = Swal.stopTimer;
-                    toast.onmouseleave = Swal.resumeTimer;
-                }
-            });
             Toast.fire({
                 icon: "error",
                 title: "¡No se encontró el producto!"

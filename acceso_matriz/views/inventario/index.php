@@ -2,50 +2,42 @@
 <?php require_once MATRIX_DOC_ROOT . '/database.php' ?>
 <?php require_once MATRIX_DOC_FNS . 'helpers/encrypt.php' ?>
 <?php require_once MATRIX_DOC_FNS . 'helpers/clear.php' ?>
+
 <?php $page_name = ACCESO . 'Inventario' ?>
 
 <?php
-    //  P R O D U C T O S   C O N   V E N C I M I E N T O
     $sql = '
-        SELECT p.stock_producto, p.id_producto, GROUP_CONCAT(v.fecha_vencimiento ORDER BY v.fecha_vencimiento ASC) AS fechas_vencimiento
-        FROM productos AS p
-        LEFT JOIN lotes_vencimientos AS v
-        ON p.id_producto = v.id_producto_fk_lote_vencimiento
+        SELECT
+            p.stock_producto,
+            p.id_producto,
+            (SELECT MIN(v.fecha_vencimiento)
+            FROM lotes_vencimientos v
+            WHERE v.id_producto_fk_lote_vencimiento = p.id_producto) AS fecha_vencimiento,
+            SUM(CASE WHEN p.stock_producto = 0 THEN 1 ELSE 0 END) AS count_out_stock_products,
+            SUM(CASE WHEN p.stock_producto > 0 AND p.stock_producto <= 50 THEN 1 ELSE 0 END) AS count_few_stock_products,
+            SUM(CASE WHEN p.status_producto = 1 THEN 1 ELSE 0 END) AS count_inactive_products,
+            SUM(CASE WHEN DATEDIFF((SELECT MIN(v.fecha_vencimiento) FROM lotes_vencimientos v WHERE v.id_producto_fk_lote_vencimiento = p.id_producto), NOW()) <= 30 THEN 1 ELSE 0 END) AS count_close_expiration_products
+        FROM productos p
         GROUP BY p.id_producto
     ';
 
     $products = simpleQuery($sql) ?: [];
+
     $count_products = count($products);
 
-    $count_out_stock_products = 0;
-    $count_few_stock_products = 0;
-    $count_close_expiration_products = 0;
-    $curr_date = new DateTime();
-    $curr_day = (int) $curr_date -> format('d');
-    $curr_month = (int) $curr_date -> format('m');
+    $count_out_stock_products = $count_few_stock_products = $count_close_expiration_products = $count_inactive_products = 0;
 
     foreach ($products as $product) {
-        $stock = (int)$product['stock_producto'];
-
-        if ($stock === 0) $count_out_stock_products++;
-        if ($stock > 0 && $stock <= 50) $count_few_stock_products++;
-
-        $fechas_vencimiento = $product['fechas_vencimiento'] ? explode(',', $product['fechas_vencimiento']) : [];
-        foreach ($fechas_vencimiento as $fecha) {
-            $expired_date = DateTime::createFromFormat('Y-m-d', $fecha);
-            if ($expired_date) {
-                $expired_day = (int)$expired_date -> format('d');
-                $expired_month = (int)$expired_date -> format('m');
-
-                if ($expired_day <= $curr_day && $expired_month === $curr_month + 1) $count_close_expiration_products++;
-            }
-        }
+        $count_out_stock_products += (int)$product['count_out_stock_products'];
+        $count_few_stock_products += (int)$product['count_few_stock_products'];
+        $count_close_expiration_products += (int)$product['count_close_expiration_products'];
+        $count_inactive_products += (int)$product['count_inactive_products'];
     }
 
-    //  S U C U R S A L E S
     $sql = 'SELECT id_sucursal, nombre_sucursal FROM sucursales ORDER BY nombre_sucursal ASC';
     $sucursales = simpleQuery($sql) ?: [];
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -65,6 +57,7 @@
                     type="text" list="sucursales" name="sucursal_datalist" id="sucursal_datalist" placeholder="Buscar sucursal..."
                     onkeyup="busqueda();"
                 >
+
                 <datalist id="sucursales">
                     <?php if (!empty($sucursales)): ?>
                         <?php foreach ($sucursales as $suc): ?>
@@ -77,13 +70,16 @@
 
                 <select name="sucursal_select" class="crud-header-select sucursal-select">
                     <?php if (empty($sucursales)): ?>
+
                         <option selected disabled>
                             No hay sucursales registradas
                         </option>
+
                     <?php else: ?>
                         <option value="" class="font-extrabold">
                             Todas las sucursales
                         </option>
+
                         <?php foreach ($sucursales as $suc): ?>
                             <option value="<?= clearEntry($suc['nombre_sucursal']) ?>">
                                 <?= ucwords($suc['nombre_sucursal']) ?>
@@ -98,6 +94,7 @@
                     Categorías
                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M80-140v-320h320v320H80Zm80-80h160v-160H160v160Zm60-340 220-360 220 360H220Zm142-80h156l-78-126-78 126ZM863-42 757-148q-21 14-45.5 21t-51.5 7q-75 0-127.5-52.5T480-300q0-75 52.5-127.5T660-480q75 0 127.5 52.5T840-300q0 26-7 50.5T813-204L919-98l-56 56ZM660-200q42 0 71-29t29-71q0-42-29-71t-71-29q-42 0-71 29t-29 71q0 42 29 71t71 29ZM320-380Zm120-260Z"/></svg>
                 </a>
+
                 <a href="<?= MATRIX_HTTP_VIEWS.'inventario/marcas/index'?>">
                     Marcas
                     <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e8eaed"><path d="M864-40 741-162q-18 11-38.5 16.5T660-140q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 23-6 43.5T797-218L920-96l-56 56ZM220-140q-66 0-113-47T60-300q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm0-80q33 0 56.5-23.5T300-300q0-33-23.5-56.5T220-380q-33 0-56.5 23.5T140-300q0 33 23.5 56.5T220-220Zm440 0q33 0 56.5-23.5T740-300q0-33-23.5-56.5T660-380q-33 0-56.5 23.5T580-300q0 33 23.5 56.5T660-220ZM220-580q-66 0-113-47T60-740q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm440 0q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47Zm-440-80q33 0 56.5-23.5T300-740q0-33-23.5-56.5T220-820q-33 0-56.5 23.5T140-740q0 33 23.5 56.5T220-660Zm440 0q33 0 56.5-23.5T740-740q0-33-23.5-56.5T660-820q-33 0-56.5 23.5T580-740q0 33 23.5 56.5T660-660ZM220-300Zm0-440Zm440 0Z"/></svg>
@@ -120,6 +117,7 @@
                                 </a>
                             </h1>
                         </div>
+
                         <p>Consulte y gestiones su invetario</p>
                     </div>
 
@@ -179,17 +177,25 @@
                             <p>Total de productos</p>
                             <span><?= $count_products ?? 0 ?></span>
                         </div>
+
                         <div class="summary">
                             <p>Productos sin stock</p>
                             <span><?= $count_out_stock_products ?? 0 ?></span>
                         </div>
+
                         <div class="summary">
                             <p>Productos con bajo inventario</p>
                             <span><?= $count_few_stock_products ?? 0 ?></span>
                         </div>
+
                         <div class="summary">
                             <p>Productos próximos a vencer</p>
                             <span><?= $count_close_expiration_products ?? 0 ?></span>
+                        </div>
+
+                        <div class="summary">
+                            <p>Productos inactivos</p>
+                            <span><?= $count_inactive_products ?? 0 ?></span>
                         </div>
                     </div>
                 </div>
@@ -197,7 +203,7 @@
                 <!-- HEADER INFERIOR -->
                 <div class="crud-bottom-header">
                     <form action="" class="delete-all-form">
-                        <input type="checkbox" name="" id="">
+                        <input type="checkbox" name="check-all-registers" id="check-all-registers">
                         <p>Seleccionar todo</p>
 
                         <select name="" class="crud-header-select">

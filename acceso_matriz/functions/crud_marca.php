@@ -5,20 +5,18 @@ foreach (glob(__DIR__ . "/helpers/*.php") as $helper)
     require_once $helper;
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST')
+
     match($_POST['accion']) {
         'guardar' => store(),
         'actualizar' => update(),
+        'status' => changeStatus(),
         default => redirect(),
     };
 
 else if ($_SERVER['REQUEST_METHOD'] === 'GET')
-    !$_GET['m']
-        ? redirect_json('¡Marca no definida!')
-        : match($_GET['accion']) {
-            'detalles' => show(),
-            'status' => changeStatus(),
-            default => redirect_json('¡Acción no válida!', 'warning'),
-        };
+
+    (!empty($_GET['m']) && $_GET['accion'] === 'detalles') ? show() : redirect();
+
 else redirect_json('¡Acceso denegado!', 'error');
 
 
@@ -31,7 +29,6 @@ function redirect()
 
 function redirect_json($message = '¡Ocurrió un error!', $status = 'error')
 {
-    header('Content-Type: application/json');
     echo json_encode(['status' => $status, 'message' => $message]);
     exit;
 }
@@ -361,46 +358,25 @@ function show()
 function changeStatus()
 {
     try {
-        $id = (int)decryptValue($_GET['m'], SECRETKEY);
-        if (!$id) throw new Exception('¡Marca no válida!');
+        header('Content-Type: application/json');
 
-        global $conn;
-        $sql = '
-            SELECT * FROM marcas
-            WHERE id_marca = ?
-        ';
-        $query = $conn -> prepare($sql);
-        $query -> bind_param('i', $id);
+        $id = (int)decryptValue($_POST['m'] ?? '', SECRETKEY) ?? '';
+        if (!$id) redirect_json('¡Marca no válida!');
 
-        if (!$query -> execute()) {
-            throw new Exception('¡Marca no encontrada!');
-        }
+        $sql = 'SELECT status_marca FROM marcas WHERE id_marca = ?';
 
-        $brand = $query -> get_result() -> fetch_assoc();
-        $query -> close();
-
-        if (!$brand) {
-            throw new Exception('¡Marca no encontrada!');
-        }
+        $brand = simpleQuery($sql, [$id], 'i', true)[0] ?? null;
+        if (!$brand) redirect_json('¡Marca no encontrada!');
 
         $current_status = (int)$brand['status_marca'];
         $new_status = ($current_status === 0) ? 1 : 0;
 
-        $sql = '
-            UPDATE marcas
-            SET status_marca = ?
-            WHERE id_marca = ?
-        ';
-        $query = $conn -> prepare($sql);
-        $query -> bind_param('ii', $new_status, $id);
+        $sql = 'UPDATE marcas SET status_marca = ? WHERE id_marca = ?';
 
-        !$query -> execute()
-        ?
-        redirect_json('¡No se pudo actualizar el status!', 'error')
-        :
-        redirect_json('¡Status actualizado!', 'success');
+        !simpleQuery($sql, [$new_status, $id], 'ii')
+            ? redirect_json('¡No se pudo actualizar el status!', 'error')
+            : redirect_json('¡Status actualizado!', 'success');
 
-        $query -> close();
     } catch (Exception $e) {
         redirect_json($e -> getMessage(), 'warning');
     }

@@ -146,9 +146,10 @@ $(document).on('click', '.aproved-order-btn', function() {
                 data: params,
                 type: 'POST',
                 url: '../../../functions/crud_pedido.php',
+                dataType: 'json',
                 success: function(response) {
                     try {
-                        var res = JSON.parse(response);
+                        var res = response;
 
                         if (res.status === "success") {
                             Toast.fire({
@@ -158,15 +159,19 @@ $(document).on('click', '.aproved-order-btn', function() {
                         } else {
                             Toast.fire({
                                 icon: res.status,
-                                title: "¡Hubo un problema al aprobar la orden!"
+                                title: res.message
                             });
                         }
                     } catch (e) {
-                        console.error("Error al procesar la respuesta", e);
-                        Swal.fire("Error", "No se pudo procesar la respuesta del servidor", "error");
+                        Toast.fire({
+                            icon: res.status,
+                            title: res.message
+                        })
                     }
                 },
                 error: (xhr, status, error) => {
+                    console.error("Error al cargar la orden:", error);
+
                     Toast.fire({
                         icon: "error",
                         title: "¡No se pudo aprobar la orden!"
@@ -222,7 +227,7 @@ $(document).on('click', '.rejected-order-btn', function() {
                 url: '../../../functions/crud_pedido.php',
                 success: function(response) {
                     try {
-                        var res = JSON.parse(response);
+                        var res = response;
 
                         if (res.status === "success") {
                             Toast.fire({
@@ -232,12 +237,14 @@ $(document).on('click', '.rejected-order-btn', function() {
                         } else {
                             Toast.fire({
                                 icon: res.status,
-                                title: "¡Hubo un problema al rechazar la orden!"
+                                title: res.message
                             });
                         }
                     } catch (e) {
-                        console.error("Error al procesar la respuesta", e);
-                        Swal.fire("Error", "No se pudo procesar la respuesta del servidor", "error");
+                        Toast.fire({
+                            icon: res.status,
+                            title: res.message
+                        })
                     }
                 },
                 error: (xhr, status, error) => {

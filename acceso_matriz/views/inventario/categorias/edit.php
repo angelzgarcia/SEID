@@ -52,7 +52,14 @@
                 </div>
             </div>
 
-            <form class="form-create category-add" action="<?= MATRIX_FNS ?>crud_categoria.php?c=<?= $id ?>" method="POST" autocomplete="off" enctype="multipart/form-data">
+            <form
+                class="form-create category-add"
+                action="<?= MATRIX_FNS ?>crud_categoria.php?c=<?= $id ?>"
+                method="POST"
+                autocomplete="off"
+                enctype="multipart/form-data"
+                id="form-editar"
+            >
                 <!-- NOMBRE -->
                 <fieldset class="category-field-name">
                     <legend>

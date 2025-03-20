@@ -9,14 +9,21 @@ require_once DOC_ROOT . 'qrlib/barcode.php';
 foreach (glob(__DIR__ . "/helpers/*.php") as $helper)
     require_once $helper;
 
-match ($_POST['accion']) {
-    'crear' => store(),
-    'ver' => show(),
-    'editar' => edit(),
-    'actualizar' => update(),
-    'eliminar' => destroy(),
-    default => redirect()
-};
+if ($_SERVER['REQUEST_METHOD'] === 'POST')
+
+    match($_POST['accion']) {
+        'guardar' => store(),
+        'actualizar' => update(),
+        'status' => changeStatus(),
+        default => redirect(),
+    };
+
+else if ($_SERVER['REQUEST_METHOD'] === 'GET')
+
+    (!empty($_GET['c']) && $_GET['accion'] === 'detalles') ? show() : redirect_json('¡Datos incompletos!');
+
+else redirect_json('¡Acceso denegado!', 'error');
+
 
 function redirect()
 {
@@ -24,6 +31,15 @@ function redirect()
     header("Location: $redirect_ulr");
     exit;
 }
+
+function redirect_json($message = '¡Ocurrió un error!', $status = 'error')
+{
+    header('Content-Type: application/json');
+
+    echo json_encode(['status' => $status, 'message' => $message]);
+    exit;
+}
+
 
 function store()
 {

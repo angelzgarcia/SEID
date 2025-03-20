@@ -35,7 +35,13 @@
                 </div>
             </div>
 
-            <form class="form-create category-add" action="<?= MATRIX_FNS ?>crud_marca.php" method="POST" autocomplete="off" enctype="multipart/form-data">
+            <form
+                class="form-create category-add"
+                action="<?= MATRIX_FNS ?>crud_marca.php"
+                method="POST"
+                autocomplete="off"
+                enctype="multipart/form-data"
+            >
                 <!-- NOMBRE -->
                 <fieldset class="category-field-name">
                     <legend>

@@ -14,8 +14,10 @@ match ($_POST['accion']) {
     default => redirect_json(),
 };
 
-function redirect_json($message = '¡Ocurrió un error!', $status = 'error')
+function redirect_json($message = '¡Ocurrió un error con AJAX!', $status = 'error')
 {
+    header('Content-Type: application/json');
+
     echo json_encode(['status' => $status, 'message' => $message]);
     exit;
 }
@@ -24,7 +26,7 @@ function store()
 {
     unset($_POST['accion']);
 
-    $productos = $_POST['productos'] ?? [];
+    $productos = $_POST['productos'] ?? '';
     $sucursal_id = decryptValue($_POST['sucursal'] ?? '', SECRETKEY) ?: null;
     $order_value = (float)($_POST['orderValue'] ?? 0);
 
@@ -42,7 +44,7 @@ function store()
 
     if (!simpleQuery($sql, [(int)$sucursal_id, $order_value], 'id')) {
         rollbackTransaction();
-        redirect_json('No se pudo insertar el pedido');
+        redirect_json('¡No se pudo insertar el pedido!');
     }
 
     global $conn;
@@ -85,6 +87,7 @@ function store()
             redirect_json('No se pudo validar el stock de un producto');
 
         if ($stock_disponible < $product_quantity) {
+            header('Content-Type: application/json');
             rollbackTransaction();
             echo json_encode([
                 'status' => 'warning',
@@ -125,63 +128,48 @@ function edit()
 
 function aproved()
 {
-    unset($_POST['accion']);
+    try {
+        header('Content-Type: application/json');
 
-    $order_id = $_POST['order_id'] ? (int)clearEntry(decryptValue($_POST['order_id'], SECRETKEY)) : null;
+        unset($_POST['accion']);
 
-    if (!$order_id) redirect_json('¡No se pudo identificar el pedido!');
+        $order_id = $_POST['order_id'] ? (int)clearEntry(decryptValue($_POST['order_id'] ?? '', SECRETKEY)) : null;
 
-    $sql = 'UPDATE pedidos_sucursales SET status_pedido_sucursal = ? WHERE id_pedido_sucursal = ?';
-    $status = 'aprobado';
+        if (!$order_id) redirect_json('¡No se pudo identificar el pedido!');
 
-    if (!simpleQuery($sql, [&$status, &$order_id], 'si'))
-        redirect_json('¡No se pudo aprobar el pedido!');
+        $sql = 'UPDATE pedidos_sucursales SET status_pedido_sucursal = ? WHERE id_pedido_sucursal = ?';
+        $status = 'aprobado';
 
-    redirect_json('¡Orden aprobada!', 'success');
+        if (!simpleQuery($sql, [&$status, &$order_id], 'si'))
+            redirect_json('¡No se pudo almacenar el pedido!');
+
+        redirect_json('¡Orden aprobada!', 'success');
+
+    } catch (Exception $e) {
+        redirect_json($e -> getMessage(), 'warning');
+    }
 }
 
 function rejected()
 {
-    unset($_POST['accion']);
+    try {
+        header('Content-Type: application/json');
 
-    $order_id = $_POST['order_id'] ? (int)clearEntry(decryptValue($_POST['order_id'], SECRETKEY)) : null;
+        unset($_POST['accion']);
 
-    if (!$order_id) redirect_json('¡No se pudo identificar el pedido!');
+        $order_id = $_POST['order_id'] ? (int)clearEntry(decryptValue($_POST['order_id'] ?? '', SECRETKEY)) : null;
 
-    $sql = 'UPDATE pedidos_sucursales SET status_pedido_sucursal = ? WHERE id_pedido_sucursal = ?';
-    $status = 'rechazado';
+        if (!$order_id) redirect_json('¡No se pudo identificar el pedido!');
 
-    if (!simpleQuery($sql, [&$status, &$order_id], 'si'))
-        redirect_json('¡No se pudo rechazar el pedido!');
+        $sql = 'UPDATE pedidos_sucursales SET status_pedido_sucursal = ? WHERE id_pedido_sucursal = ?';
+        $status = 'rechazado';
 
-    redirect_json('¡Orden rechazada!', 'success');
+        if (!simpleQuery($sql, [&$status, &$order_id], 'si'))
+            redirect_json('¡No se pudo rechazar el pedido!');
+
+        redirect_json('¡Orden rechazada!', 'success');
+    } catch (Exception $e) {
+        redirect_json($e -> getMessage(), 'warning');
+    }
 }
 
-function validateNames($nombre) {
-    return !empty($nombre) ? preg_match("/^[a-zA-Z\s]+$/", $nombre) : true;
-}
-
-
-function validateLastNames($apellidos) {
-    return !empty($apellidos) ? preg_match("/^[a-zA-Z\s]+$/", $apellidos) : true;
-}
-
-
-function validateEmail($correo) {
-    return !empty($correo) ? filter_var($correo, FILTER_VALIDATE_EMAIL) !== false : true;
-}
-
-
-function validateCellPhone($telefono) {
-    return !empty($telefono) ? preg_match('/^\+?[0-9]{1,4}?[-.\s]?[0-9]{1,15}$/', $telefono) : true;
-}
-
-
-function validateCurp($curp) {
-    return !empty($curp) ? preg_match('/^[A-Z]{4}[0-9]{6}[HM]{1}[A-Z]{2}[A-Z]{3}[0-9A-Z]{1}[0-9]{1}$/', strtoupper($curp)) : true;
-}
-
-
-function validateUserLevel($nivel) {
-    return !empty($nivel) ? is_numeric($nivel) && $nivel >= 1 && $nivel <= 3 : true;
-}
