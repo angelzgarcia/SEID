@@ -72,7 +72,6 @@ else:
     <div class="content-product-found">
         <div class="product-header">
             <div class="product-img">
-                <!-- <img src="https://www.hubspot.com/hs-fs/hubfs/Shell_logo.svg.png?width=450&height=417&name=Shell_logo.svg.png" alt="product image"> -->
                 <img src="<?=$producto['imagen_producto'] ?? '' ?>" alt="product image">
             </div>
 

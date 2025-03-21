@@ -38,6 +38,7 @@
                     </li>
                 </ul>
             </div>
+            
             <!-- PERFIL -->
             <div class="profile-access">
                 <a href="" class="<?= strpos($_SERVER['PHP_SELF'], 'inventario/create.php') ? 'active' : '' ?>">

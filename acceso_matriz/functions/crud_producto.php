@@ -481,7 +481,6 @@ function updateProduct($data, $producto_actual, $unfillable)
     return true;
 }
 
-
 function updateProductImage($producto_actual, $file_assoc)
 {
     $http_path = HTTP_URL . 'imgs_productos/';
