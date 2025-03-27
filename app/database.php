@@ -15,7 +15,7 @@
 
     $conn -> set_charset("utf8");
 
-
+    
     function simpleQuery($query, $params = [], $types = '', $with_results = false)
     {
         global $conn;

@@ -42,7 +42,9 @@ function store()
     $data = [];
     $errors = [];
     $olds = [];
+
     $unfillable = ['aplica_mayoreo' => '', 'precio_mayoreo' => '', 'cantidad_minima_mayoreo' => '', 'vencimiento' => ''];
+
     if ((int)$_POST['aplica_mayoreo'] === 1)
         unset($unfillable['aplica_mayoreo']);
 

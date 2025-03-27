@@ -140,7 +140,9 @@ function store()
         OR correo_inicio = ?
     ';
 
-    $credential_exists = simpleQuery($sql, [$merge_data['curp'], $merge_data['telefono']. $merge_data['correo_electronico']], 'sss', true)[0] ?? '';
+    $credential_exists = simpleQuery(
+        $sql, [$merge_data['curp'], $merge_data['telefono'], $merge_data['correo_electronico']], 'sss', true
+    )[0] ?? '';
 
     if ($credential_exists) {
         if ($credential_exists['curp_credencial'] === $merge_data['curp'])
